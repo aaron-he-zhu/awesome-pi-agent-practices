@@ -12,6 +12,7 @@
 ## 目录
 
 - [从这里开始](#从这里开始)
+- [Pi 生态概览](#pi-生态概览)
 - [实践领域](#实践领域)
 - [官方基础材料](#官方基础材料)
 - [证据与研究](#证据与研究)
@@ -36,6 +37,63 @@
 
 阅读完整的[三十条实践指南](docs/practice-guide.zh-CN.md)；检查失败时使用
 [故障排查手册](docs/troubleshooting.zh-CN.md)。
+
+<!-- sync:root-ecosystem -->
+
+## Pi 生态概览
+
+Pi 生态不只是 `pi` 终端命令。在本仓库采用的稳定 **v0.83.0** 基线中，四个主要
+Package 分别覆盖 Multi-provider AI API、Agent Runtime、Coding-agent CLI 与
+TUI。Prompt Template、Skill、Extension、Theme 和 Pi Package 构成从可复用文本
+到进程内代码的分层定制路径；JSON、RPC 与 SDK 则提供不同强度的程序化集成入口。
+
+### 四个主要 Package
+
+| Package                                                                                                                                                 | 具体职责                                                                                  | 适用场景                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [`@earendil-works/pi-ai`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/ai/README.md)                     | 统一 Provider Streaming、Message、Tool Call、Usage 与 Cross-provider Transformation。        | 只需要 Model/Provider Primitive，不需要 Coding-agent UX。                |
+| [`@earendil-works/pi-agent-core`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/agent/README.md)          | 提供 Agent Loop、State、Event、Tool Execution 与 Transport Primitive。                       | 构建 Agent Runtime，而不是直接使用完整 CLI。                                  |
+| [`@earendil-works/pi-coding-agent`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/README.md) | 提供 `pi` CLI、Coding Tool、Session、Resource Loading，以及 TUI、Print、JSON、RPC 与 SDK Surface。 | 使用交互式 Agent、Headless Automation 或 Application Embedding Surface。 |
+| [`@earendil-works/pi-tui`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/tui/README.md)                   | 提供 Terminal Component、Differential Rendering、Input、Layout 与 Width Handling。           | 构建 Terminal Interface 或自定义 Pi UI。                                |
+
+[Pi 的设计原则](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#design-principles)
+是让 Mandatory Core 保持精简。在 v0.83.0 中，MCP、Subagent、Permission
+Popup、Plan Mode、Todo 与 Background Bash 都不是内建 Workflow；它们可以通过
+Extension/Package 实现，也可以与 Container、tmux 等外部工具组合。
+
+### 定制与分发
+
+| 原语                                                                                                                                                   | 具体行为                                                                                   | 必须记住的边界                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| [Context File](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#context-files) | 分层加载 `AGENTS.md` 或 `CLAUDE.md` Instruction。                                            | 拒绝 Project Trust 不会关闭发现；需用 `-nc`。Context 不是 OS Permission Boundary。 |
+| [Prompt Template](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/prompt-templates.md) | 通过 `/review` 等显式 Slash Command 展开可复用 Markdown。                                         | 它是文本展开，不是自动 Runtime Hook 或 Tool Policy。                             |
+| [Skill](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/skills.md)                     | 按需加载 Workflow，并可包含 Script、Reference 与 Asset。                                           | Skill 可以指示 Tool/Executable Use，仍需要 Source Review。                   |
+| [Extension](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/extensions.md)             | 在进程内运行 TypeScript/JavaScript，可增加 Event、Tool、Command、UI、Provider、Policy 与 Tool Routing。 | 它具有 Pi Process User 的 Authority；Tool Allowlist 不是 Sandbox。          |
+| [Theme](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/themes.md)                     | 通过 JSON 配置 Terminal Presentation。                                                      | 包含 Theme 的 Package 还可能包含可执行 Extension 或 Dependency。                 |
+| [Pi Package](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/packages.md)              | 打包 Extension、Skill、Prompt 与 Theme；来源可以是 npm、Git 或 Local Path，CLI 管理已配置条目。              | 分发与 Catalog 收录不能证明 Identity、Compatibility、Quality 或 Safety。         |
+
+### 集成路径
+
+| Interface                                                                                                                                           | Data/Control 形态                                          | Ownership Boundary                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [Interactive 与 Print](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#modes) | 面向人的 TUI 或一次性 Final Output。                              | Print Mode 不会自动无 Session；需要时使用 `--no-session`。                             |
+| [JSON Mode](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/json.md)                  | 面向 Log、Pipeline 与自定义消费者的单向 JSON Lines Event Stream。      | 它不是双向 Controller，Consumer 必须处理 Streaming Event。                            |
+| [CLI RPC](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/rpc.md)                     | 通过 stdio 上 LF 分隔的 JSONL 传递双向 Request、Response 与异步 Event。 | 固定 Pi Version，并单独 Drain stderr；RPC 不是 JSON Mode。                           |
+| [TypeScript SDK](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/sdk.md)              | 在进程内构建并拥有 Session、Resource、Tool、Model 与 Event。           | Host 负责 Policy、Credential、Persistence、Cancellation、Subscription 与 Cleanup。 |
+
+[已完成源码审查的社区能力地图](docs/research/landscape.zh-CN.md#社区能力地图)
+记录了 VM Isolation（Gondolin）、Subagent/Workflow Orchestration（pi-subagents
+与 pi-crew）、MCP（pi-mcp-adapter）、Web/Browser Access（pi-web-access 与
+pi-agent-browser-native）、Human Review（Plannotator）、Code Analysis
+（pi-lens）、Memory（pi-hermes-memory）、Tracing（braintrust-pi-extension）、
+Emacs UI 与 Broad Operating Layer（gentle-pi）等具体线索。这些是 Research
+Lead，不是正式精选推荐；每个项目仍需具名人类完成可复现实测。
+
+发现候选时，先使用[目录快速选择器](docs/research/ecosystem-directories.zh-CN.md#快速选择)，
+再回到每个项目的 Canonical Source 核验。较早材料仍可能使用
+`badlogic/pi-mono`、`earendil-works/pi-mono` 或 `@mariozechner/*`；执行前应根据
+[Scope 迁移说明](docs/research/landscape.zh-CN.md#scope-迁移与过时指令)检查当前
+Repository、npm Publisher/Scope、Peer Dependency 与 Install Target。
 
 <!-- sync:root-areas -->
 
