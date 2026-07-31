@@ -1,0 +1,71 @@
+name: Hands-on review / 亲测审查
+description: Submit a named human trial of a pinned third-party artifact.
+title: "Hands-on: "
+labels:
+  - hands-on-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Complete the hands-on review template first. One happy path is not enough for a broad artifact. Never attach live credentials, private session/source content, browser profiles, or unredacted logs.
+
+  - type: textarea
+    id: identity
+    attributes:
+      label: Artifact identity and provenance / 制品与来源
+      description: Repository, package, exact ref/version, integrity, license, and source mapping.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Exact environment / 精确环境
+      description: Pi/runtime/platform/model, containment, mounts, network, credentials category, trust/resources/tools.
+    validations:
+      required: true
+
+  - type: textarea
+    id: source_review
+    attributes:
+      label: Source and authority review / 源码与权限审查
+      description: Dependencies, lifecycle scripts, files, processes, network, credentials, data, persistence, cleanup.
+    validations:
+      required: true
+
+  - type: textarea
+    id: matrix
+    attributes:
+      label: Behavioral matrix results / 行为矩阵结果
+      description: Exact commands and passed, failed, skipped cases including denial, concurrency, cancellation, reload, shutdown, uninstall.
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision and residual risk / 决定与残余风险
+      description: Use rejected, source-reviewed, or hands-on-verified; propose featured separately and include an expiration/retest trigger.
+    validations:
+      required: true
+
+  - type: textarea
+    id: disclosure
+    attributes:
+      label: Reviewer, relationship, and AI disclosure / Reviewer、关系与 AI 披露
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: attestation
+    attributes:
+      label: Human attestation / 人类确认
+      options:
+        - label: I am the named human who ran the reported commands and observed the results.
+          required: true
+        - label: I used test credentials/data and removed sensitive evidence.
+          required: true
+        - label: I verified cleanup and documented skipped/failed cases honestly.
+          required: true
+        - label: I understand that hands-on-verified does not automatically mean featured or secure.
+          required: true

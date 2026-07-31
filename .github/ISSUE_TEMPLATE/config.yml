@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Pi contribution gate
+    url: https://github.com/earendil-works/pi/blob/main/CONTRIBUTING.md
+    about: Read this before proposing an issue or pull request to Pi upstream.
+  - name: Pi security policy
+    url: https://github.com/earendil-works/pi/security/policy
+    about: Report a genuine Pi privilege-boundary vulnerability through upstream's current policy.

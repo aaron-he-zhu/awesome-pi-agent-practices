@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "capturedOn": "2026-07-31",
+  "timezone": "Asia/Singapore",
+  "finalizedAt": "2026-07-31T15:56:32+08:00",
+  "sourceBaseline": {
+    "piVersion": "0.83.0",
+    "piCommit": "845d6ff1f6643aba440341cce877ce1c43ebbc39",
+    "mainCommit": "9b50b046d328d589a81400d2e184175d0bf19734",
+    "mainCommitsAhead": 56
+  },
+  "github": {
+    "repositoryEndpoint": "GET https://api.github.com/repos/earendil-works/pi",
+    "repositoryFields": [
+      {
+        "id": "stars",
+        "field": "stargazers_count",
+        "value": 81068
+      },
+      {
+        "id": "forks",
+        "field": "forks_count",
+        "value": 10008
+      },
+      {
+        "id": "subscribers",
+        "field": "subscribers_count",
+        "value": 273
+      },
+      {
+        "id": "open-issues-field",
+        "field": "open_issues_count",
+        "value": 83,
+        "note": "GitHub repository metadata includes open issues and open pull requests in this field."
+      }
+    ],
+    "searchEndpoint": "GET https://api.github.com/search/issues",
+    "totals": [
+      {
+        "id": "issues-total",
+        "query": "repo:earendil-works/pi is:issue",
+        "totalCount": 4579
+      },
+      {
+        "id": "issues-open",
+        "query": "repo:earendil-works/pi is:issue is:open",
+        "totalCount": 71
+      },
+      {
+        "id": "issues-closed",
+        "query": "repo:earendil-works/pi is:issue is:closed",
+        "totalCount": 4508
+      },
+      {
+        "id": "pulls-total",
+        "query": "repo:earendil-works/pi is:pr",
+        "totalCount": 2485
+      },
+      {
+        "id": "pulls-open",
+        "query": "repo:earendil-works/pi is:pr is:open",
+        "totalCount": 12
+      },
+      {
+        "id": "pulls-closed",
+        "query": "repo:earendil-works/pi is:pr is:closed",
+        "totalCount": 2473
+      }
+    ],
+    "keywordClusters": [
+      {
+        "id": "provider-model",
+        "query": "repo:earendil-works/pi is:issue provider OR model",
+        "totalCount": 2272
+      },
+      {
+        "id": "authentication",
+        "query": "repo:earendil-works/pi is:issue auth OR login OR OAuth",
+        "totalCount": 490
+      },
+      {
+        "id": "extension",
+        "query": "repo:earendil-works/pi is:issue extension",
+        "totalCount": 1563
+      },
+      {
+        "id": "package-install-update",
+        "query": "repo:earendil-works/pi is:issue package OR install OR update",
+        "totalCount": 2478
+      },
+      {
+        "id": "session",
+        "query": "repo:earendil-works/pi is:issue session",
+        "totalCount": 1534
+      },
+      {
+        "id": "compaction",
+        "query": "repo:earendil-works/pi is:issue compact OR compaction",
+        "totalCount": 415
+      },
+      {
+        "id": "windows-wsl",
+        "query": "repo:earendil-works/pi is:issue Windows OR WSL",
+        "totalCount": 304
+      },
+      {
+        "id": "terminal-tui",
+        "query": "repo:earendil-works/pi is:issue terminal OR TUI",
+        "totalCount": 1061
+      },
+      {
+        "id": "timeout-retry-hang",
+        "query": "repo:earendil-works/pi is:issue timeout OR retry OR hang",
+        "totalCount": 530
+      },
+      {
+        "id": "sandbox-security-permission",
+        "query": "repo:earendil-works/pi is:issue sandbox OR security OR permission",
+        "totalCount": 211
+      }
+    ]
+  },
+  "packageCatalog": {
+    "extraction": "Read the server-rendered .packages-count text from each view.",
+    "views": [
+      {
+        "id": "all",
+        "url": "https://pi.dev/packages",
+        "count": 5351
+      },
+      {
+        "id": "extension",
+        "url": "https://pi.dev/packages?type=extension",
+        "count": 3059
+      },
+      {
+        "id": "skill",
+        "url": "https://pi.dev/packages?type=skill",
+        "count": 360
+      },
+      {
+        "id": "theme",
+        "url": "https://pi.dev/packages?type=theme",
+        "count": 109
+      },
+      {
+        "id": "prompt",
+        "url": "https://pi.dev/packages?type=prompt",
+        "count": 78
+      }
+    ],
+    "note": "Filter counts overlap because one package can declare multiple resource types."
+  },
+  "rfc": {
+    "url": "https://rfc.earendil.com/keyword/pi/",
+    "visiblePiRelatedEntries": 9,
+    "note": "State labels were read from the rendered keyword index and cross-checked against implementation before stable claims."
+  },
+  "communityReview": {
+    "registry": "./resources.json",
+    "commitEndpointTemplate": "GET https://api.github.com/repos/{owner}/{repo}/commits/{reviewedRef}",
+    "reviewedResources": 15
+  },
+  "manualSampling": {
+    "usedForQuantitativeClaims": false,
+    "fixedSamplePreserved": false,
+    "note": "The initial pass sampled recent and high-signal results qualitatively but did not preserve a fixed sample size or ordering. Failure shapes are synthesis, not prevalence estimates. Future snapshots must record sort order, sample size, and selection rule."
+  },
+  "limitations": [
+    "Counts are point-in-time values and can change immediately.",
+    "GitHub keyword clusters overlap and can contain false positives and false negatives.",
+    "GitHub Search total_count can be read beyond the 1000-result retrieval cap, but full-result sampling cannot.",
+    "Catalog filter counts overlap and rendered catalog data can change without this repository changing.",
+    "Exploratory repository searches were discovery-only and are not completeness claims."
+  ]
+}

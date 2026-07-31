@@ -1,0 +1,297 @@
+[English](CONTRIBUTING.md) | [简体中文](CONTRIBUTING.zh-CN.md)
+
+# 贡献指南
+
+<!-- sync:contrib-scope -->
+
+感谢改进这份双语、证据导向的 Pi 实践指南。本仓库做 Practice Curation，不做穷举
+Package Directory。有用的贡献应帮助读者做出或验证 Operational Decision。
+
+贡献前阅读：
+
+- [研究与收录方法](docs/research/methodology.zh-CN.md)；
+- [证据台账](docs/research/evidence-ledger.zh-CN.md)；
+- 第三方 Artifact 适用的
+  [Extension 审查](docs/extension-review.zh-CN.md)；
+- 若底层请求应提交上游，阅读 Pi 自己的
+  [Contribution Gate](https://github.com/earendil-works/pi/blob/main/CONTRIBUTING.md)。
+
+## 范围内
+
+<!-- sync:contrib-in -->
+
+- 修正 Fact、Version Boundary、Command、Translation、Citation 或 Broken Link。
+- 新增或改进可复现的 Pi-specific Practice。
+- 增加 Primary Evidence 或有文档的矛盾。
+- 提议第三方 Artifact 进行 Source Review。
+- 提交人类 Hands-on Trial Record。
+- 更新 Pi Baseline 或季度 Ecosystem Snapshot。
+- 改善 Bilingual Parity、Template、Schema、Check、Accessibility 或 Maintenance
+  Documentation。
+
+## 范围外
+
+<!-- sync:contrib-out -->
+
+- 没有 Operational Recommendation 的批量 Package/Link Submission。
+- 用 Popularity、Star、Download、Sponsorship 或 Affiliation 证明质量。
+- 从 Catalog/Search Result 复制的 Generated Description。
+- 把无 License Artifact 当成可复用推荐。
+- 没有 Pi-specific Failure Mode/Verification 的通用 Prompting Slogan。
+- 未披露 Data Transfer、Credential Access、Destructive Action、Lifecycle
+  Script 或 Execution Boundary。
+- 没有 Scoped/Reproducible Record 却声称 “Verified”“Secure”“Private”
+  “Sandboxed” 或 “Battle-tested”。
+- 完全自动或无人审查的 AI-generated PR。
+
+## 贡献类型
+
+<!-- sync:contrib-types -->
+
+### 事实修正
+
+包括：
+
+1. 精确 File/Claim；
+2. 当前行为与修正措辞；
+3. Pi Version/Tag/Commit；
+4. Primary Source；含糊时增加 Implementation/Test Evidence；
+5. 对应英文与中文修改；
+6. 是否影响其他 Practice/Registry Record。
+
+安全敏感修正遵循 [SECURITY.zh-CN.md](SECURITY.zh-CN.md)。
+
+### 新增或修改实践
+
+使用[实践提案模板](templates/practice-proposal.zh-CN.md)。实践需要：
+
+- 稳定 ID 或拟议 New ID；
+- Pi-shaped Failure Mode；
+- Rationale；
+- Concrete Procedure；
+- Observable Verification；
+- 有一手证据时引用一手证据；
+- 显式 Inference Label；
+- Security/Data/Version Qualification；
+- Failure、Rollback 或 Recovery Guidance；
+- Fact-equivalent English/Chinese Text。
+
+避免重新编号已有 Practice。Practice Retired 时，在 Decision History 保留 ID，
+不要让 External Link 静默改变含义。
+
+### 观察名单候选
+
+仅链接远远不够。提交：
+
+- Canonical Repository 与 Immutable Reviewed Ref；
+- Artifact/Package Identity；
+- Repository 与 Published Artifact License；
+- Current/Historical Pi Scope；
+- Purpose 与 Non-duplicative Value；
+- Manifest、Resource、Dependency、Lifecycle Script、Native/Binary/Download
+  Behavior；
+- File/Process/Network/Credential/Session Authority；
+- 带日期快照的 Test/CI；
+- Maintenance/Compatibility Evidence；
+- 明显 Risk 与拟议 Isolated Trial；
+- Relationship Disclosure。
+
+默认结果是 `source-reviewed`，不是推荐。
+
+### 亲测审查
+
+使用[亲测审查模板](templates/hands-on-review.zh-CN.md)，记录：
+
+- 具名 Human Reviewer 与 Relationship；
+- Exact Artifact/Ref/Integrity；
+- Pi/Runtime/Platform/Provider Version；
+- Containment、Test Credential/Data 与 Network Policy；
+- 精确 Install/Test Command；
+- Relevant Matrix 的 Expected/Actual Result；
+- Process/Network/Filesystem/Data Observation；
+- Cancellation、Failure、Reload、Shutdown、Uninstall、Cleanup 与 Rollback；
+- Passed/Failed/Skipped Case；
+- Residual Risk、Retest Trigger 与 Expiration Date；
+- Sanitized Evidence Link。
+
+一次 Happy Path 成功不等于对宽泛 Package 的 Hands-on Verification。
+
+## 推荐状态
+
+<!-- sync:contrib-states -->
+
+```text
+discovered -> source-reviewed -> hands-on-verified -> featured
+                    \-> rejected          \-> rejected
+featured -> stale -> retest or remove
+```
+
+只有 `featured` 第三方 Item 进入根 Curated Section。Promotion 需要 Direct Human
+Use 与 Editorial Judgment；Numeric Score、CI、Package Catalog Entry 或 Maintainer
+Reputation 都不能自动晋级。
+
+## AI 辅助
+
+<!-- sync:contrib-ai -->
+
+只有在 Human Contributor 完成以下事项时，AI 才可辅助 Discovery、Draft、
+Translation 或 Consistency Check：
+
+1. 理解每条提交 Claim 与每行内容；
+2. 打开并验证每个 Source；
+3. 运行或亲自验证每个声称的 Command/Test；
+4. 移除 Fabricated、Overbroad 或 Unsupported Language；
+5. 检查两种语言；
+6. 在 PR 中披露重要 AI Assistance。
+
+AI 不能成为具名 Hands-on Reviewer。不得伪造 Test Result、Citation、Maintainer
+Opinion 或 Translation。不得提交 Fully AI-generated/Unreviewed PR。
+
+中央 Awesome 项目的
+[列表创建指南](https://github.com/sindresorhus/awesome/blob/main/create-list.md)与
+[当前 PR 模板](https://github.com/sindresorhus/awesome/blob/main/pull_request_template.md)
+要求 Non-generated Markdown，并拒绝 AI-generated List/Fully AI-generated PR。
+本仓库透明的 Research-preview History 不构成豁免。未来中央列表提案需要实质
+Human Testing、Selection、Rewriting 与要求的 Public-maintenance Period。
+
+## 利益冲突
+
+<!-- sync:contrib-conflict -->
+
+如果你 Own、Maintain、Work For、Advise、Sponsor、Invest In 候选项目，或从中
+获得报酬，必须披露。披露后的 Self-nomination 可以接受 Source Review，但不会
+获得优先级或降低证据标准。
+
+本仓库没有 Paid Placement、Affiliate Ranking、Sponsored Ordering 或基于 Star/
+Download 的 Promotion。存在重要利益冲突的 Maintainer 不得成为 Feature 决定的
+唯一 Reviewer。
+
+## 双语修改
+
+<!-- sync:contrib-bilingual -->
+
+- 英文文件使用 `.md`；简体中文 Peer 使用 `.zh-CN.md`。
+- 在同一 PR 增加/更新两个 Peer。
+- 保持完全相同的 `<!-- sync:... -->` Marker ID 与顺序。
+- 保持完全相同的 `<!-- resource:... -->` Membership、Order 与 Status。
+- 翻译 Fact 与 Risk Qualification，而不只是 Heading。
+- 精确保留 Command、Version、Commit、Flag、Identifier、Date、License 与
+  Evidence Status。
+- 优先自然中文，不强求逐词翻译，但不能弱化 Security Warning，也不能把
+  Source-reviewed Item 升级成推荐。
+- 英文 `README.md` 是 `awesome-lint` Target；不要为了通过英文规则而破坏中文
+  Punctuation。
+
+Automation 检查 Structure/Registry Membership，不检查 Semantic Translation
+Quality。仍需要 Human Bilingual Review。
+
+## 编辑资源注册表
+
+<!-- sync:contrib-registry -->
+
+`data/resources.json` 是 Validation Ledger，不是 README Generator。Markdown 必须
+由人类编辑。
+
+每个 Resource：
+
+- 使用稳定、小写、Hyphenated ID；
+- 如实记录带日期的 `reviewStatus` 与 `status`；
+- 不能用推断结果填写 Reviewer/Test Field；
+- 没检测到 License 时使用 `NOASSERTION`，不能猜；
+- 写明 Current/Legacy Pi Scope；
+- 区分 `reason` 与 `riskSummary`；
+- 在两种语言文件中更新对应 Resource Marker。
+
+不要把 Dynamic Star/Download 变成持久 Resource Field 或 Recommendation Order。
+
+## 写作风格
+
+<!-- sync:contrib-style -->
+
+- 写具体、中性的 Description，回答条目为何有用。
+- 区分 **Fact**、**Community Claim**、**Example** 与 **Inference**。
+- Stable Implementation Claim 使用 Version-pinned Link。
+- 优先使用当前 Canonical `earendil-works/pi` 与 `@earendil-works/*`；标记历史
+  Identity，不静默重写证据。
+- 不把 v0.83.0 CLI RPC 称为永久稳定协议。
+- 不把 Project Trust、Tool Allowlist、Worktree 或 Subprocess 称为 OS Sandbox。
+- 不把 GitHub Secret/Unlisted Gist 称为 Access-controlled Private Document。
+- 保持 Root README 精简；详细 Methodology、Dynamic Number 与 Untested
+  Candidate 放入 `docs/research/`。
+- 根文件正式 Awesome Item 使用
+  `- [Name](URL) - Description.`，Description 具体、首字母大写并有标点。
+- Internal Navigation 使用 Table 或 Text-first Bullet，避免 `awesome-lint` 把
+  Relative Link 误判成正式 List Item。
+- 不增加 CI Badge 或 README `License` Heading。
+
+## 本地检查
+
+<!-- sync:contrib-checks -->
+
+使用仓库要求的 Node Version：
+
+```bash
+npm ci --ignore-scripts
+npm run check
+npm run check:awesome
+```
+
+另外：
+
+1. 检查 English/Chinese Markdown Rendering；
+2. 打开每个新增 Evidence Link；
+3. 确认 Fixture、Log、Screenshot 或 Session Export 没有 Secret/Private Data；
+4. 确认 Diff 没有 Generated Root README 或 Unrelated Change。
+
+`awesome-lint` 可能要求 GitHub Remote Metadata，例如 Description、Topic 与检测到的
+CC0 License。因此新 Local Clone 可能通过 Content Rule，却在 Repository 发布/
+配置前无法通过 Remote-metadata Rule。不要永久禁用该 Rule 来隐藏 Metadata
+缺失。
+
+## 首次发布检查表
+
+<!-- sync:contrib-publish -->
+
+在把仓库视为公开发布前：
+
+1. 写明人类 Maintainer，分别指定 Bilingual Fact Review、Security Report、
+   Feature Decision 与 Stale-item Revalidation Owner，并记录有人监控的 Security
+   Contact 或启用 Private Vulnerability Reporting；
+2. 发布到 GitHub，并把 `main` 设为 Default Branch；
+3. 使用具体 Description，例如“Bilingual, evidence-led, reproducible practices
+   for the Pi coding agent”；
+4. 至少添加 `awesome` 与 `awesome-list` Topic，并添加范围精确的 `pi-agent`、
+   `coding-agent`、`bilingual` 等 Topic；
+5. 确认 GitHub 把根 License 识别为 CC0-1.0；
+6. 若 Hosting Plan 支持，对受保护修改要求 Documentation-quality 与 Link-health
+   Check；
+7. 从 Branch 正在跟踪已发布 Remote 的 Clone 中重跑 `npm run check:awesome`。
+
+不要把这个研究预览提交到中央 Awesome List。只有在公开维护至少 30 天，并经过
+实质、可独立审查的人类亲测、筛选、重写与双语事实审查，使上游
+Non-AI-generated-list Attestation 成为真实陈述后，才重新考虑。
+
+## Pull-request 检查表
+
+<!-- sync:contrib-pr -->
+
+- [ ] 修改在范围内，并说明 Reader Value。
+- [ ] 我亲自验证了每项 Fact、Command、Link 与 Result。
+- [ ] 我记录了精确 Version/Commit/Date 与 Evidence Status。
+- [ ] 我披露了 Relationship、Sponsorship 与重要 AI Assistance。
+- [ ] 我没有把 Popularity/Generated Text 转换成 Recommendation。
+- [ ] 我更新了 English/Chinese Peer 与一致的 Sync/Resource Marker。
+- [ ] Membership/Status 改变时，我更新了 `data/resources.json`。
+- [ ] 我运行本地检查并检查 Markdown Rendering。
+- [ ] 我移除了 Credential、Private Source/Session Content、Identifier 与
+      Sensitive Log。
+- [ ] 我同意以 CC0-1.0 贡献所提交内容。
+
+## 授权
+
+<!-- sync:contrib-license -->
+
+除非明确另行说明，对本仓库的贡献均通过
+[CC0 1.0 Universal](LICENSE)贡献到公共领域。提交 Contribution 表示你确认有权
+作出该贡献。除非 License 允许，不要复制第三方 Description、Documentation 或
+Code；应写简短的 Original Summary 并链接 Source。

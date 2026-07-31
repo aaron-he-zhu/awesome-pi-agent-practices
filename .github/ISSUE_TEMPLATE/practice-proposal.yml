@@ -1,0 +1,80 @@
+name: Practice proposal / 实践提案
+description: Propose a reproducible, evidence-backed Pi practice.
+title: "Practice: "
+labels:
+  - practice
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This repository curates practices, not package links. Read the methodology and use the practice-proposal template before submitting.
+
+  - type: textarea
+    id: failure
+    attributes:
+      label: Pi-shaped failure mode / Pi 相关失败模式
+      description: Describe impact and a sanitized minimal reproduction.
+    validations:
+      required: true
+
+  - type: textarea
+    id: practice
+    attributes:
+      label: Why, do, verify / 原因、操作、验证
+      description: Give concrete steps, falsifiable expected results, failure behavior, and cleanup/rollback.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Pi version scope / Pi 版本范围
+      placeholder: Stable v0.83.0 / main-only full commit / provider-specific
+    validations:
+      required: true
+
+  - type: textarea
+    id: authority
+    attributes:
+      label: Security and data consequences / 安全与数据影响
+      description: Files, processes, network, credentials, session/model context, transfer, and containment.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / 证据
+      description: Primary, example, community, and inference labels with version-pinned links.
+    validations:
+      required: true
+
+  - type: textarea
+    id: trial
+    attributes:
+      label: Human trial status / 人类试验状态
+      description: Exact environment and results, or explicitly state not hands-on-verified.
+    validations:
+      required: true
+
+  - type: textarea
+    id: disclosure
+    attributes:
+      label: Relationship and AI disclosure / 关系与 AI 披露
+      description: Ownership, employment, sponsorship, payment, and material AI assistance.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Contribution checks / 贡献检查
+      options:
+        - label: I personally understand and verified every submitted claim and source.
+          required: true
+        - label: I did not use popularity or generated catalog text as quality evidence.
+          required: true
+        - label: I will provide fact-equivalent English and Chinese changes.
+          required: true
+        - label: I agree to contribute submitted content under CC0-1.0.
+          required: true

@@ -1,0 +1,63 @@
+name: Fact correction / 事实修正
+description: Correct a claim, version boundary, command, translation, or link.
+title: "Correction: "
+labels:
+  - correction
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Do not paste credentials, private sessions/source, debug logs, signed URLs, or sensitive reproductions. Use the Security policy when private reporting is needed.
+
+  - type: input
+    id: location
+    attributes:
+      label: Affected location / 位置
+      description: File, heading, practice ID, and line/link when possible.
+      placeholder: docs/practice-guide.md, P04
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current and corrected claim / 当前与修正结论
+      description: Quote only the minimum needed, then provide precise replacement wording.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Pi version, tag, or commit / Pi 版本
+      placeholder: v0.83.0 / full commit / latest checked at date
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Primary evidence / 一手证据
+      description: Version-pinned URLs and what each source proves.
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact and related files / 影响范围
+      description: Security, data, translation, evidence-ledger, registry, or other practices affected.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verification / 核验
+      options:
+        - label: I opened and personally verified every source I supplied.
+          required: true
+        - label: I removed credentials, private data, and sensitive reproductions.
+          required: true
+        - label: I understand that English and Chinese peers must be updated together.
+          required: true

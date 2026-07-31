@@ -1,0 +1,28 @@
+{
+  "name": "awesome-pi-agent-practices",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A bilingual, evidence-led collection of reproducible practices for earendil-works/pi.",
+  "license": "CC0-1.0",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "check": "npm run check:markdown && npm run check:bilingual && npm run check:resources && npm run check:research && npm run check:links",
+    "check:awesome": "awesome-lint README.md",
+    "check:bilingual": "node scripts/check-bilingual.mjs",
+    "check:links": "node scripts/check-local-links.mjs",
+    "check:markdown": "markdownlint-cli2",
+    "check:research": "node scripts/check-research-snapshot.mjs",
+    "check:resources": "node scripts/check-resources.mjs"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "awesome-lint": "2.3.0",
+    "markdownlint-cli2": "0.23.2"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.9"
+  }
+}
