@@ -94,16 +94,17 @@ endorsements.
 
 ## Evidence and Research
 
-| Read                                                 | Use it for                                                                                          |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| [Documentation map](docs/README.md)                  | Choose a reading path and understand evidence labels.                                               |
-| [Official source map](docs/research/source-map.md)   | Replace memory/search snippets with version-pinned primary sources.                                 |
-| [Evidence ledger](docs/research/evidence-ledger.md)  | Trace every P01–P30 recommendation to facts and labeled inference.                                  |
-| [Research methodology](docs/research/methodology.md) | Review source tiers, inclusion gates, scoring, AI disclosure, and update procedure.                 |
-| [Exact query log](docs/research/query-log.md)        | Re-run the dated GitHub, catalog, registry, RFC, source, and community-review queries.              |
-| [Ecosystem landscape](docs/research/landscape.md)    | Inspect the dated project, catalog, issue-cluster, directory, and opportunity snapshot.             |
-| [Extension review](docs/extension-review.md)         | Audit identity, install scripts, dependencies, authority, lifecycle, data flow, tests, and removal. |
-| [Glossary](docs/glossary.md)                         | Disambiguate Project Trust, session operations, tool limits, RPC, SDK, and containment.             |
+| Read                                                                | Use it for                                                                                          |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| [Documentation map](docs/README.md)                                 | Choose a reading path and understand evidence labels.                                               |
+| [Official source map](docs/research/source-map.md)                  | Replace memory/search snippets with version-pinned primary sources.                                 |
+| [Evidence ledger](docs/research/evidence-ledger.md)                 | Trace every P01–P30 recommendation to facts and labeled inference.                                  |
+| [Research methodology](docs/research/methodology.md)                | Review source tiers, inclusion gates, scoring, AI disclosure, and update procedure.                 |
+| [Exact query log](docs/research/query-log.md)                       | Re-run the dated GitHub, catalog, registry, RFC, source, and community-review queries.              |
+| [Ecosystem landscape](docs/research/landscape.md)                   | Inspect the dated project, catalog, issue-cluster, directory, and opportunity snapshot.             |
+| [Ecosystem directory guide](docs/research/ecosystem-directories.md) | Choose among official, curated, automated, synthesized, and historical discovery surfaces.          |
+| [Extension review](docs/extension-review.md)                        | Audit identity, install scripts, dependencies, authority, lifecycle, data flow, tests, and removal. |
+| [Glossary](docs/glossary.md)                                        | Disambiguate Project Trust, session operations, tool limits, RPC, SDK, and containment.             |
 
 Stable claims were checked against **v0.83.0** at
 `845d6ff1f6643aba440341cce877ce1c43ebbc39`. Post-release observations are
@@ -140,6 +141,10 @@ These projects answer adjacent discovery and ecosystem questions.
 <!-- resource:related-automated-directory -->
 
 - [awesome-pi-coding-agent](https://github.com/shaftoe/awesome-pi-coding-agent) - Automated, frequently refreshed directory optimized for breadth and discovery.
+
+<!-- resource:related-package-index -->
+
+- [Pi Package Index](https://github.com/getpipher/pi-package-index) - Unofficial daily-refreshed npm package index with searchable maintenance metadata and a public JSON API.
 
 <!-- resource:related-ecosystem-wiki -->
 

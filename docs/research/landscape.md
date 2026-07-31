@@ -166,13 +166,25 @@ is an automated, frequently refreshed directory under MIT. Its strength is
 breadth/recency; automated selection and descriptions are not the same as
 human hands-on curation.
 
+<!-- resource:related-package-index -->
+
+### Pi Package Index
+
+[getpipher/pi-package-index](https://github.com/getpipher/pi-package-index) is
+an unofficial MIT-licensed, daily-refreshed npm package index with a searchable
+[web interface](https://pi-package.rectorspace.com/) and public
+[JSON API](https://pi-package.rectorspace.com/api/packages). It enriches npm
+metadata with GitHub and maintenance signals. Those signals help discovery and
+filtering; they are not quality, compatibility, or security review.
+
 <!-- resource:related-archived-awesome -->
 
 ### awesome-pi-agent
 
 [qualisero/awesome-pi-agent](https://github.com/qualisero/awesome-pi-agent) was
-historically prominent but is archived and describes itself as retired/
-outdated. It is useful for ecosystem history, not current compatibility.
+created earlier in the ecosystem but is archived and describes itself as
+retired/outdated. It is useful for ecosystem history, not current
+compatibility.
 
 <!-- resource:related-ecosystem-wiki -->
 
@@ -182,10 +194,44 @@ outdated. It is useful for ecosystem history, not current compatibility.
 focuses on architecture, comparison, and ecosystem synthesis. Treat generated
 or secondary claims as discovery leads until checked against primary sources.
 
+<!-- resource:related-extension-registry-snapshot -->
+
+### awesome-pi-agent by Traveler0014
+
+[Traveler0014/awesome-pi-agent](https://github.com/Traveler0014/awesome-pi-agent)
+uses a structured YAML registry, schema validation, generated README, and
+scheduled metadata workflow. At review time the scheduled updater was failing
+and the content had not advanced beyond its initial June snapshot. Metadata
+also disagreed between its README and license file, so it was screened out of
+navigation.
+
+<!-- resource:related-awesome-pi-mono-snapshot -->
+
+### awesome-pi-mono
+
+[afoofaa/awesome-pi-mono](https://github.com/afoofaa/awesome-pi-mono) is a
+manually categorized MIT list seeded in May. No later substantive update was
+visible at review time, old upstream paths remained, and its initial link check
+failed, so it was screened out of navigation.
+
+### Specialized registry not promoted
+
+[Leoguy77/pi-packages.nix](https://github.com/Leoguy77/pi-packages.nix) is an
+active Nix-native generated registry with integrity hashes and an optional
+binary cache. It is not a general Awesome directory. At
+[`ab97786…`](https://github.com/Leoguy77/pi-packages.nix/commit/ab977868c85409142df3c7dc1b3e98281dde5617),
+its README declared MIT, but the tree had no standalone license file and GitHub
+detected no SPDX license. Its documented fallback/build paths can require
+disabling the Nix sandbox and TLS verification. It remains a specialist
+supply-chain research lead, not a root discovery recommendation.
+
 ### Official catalog
 
 The official package catalog is much broader than any manual list. Together,
-these sources already cover “what exists?” well.
+these sources already cover “what exists?” well. The
+[ecosystem directory guide](./ecosystem-directories.md) links the official
+resource-type filters, compares update models, and separates active navigation
+from historical/context-only sources.
 
 ### Non-duplicative scope
 
@@ -198,8 +244,9 @@ This repository instead answers:
 - Which source proves the underlying fact?
 - Has a human actually installed and tested the third-party artifact?
 
-It links existing directories under Related Lists and keeps untested candidates
-in a visibly separate watchlist.
+It links current directories under Related Lists, preserves the fuller
+directory inventory in the ecosystem directory guide, and keeps untested
+candidates in a visibly separate watchlist.
 
 ## Community capability map
 
