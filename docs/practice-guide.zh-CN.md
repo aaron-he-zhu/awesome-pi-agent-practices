@@ -207,21 +207,25 @@ Export 中；`!!` 是上下文控制，不是 Secret Storage。
 
 ### P11 — 选择满足需求的最小能力原语
 
-**原因：**Context File、Prompt Template、Skill、Extension、Package、SDK、
-JSON 模式和 RPC 各自解决不同问题。运行时能力越强，代码执行、生命周期和升级
-表面积越大。
+**原因：**Context File、Prompt Template、Skill、Extension、Package 与集成接口
+回答的是三个不同问题。把它们排成一条能力阶梯，会混淆能力、分发方式与宿主所有权。
+在同一轴内，运行时能力越强，代码执行、生命周期和升级表面积通常越大。
 
-**操作：**按以下顺序选择：
+**操作：**分别做三项决定：
 
-1. 稳定仓库指引使用 `AGENTS.md`。
-2. 显式复用文本使用 Prompt Template。
-3. 按需工作流、脚本或参考资料使用 Skill。
-4. Runtime Hook、Tool、UI、Policy 或 Provider 使用 Extension。
-5. 需要分发资源时使用 Package。
-6. 单向消费事件用 JSON 模式；进程控制用 RPC；进程内 TypeScript 完全托管用
-   SDK。
+1. **能力轴：**稳定仓库指引用 `AGENTS.md`；显式展开的可复用文本用 Prompt
+   Template；按需工作流、脚本或参考资料用 Skill；只有需要 Runtime Event、Tool、
+   UI、Policy 或 Provider 时才用 Extension。
+2. **分发轴：**本地所有权足够时，把资源保留在仓库或用户目录；只有选定资源需要
+   npm、Git 或 Local Package 分发及生命周期管理时，才使用 Pi Package。
+3. **集成轴：**有人监督的工作用 Interactive；一次性最终回答用 Print；单向消费
+   Event 用 JSON；由外部进程控制用 RPC；由 TypeScript 进程内完全托管用 SDK。
 
-**验证：**前一个能力更小的选项无法清晰表达这个方案。
+常见组合包括：仓库审查使用 `AGENTS.md + Prompt Template`，团队分发工作流使用
+`Skill + Package`，共享 Runtime Tool 使用 `Extension + Package`，Python
+Controller 使用 RPC，TypeScript Host Application 使用 SDK。
+
+**验证：**分别说明每个适用轴的选择理由；同一轴上权限更小的方案无法清晰表达需求。
 
 **证据：**[E11](research/evidence-ledger.zh-CN.md#e11)。
 
@@ -536,6 +540,44 @@ Provider 可能分别变化。
 解释每项结论与修改。
 
 **证据：**[E30](research/evidence-ledger.zh-CN.md#e30)。
+
+<!-- sync:practice-after-task -->
+
+## 任务结束后：闭合执行循环
+
+完成编辑不等于完成任务。完成 P01–P30 后、报告成功前，执行下面的退出流程：
+
+1. 重新阅读最初的结果、范围、保留规则和验收检查。把每项要求标成 `pass`、
+   `fail` 或 `not run`；不要把跳过的检查合并成“全部通过”。
+2. 先运行最相关的小范围检查，再运行更广的回归检查。记录精确命令、退出状态和
+   简明结果。只有确有需要且能够安全保存时，才在模型上下文外保留完整日志。
+3. 检查 `git status --short`、完整 Diff，以及未跟踪/生成文件。解释每项修改，
+   并把任务修改与预先存在的工作分开。
+4. 重新执行任务的安全/数据边界检查：意外文件、进程、网络请求、凭据使用、外部
+   写入、Package 变化和持久状态，在解释清楚前都属于失败。
+5. 在可丢弃副本或明确的检查点上演练回滚/恢复。不要为了证明回滚而破坏用户工作。
+6. 把长期决策、不变量和后续工作从 Session 写入版本控制文件。Compaction 摘要或
+   Chat 消息不是持久项目记录。
+7. 脱敏需要保留的证据；删除临时制品，停止子进程，释放端口/锁，撤销试用凭据，
+   并记录有意保留的内容。
+8. 审查 Session、Export 和 Share 的处置：说明是否保存 Session、是否存在导出或
+   链接、谁能访问，以及怎样过期或删除。
+9. 生成一份统一交付记录，包含：结果、修改文件、检查和精确结果、版本/Ref、假设、
+   跳过项、残余风险、清理、回滚和下一项人工决定。
+10. 如果任务修改了可复用工作流，先用固定用例填写
+    [评估记录](../templates/evaluation-record.zh-CN.md)，再宣布工作流已经改善。
+
+| 阶段 | 最少持久产物 | 完成信号 |
+| --- | --- | --- |
+| 任务接收与基线 | [任务简报](../templates/task-brief.zh-CN.md)、Git 基线；版本敏感时另有[运行清单](../templates/run-manifest.zh-CN.md) | 所有者、结果、边界和恢复点明确。 |
+| 勘察与计划 | 代码/资源地图、风险等级、能力/集成选择 | 每项计划动作都对应范围和验收检查。 |
+| 受控执行 | 检查点记录、决策记录、修改路径清单 | 不依赖 Chat 记忆也能恢复或回滚工作。 |
+| 验证 | 命令/结果矩阵、Diff 审查、安全/数据检查 | 必需门槛通过，每个跳过项都有所有者可见的理由。 |
+| 交付与清理 | 结果摘要、残余风险、回滚和留存记录 | 另一位使用者能核验、运行或撤销结果。 |
+
+必需检查失败时，正确结果是有边界的部分交付或失败报告，而不是乐观地宣称成功。
+[完整示例](worked-example.zh-CN.md)提供一份已经填写、但明确标为未执行的完整记录；
+[运行手册](operating-playbook.zh-CN.md)说明阶段闸门与升级规则。
 
 <!-- sync:practice-definition-done -->
 

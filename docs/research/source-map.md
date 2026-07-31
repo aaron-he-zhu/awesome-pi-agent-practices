@@ -47,12 +47,13 @@ does not make every other workspace stable or published.
 | `@earendil-works/pi-agent-core` | [README](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/agent/README.md) · [package manifest](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/agent/package.json) | Agent loop, state, events, tools, and transports. |
 | `@earendil-works/pi-coding-agent` | [README](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/README.md) · [package manifest](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/package.json) | CLI, coding tools, sessions, resources, TUI modes, SDK, JSON, and RPC. |
 | `@earendil-works/pi-tui` | [README](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/tui/README.md) · [package manifest](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/tui/package.json) | Terminal components, rendering, input, layout, and width handling. |
+| `@earendil-works/pi-evals` | [private package manifest](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/evals/package.json) · [scripts](https://github.com/earendil-works/pi/tree/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/evals/scripts) | Private source-tree evaluation workspace; source presence is not a supported public evaluation product or quality result. |
 | `@earendil-works/pi-storage-sqlite-node` | [source directory](https://github.com/earendil-works/pi/tree/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/storage/sqlite-node) | Optional Node SQLite backend for the agent harness; not an automatic replacement for coding-agent JSONL sessions. |
 | `@earendil-works/pi-server` | [experimental README](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/server/README.md) | Experimental server present in the v0.83.0 source tree; API/CLI/behavior may change or disappear. |
 
-At the snapshot, registry checks found the five named `@earendil-works/*`
-packages above at `0.83.0` except the experimental server, while
-`@earendil-works/pi-server` and the post-release
+At the snapshot, registry checks found the four primary packages plus the
+SQLite storage package at `0.83.0`. The private eval workspace, experimental
+`@earendil-works/pi-server`, and the post-release
 `@earendil-works/pi-protocol` were not stable published registry packages.
 Always verify the current registry before installation.
 

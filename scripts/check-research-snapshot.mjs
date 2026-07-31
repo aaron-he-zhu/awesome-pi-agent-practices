@@ -250,8 +250,48 @@ for (const value of new Set(displayedCounts)) {
 }
 
 const community = registry.resources.filter((resource) => resource.kind === "community");
-if (community.length !== snapshot.communityReview?.reviewedResources) {
-  fail("research snapshot: community reviewedResources count differs from registry");
+const communityCounts = {
+  communityResources: community.length,
+  sourceReviewed: community.filter(
+    (resource) => resource.reviewStatus === "source-reviewed",
+  ).length,
+  handsOnVerified: community.filter(
+    (resource) => resource.reviewStatus === "hands-on-verified",
+  ).length,
+  deferred: community.filter((resource) => resource.status === "deferred").length,
+  pinnedRefs: community.filter((resource) =>
+    /^[0-9a-f]{40}$/u.test(resource.reviewedRef ?? ""),
+  ).length,
+};
+for (const [field, expected] of Object.entries(communityCounts)) {
+  const actual = snapshot.communityReview?.[field];
+  if (!Number.isInteger(actual) || actual < 0) {
+    fail(`research snapshot: communityReview.${field} must be a non-negative integer`);
+  } else if (actual !== expected) {
+    fail(
+      `research snapshot: communityReview.${field} is ${actual}; registry requires ${expected}`,
+    );
+  }
+}
+if (snapshot.communityReview?.reviewedResources !== communityCounts.sourceReviewed) {
+  fail(
+    "research snapshot: legacy communityReview.reviewedResources alias must equal sourceReviewed",
+  );
+}
+for (const [language, text] of [
+  ["English query log", queryLogEnglish],
+  ["Chinese query log", queryLogChinese],
+]) {
+  for (const [field, value] of Object.entries({
+    ...communityCounts,
+    reviewedResources: communityCounts.sourceReviewed,
+  })) {
+    requireTermsOnOneLine(
+      text,
+      [`\`${field}\``, value],
+      `${language}/community review field ${field}`,
+    );
+  }
 }
 if (
   !Number.isInteger(snapshot.rfc?.visiblePiRelatedEntries) ||
@@ -285,6 +325,9 @@ if (failures.length > 0) {
   console.log(
     `Research-snapshot validation passed: ${repositoryFields.size} repository fields, ` +
       `${totals.size} totals, ${clusters.size} keyword queries, ` +
-      `${catalogViews.size} catalog views, ${community.length} pinned community refs.`,
+      `${catalogViews.size} catalog views, ${communityCounts.communityResources} community ` +
+      `records (${communityCounts.sourceReviewed} source-reviewed, ` +
+      `${communityCounts.handsOnVerified} hands-on, ${communityCounts.deferred} deferred), ` +
+      `${communityCounts.pinnedRefs} pinned refs.`,
   );
 }

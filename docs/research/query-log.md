@@ -147,10 +147,22 @@ calendar date.
 
 <!-- sync:query-community -->
 
-All 12 watchlist and three deferred repositories have a full 40-character
-`reviewedRef` in [`data/resources.json`](../../data/resources.json). The
-watchlist links both the moving repository and the immutable reviewed tree.
-Verify a saved ref with:
+The snapshot separates the community population, evidence stage, disposition,
+and immutable-ref coverage:
+
+| Snapshot field | Value | Interpretation |
+| --- | ---: | --- |
+| `communityResources` | 15 | All registry records whose `kind` is `community`. |
+| `sourceReviewed` | 12 | Records whose `reviewStatus` is `source-reviewed`. |
+| `reviewedResources` | 12 | Compatibility alias for `sourceReviewed`; it is not the total community population. |
+| `handsOnVerified` | 0 | Records whose `reviewStatus` is `hands-on-verified`. |
+| `deferred` | 3 | Records whose curation `status` is `deferred`. |
+| `pinnedRefs` | 15 | Community records with a full 40-character `reviewedRef`. |
+
+The 12 source-reviewed watchlist and three deferred repositories all have a
+full ref in [`data/resources.json`](../../data/resources.json). The watchlist
+links both the moving repository and the immutable reviewed tree. Verify a
+saved ref with:
 
 ```text
 GET https://api.github.com/repos/{owner}/{repo}/commits/{reviewedRef}

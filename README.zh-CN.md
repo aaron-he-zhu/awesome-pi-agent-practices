@@ -12,6 +12,7 @@
 ## 目录
 
 - [从这里开始](#从这里开始)
+- [把 Pi 作为一个系统运行](#把-pi-作为一个系统运行)
 - [Pi 生态概览](#pi-生态概览)
 - [实践领域](#实践领域)
 - [官方基础材料](#官方基础材料)
@@ -22,7 +23,83 @@
 
 ## 从这里开始
 
-本集合最短的安全阅读路径：
+复制任何命令前，先选择版本轨道：
+
+| 轨道 | 适用情况 | 规则 |
+| --- | --- | --- |
+| 可复现基线 | 复现本仓库结论或比较行为。 | 使用 Pi **v0.83.0**，并采用[官方来源地图](docs/research/source-map.zh-CN.md#规范入口)中的固定来源。 |
+| 当前版本 | 使用刚安装的最新 Pi 开始日常工作。 | 查阅[当前 Quickstart](https://pi.dev/docs/latest/quickstart)，记录精确版本；在核验前，把与 v0.83.0 的差异视为版本敏感行为。 |
+
+### 五分钟只读基线
+
+下面的基线用于核验可执行文件、Provider 认证、模型选择和最小资源运行；它**不是**
+安装指南，也不是 Sandbox。
+
+1. 在不含敏感数据的仓库中记录初始状态：
+
+   ```bash
+   command -v pi
+   pi --version
+   node --version
+   git status --short
+   ```
+
+2. 使用与试运行相同的可选资源控制枚举模型：
+
+   ```bash
+   pi --offline --no-approve --no-context-files --no-extensions --no-skills \
+     --no-prompt-templates --no-themes --list-models
+   ```
+
+   从真实结果中选择模型，再替换下方的 `PROVIDER` 和 `MODEL`。使用测试账号，或
+   仅能完成一次模型请求的最小权限凭据。该命令仍使用当前全局 Pi Profile；若还要
+   排除 Profile 本身，请使用故障排查手册的[干净基线](docs/troubleshooting.zh-CN.md#干净基线)。
+
+3. 执行一次临时、只读的勘察；同时关闭项目上下文和可选资源：
+
+   ```bash
+   pi --offline --no-approve --no-context-files --no-extensions --no-skills \
+     --no-prompt-templates --no-themes --no-session \
+     --tools read,grep,find,ls \
+     --provider PROVIDER --model MODEL -p \
+     "只做勘察：指出仓库根目录和建议运行的检查，不要修改文件。"
+   ```
+
+   这里的只读只发生在“已注册工具”层，不是操作系统层。`read`、`grep`、`find` 与
+   `ls` 仍能访问 Pi 进程可读的任何路径，返回内容也可能发送给所选 Provider；若
+   这种可达范围不可接受，必须使用外部边界。`--offline` 只关闭 Pi 启动时的更新、
+   Catalog 与 Telemetry 网络操作，不会阻止所选 Provider 请求，也不是网络防火墙。
+
+4. 只有在命令成功退出、回答识别了预期仓库、`git status --short` 没有变化，且
+   运行不依赖项目资源时，才算基线通过。认证、网络或模型错误进入
+   [Provider 故障排查](docs/troubleshooting.zh-CN.md#provider-model-auth)；
+   仅在项目目录中出现的故障进入[隔离阶梯](docs/troubleshooting.zh-CN.md#隔离阶梯)。
+
+5. 开放写权限前，填写[任务简报](templates/task-brief.zh-CN.md)，根据
+   [运行手册](docs/operating-playbook.zh-CN.md)划分风险，并建立可恢复的 Git
+   基线。`git status` 不变只能证明仓库状态；工具白名单只限制已注册工具，不能
+   隔离宿主进程。
+
+### 按任务选择路径
+
+| 任务 | 从这里开始 | 完成前的必需产物 |
+| --- | --- | --- |
+| 第一次在真实仓库中工作 | [运行手册](docs/operating-playbook.zh-CN.md#如何使用本手册) | 任务简报、Git 基线、验证结果和交付摘要。 |
+| 只读审查或分诊 | [勘察闸门](docs/operating-playbook.zh-CN.md#阶段-4--只读勘察与计划) | 与文件对应的发现，以及“未授权写入”的明确说明。 |
+| 长任务或并行修改 | [运行手册：检查点与并行工作](docs/operating-playbook.zh-CN.md#检查点与并行工作) | 路径/Worktree 归属、检查点、合并顺序和最终集成检查。 |
+| 未知仓库或第三方 Package | [Extension 审查](docs/extension-review.zh-CN.md#gate-0--确认精确制品) | 来源图、权限/数据流审查、隔离试用和清理。 |
+| CI 或无人值守运行 | [P25–P27](docs/practice-guide.zh-CN.md#p25--按所有权边界选择接口) | 显式 Trust/Tool/Session 策略、有限超时/重试和机器可读结果。 |
+| JSON、RPC 或 SDK 集成 | [架构：集成模式](docs/architecture.zh-CN.md#集成模式) | 启动、流式传输、取消、失败和关闭的生命周期测试。 |
+| 故障调查 | [症状路由](docs/troubleshooting.zh-CN.md#症状路由) | 最小复现、单变量对照和已脱敏证据。 |
+| 升级 | [P29](docs/practice-guide.zh-CN.md#p29--通过固定分阶段可逆的路径升级) | 升级前后矩阵和经过演练的回滚。 |
+| 评估工作流或模型变更 | [评估记录](templates/evaluation-record.zh-CN.md) | 固定用例、门槛、指标、成本和 Reviewer 决定。 |
+
+如果需要十二种常见任务的具体命令、预期结果、失败分支、核验和清理步骤，
+请直接使用[场景手册](docs/scenario-cookbook.zh-CN.md)。
+
+### 每个真实任务都要控制的八件事
+
+三十条实践中最短的安全路径是：
 
 | 步骤 | 实践                                                                                                                  | 可观察结果                                                       |
 | ---: | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
@@ -37,6 +114,37 @@
 
 阅读完整的[三十条实践指南](docs/practice-guide.zh-CN.md)；检查失败时使用
 [故障排查手册](docs/troubleshooting.zh-CN.md)。
+
+<!-- sync:root-operating -->
+
+## 把 Pi 作为一个系统运行
+
+可靠运行需要分别控制五个平面。一个平面通过，不代表另一个平面安全或正确。
+
+| 控制平面 | 核心问题 | 最少证据 |
+| --- | --- | --- |
+| 意图与范围 | 授权了哪个可观察结果，明确排除了什么？ | 含验收与停止条件的任务简报。 |
+| 上下文与知识 | 哪些仓库指令、文件、Session 历史和模型可见输出真正相关？ | 已加载资源清单和有边界的上下文。 |
+| 能力与权限 | 哪些工具/代码能执行，它们能访问哪些文件、进程、网络、凭据或外部系统？ | 风险等级、隔离决定和显式能力集合。 |
+| 执行与状态 | 检查点、分支/Worktree、Session、重试、取消和清理由谁负责？ | 运行清单、恢复点和生命周期记录。 |
+| 证据与质量 | 如何判断正确性、回归、安全、效率和可复现性？ | 已命名检查、结果、最终 Diff、残余风险和回滚。 |
+
+[运行手册](docs/operating-playbook.zh-CN.md)把这些平面落实为八个阶段：任务接收、
+基线、边界选择、只读勘察、计划、受控执行、分层验证，以及交付/清理。
+[完整示例](docs/worked-example.zh-CN.md)展示已经填写的产物和失败分支，而不只是
+空白模板。
+
+以下风险等级用于路由任务，并不表示 Pi 会自动实施策略：
+
+| 等级 | 典型任务 | 必需控制 |
+| --- | --- | --- |
+| R0 — 观察 | 公开或合成数据、只读分析、不修改外部状态。 | 显式只读工具、关闭不必要的 Session/资源、核验状态未变化。 |
+| R1 — 可逆本地修改 | 在受信仓库中修改代码或文档。 | 已知 Git 基线、受限写入、项目检查、Diff 审查和回滚。 |
+| R2 — 高权限或外部影响 | 安装 Package、使用凭据、网络写入、Issue/PR/消息、共享环境。 | 受限测试身份、隔离试用、影响发生前人工复核、审计和清理。 |
+| R3 — 破坏性或生产敏感 | 删除、生产修改、安全响应、受监管/私密数据、无人值守高权限工作。 | 专用隔离与策略、所有者明确批准、Dry Run/Canary、独立验证和演练过的恢复。 |
+
+任务一旦升级到更高等级，应在检查点停止，取得新的边界与权限后再继续。
+Project Trust、Prompt 措辞、Worktree 和工具名称白名单都不能替代 OS 或服务端控制。
 
 <!-- sync:root-ecosystem -->
 
@@ -155,6 +263,7 @@ Customization Layer、Trust Boundary、Session Semantics 与 Integration Mode。
 | [研究方法](docs/research/methodology.zh-CN.md)     | 检查 Source Tier、Inclusion Gate、Scoring、AI Disclosure 与 Update Procedure。                |
 | [精确查询日志](docs/research/query-log.zh-CN.md)   | 重跑带日期的 GitHub、Catalog、Registry、RFC、Source 与 Community-review Query。                |
 | [生态全景](docs/research/landscape.zh-CN.md)       | 查看带日期的 Project、Catalog、Issue Cluster、Directory 与 Opportunity Snapshot。             |
+| [生态覆盖矩阵](docs/research/coverage-matrix.zh-CN.md) | 查看全部官方/社区能力领域、证据状态、明确缺口与下一道 Gate。                              |
 | [生态目录指南](docs/research/ecosystem-directories.zh-CN.md) | 在 Official、Curated、Automated、Synthesized 与 Historical Discovery Surface 之间选择。 |
 | [Extension 审查](docs/extension-review.zh-CN.md)   | 审计 Identity、Install Script、Dependency、Authority、Lifecycle、Data Flow、Test 与 Removal。 |
 | [术语表](docs/glossary.zh-CN.md)                   | 区分 Project Trust、Session Operation、Tool Limit、RPC、SDK 与 Containment。                  |
@@ -172,6 +281,10 @@ Customization Layer、Trust Boundary、Session Semantics 与 Integration Mode。
 Web/Browser Access、Human Review、Code Analysis、Memory、Tracing、Alternative
 UI 与 Broad Operating Layer。每个条目都记录为何值得试用，以及必须测试的
 Authority、Privacy、Supply-chain、Lifecycle 或 Compatibility Boundary。
+
+[覆盖矩阵](docs/research/coverage-matrix.zh-CN.md#community-capability-coverage)另外追踪二十五类社区能力，其中
+十三类目前没有完成源码审查的代表。空白类别表示“本仓库尚无证据”，不表示“生态中
+没有实现”。Discovery Link 在通过 Source 与 Hands-on Gate 前始终只是线索。
 
 目前有意**不设置任何第三方正式精选条目**。晋级需要具名人类 Reviewer、Immutable
 Artifact、Relationship Disclosure、Isolated Trial、精确 Environment/Command、

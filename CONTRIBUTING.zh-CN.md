@@ -130,6 +130,26 @@ featured -> stale -> retest or remove
 Use 与 Editorial Judgment；Numeric Score、CI、Package Catalog Entry 或 Maintainer
 Reputation 都不能自动晋级。
 
+<!-- sync:contrib-state-map -->
+
+上面的生命周期、Registry 字段和发布位置是不同维度。在 Registry Schema 进一步
+拆分前，社区资源采用下面的规范映射：
+
+| 生命周期含义 | `reviewStatus` | 允许的 `status` 形态 | 必需证据与发布动作 |
+| --- | --- | --- | --- |
+| 仅发现 | 按情况使用 `catalog-only`、`collection-needs-item-review`、`legacy-scope` 或 `blocked` | 通常为 `deferred`；绝不能是 `featured` | 保存 Canonical URL/Ref 与发现理由；只进入 Research/Coverage 材料。 |
+| 已审源码 | `source-reviewed` | 某个 `watchlist*` 风险/处置值 | 在双语 Watchlist 记录精确 Ref、License、入口、依赖、Authority/Data Flow、Test/CI 与未决试用问题。 |
+| 已亲测 | `hands-on-verified` | 在独立编辑决定前仍为 `watchlist*` | 附上已完成的[亲测审查](templates/hands-on-review.zh-CN.md)，包含具名人类、Expected/Actual 证据、Cleanup、残余风险与到期时间。 |
+| 已精选 | `hands-on-verified` | `featured` | 完成独立编辑与双语审查；加入成对的根 Resource Block，并移除成对的 Watchlist Block。 |
+| 已过期 | 保留上一证据阶段，但不得暗示仍然有效 | `stale` | 从根列表移除，说明到期 Trigger，并安排固定制品复测或移除决定。 |
+| 已拒绝 | 保留支持决定的证据阶段，或使用 `blocked` | `rejected` | 保留简明理由与 Immutable Evidence，避免反复发现同一不安全/不适合制品。 |
+
+`watchlist-data-access`、`watchlist-data-egress`、`watchlist-high-risk`、
+`watchlist-privacy` 与 `watchlist-trust-sensitive` 是面向风险的展示变体，不是更高
+证据阶段。`deferred` 与 `rejected` 是处置结果，不证明发生过 Source 或 Hands-on
+Review。`hands-on-review` 表单不能自行授予 `featured`；独立决定还要检查相对价值、
+利益冲突、到期、措辞和双语一致性。
+
 ## AI 辅助
 
 <!-- sync:contrib-ai -->

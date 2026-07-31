@@ -235,22 +235,32 @@ not thousands of unrelated lines.
 
 ### P11 — Choose the least powerful customization primitive
 
-**Why:** Context files, prompt templates, skills, extensions, packages, SDK,
-JSON mode, and RPC solve different problems. More runtime power means more code
-execution, lifecycle, and upgrade surface.
+**Why:** Context files, prompt templates, skills, extensions, packages, and
+integration interfaces answer three different questions. Treating them as one
+power ladder confuses capability, distribution, and host ownership. Runtime
+power matters within an axis because it adds code execution, lifecycle, and
+upgrade surface.
 
-**Do:** Choose in this order:
+**Do:** Make three independent decisions:
 
-1. `AGENTS.md` for stable repository guidance.
-2. A prompt template for explicit reusable text.
-3. A skill for an on-demand workflow, scripts, or references.
-4. An extension for runtime hooks, tools, UI, policy, or providers.
-5. A package when resources must be distributed.
-6. JSON mode for one-way event consumption, RPC for process control, or the SDK
-   for in-process TypeScript ownership.
+1. **Capability axis:** use `AGENTS.md` for stable repository guidance, a
+   prompt template for explicitly expanded reusable text, a skill for an
+   on-demand workflow/scripts/references, and an extension only for runtime
+   events, tools, UI, policy, or providers.
+2. **Distribution axis:** keep a resource in the repository or user directory
+   when local ownership is enough; use a Pi package only when the selected
+   resources need npm/Git/local-package distribution and lifecycle management.
+3. **Integration axis:** use interactive mode for supervised work, print for a
+   one-shot final answer, JSON for one-way event consumption, RPC for a
+   controlling process, and the SDK for in-process TypeScript ownership.
 
-**Verify:** The solution cannot be expressed cleanly by the preceding,
-lower-power option.
+Common combinations are `AGENTS.md + prompt template` for repository review,
+`skill + package` for a distributed team workflow, `extension + package` for a
+shared runtime tool, RPC for a Python controller, and the SDK for a TypeScript
+host application.
+
+**Verify:** The choice is justified separately on all applicable axes, and a
+lower-authority option on the same axis cannot express the requirement cleanly.
 
 **Evidence:** [E11](research/evidence-ledger.md#e11).
 
@@ -611,6 +621,58 @@ environment and reproduction steps, and a human signer can defend the proposed
 change.
 
 **Evidence:** [E30](research/evidence-ledger.md#e30).
+
+<!-- sync:practice-after-task -->
+
+## After the task: close the loop
+
+Finishing an edit is not the same as completing the task. Use this exit
+procedure after P01–P30 and before reporting success:
+
+1. Re-read the original outcome, scope, preservation rules, and acceptance
+   checks. Mark every requirement `pass`, `fail`, or `not run`; never collapse a
+   skipped check into “all checks passed.”
+2. Run the smallest relevant checks first, then the broader regression suite.
+   Record exact commands, exit status, and a concise result. Preserve full logs
+   outside model context only when they are needed and safe to retain.
+3. Inspect `git status --short`, the complete diff, and untracked/generated
+   files. Account for every change and distinguish pre-existing work from the
+   task's edits.
+4. Re-run the task's security/data boundary check: unexpected files, processes,
+   network calls, credential use, external writes, package changes, and
+   persistent state are failures until explained.
+5. Exercise the rollback or recovery path against a disposable copy or an
+   explicitly identified checkpoint. Do not destroy user-owned work merely to
+   prove rollback.
+6. Move durable decisions, invariants, and follow-up work from the session into
+   version-controlled files. A compaction summary or chat message is not a
+   durable project record.
+7. Sanitize retained evidence. Remove temporary artifacts, stop child
+   processes, release ports/locks, revoke trial credentials, and record what
+   intentionally remains.
+8. Review session/export/share handling. State whether a session was saved,
+   whether an export or link exists, who can access it, and how it will expire
+   or be removed.
+9. Produce one handoff containing the outcome, files changed, checks and exact
+   results, versions/refs, assumptions, skipped work, residual risks, cleanup,
+   rollback, and next human decision.
+10. If the task changed a reusable workflow, evaluate it on fixed cases with
+    the [evaluation record](../templates/evaluation-record.md) before declaring
+    the workflow improved.
+
+| Phase | Minimum durable artifact | Completion signal |
+| --- | --- | --- |
+| Intake and baseline | [Task brief](../templates/task-brief.md), Git baseline, [run manifest](../templates/run-manifest.md) when version-sensitive | Owner, outcome, boundaries and recovery point are explicit. |
+| Reconnaissance and plan | Code/resource map, risk class, capability/integration choice | Every planned action maps to scope and an acceptance check. |
+| Controlled execution | Checkpoint notes, decision record, changed-path inventory | Work can resume or roll back without relying on chat memory. |
+| Validation | Command/result matrix, diff review, security/data check | Required gates pass and every skip has an owner-visible reason. |
+| Handoff and cleanup | Result summary, residual risk, rollback and retention record | Another person can verify, operate, or reverse the result. |
+
+If a required check fails, the correct outcome is a bounded partial result or a
+failure report, not an optimistic success claim. Use the
+[worked example](worked-example.md) for a filled, explicitly unexecuted example
+of the complete record, and the [operating playbook](operating-playbook.md) for
+stage gates and escalation rules.
 
 <!-- sync:practice-definition-done -->
 

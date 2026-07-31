@@ -38,6 +38,17 @@ Metadata、Registry Metadata 与 Earendil RFC Index 捕获。向其他地方引�
 这些发现定义本仓库的空位：建设双语、可复现、证据导向、安全敏感的实践，而不是
 Package Inventory。
 
+## 覆盖矩阵
+
+<!-- sync:landscape-coverage -->
+
+[生态覆盖矩阵](coverage-matrix.zh-CN.md)把 Stable Official Surface、Main-only/
+Experimental Source、Extension/Package Capability、External Service 与 OS
+Enforcement Boundary 分开。它还把 15 条 Community Registry Record 映射到明确的
+Capability Category：12 条 Source-reviewed、零条 Hands-on-verified/Featured、
+三条 Deferred。空行表示 Research Gap，不表示实现不存在；Catalog/Directory Lead
+在通过文档 Gate 前始终属于 Discovery-only。
+
 ## 上游项目快照
 
 <!-- sync:landscape-upstream -->

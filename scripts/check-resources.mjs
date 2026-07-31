@@ -4,31 +4,27 @@ import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
+import {
+  displayedNameMatches,
+  duplicateValues,
+  expectedLandscapeIds,
+  expectedRootIdGroups,
+  expectedRootIds,
+  expectedWatchlistIds,
+  firstMarkdownLink,
+  isRegistryResourceLink,
+  resourceBlocks,
+  resourceDisplayName,
+  resourceMarkers,
+  sameMembership,
+  sameSequence,
+} from "./resource-validation-utils.mjs";
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
 
 async function read(relativePath) {
   return readFile(path.join(root, relativePath), "utf8");
-}
-
-function resourceMarkers(text) {
-  return [...text.matchAll(/<!--\s*resource:([a-z0-9]+(?:-[a-z0-9]+)*)\s*-->/gu)].map(
-    (match) => match[1],
-  );
-}
-
-function sameSequence(left, right) {
-  return left.length === right.length && left.every((value, index) => value === right[index]);
-}
-
-function duplicateValues(values) {
-  const seen = new Set();
-  const duplicate = new Set();
-  for (const value of values) {
-    if (seen.has(value)) duplicate.add(value);
-    seen.add(value);
-  }
-  return [...duplicate];
 }
 
 const registry = JSON.parse(await read("data/resources.json"));
@@ -45,7 +41,11 @@ if (!validateRegistry(registry)) {
   }
 }
 
-const resources = registry.resources ?? [];
+const resources = Array.isArray(registry.resources)
+  ? registry.resources.filter(
+      (resource) => resource && typeof resource === "object" && !Array.isArray(resource),
+    )
+  : [];
 const ids = resources.map((resource) => resource.id);
 
 if (registry.schemaVersion !== 1) failures.push("data/resources.json: schemaVersion must be 1");
@@ -118,7 +118,7 @@ for (const resource of resources) {
   }
   if (
     resource.kind === "community" &&
-    resource.status.includes("featured") &&
+    resource.status === "featured" &&
     resource.reviewStatus !== "hands-on-verified"
   ) {
     failures.push(`${resource.id}: a community featured item must be hands-on-verified`);
@@ -134,17 +134,56 @@ const filesWithMarkers = [
   "docs/research/watchlist.zh-CN.md",
 ];
 const markersByFile = new Map();
+const blocksByFile = new Map();
 const used = new Set();
 
 for (const file of filesWithMarkers) {
-  const markers = resourceMarkers(await read(file));
+  const text = await read(file);
+  const markers = resourceMarkers(text);
   markersByFile.set(file, markers);
+  blocksByFile.set(file, resourceBlocks(text));
   for (const marker of markers) {
     used.add(marker);
     if (!ids.includes(marker)) failures.push(`${file}: unknown resource marker ${marker}`);
   }
   for (const duplicate of duplicateValues(markers)) {
     failures.push(`${file}: duplicate resource marker ${duplicate}`);
+  }
+}
+
+const resourcesById = new Map(resources.map((resource) => [resource.id, resource]));
+for (const file of filesWithMarkers) {
+  for (const [id, block] of blocksByFile.get(file)) {
+    const resource = resourcesById.get(id);
+    if (!resource) continue;
+    const firstLink = firstMarkdownLink(block);
+    if (!firstLink || !isRegistryResourceLink(firstLink.target, resource)) {
+      failures.push(
+        `${file}: ${id} first resource link must match registry URL or reviewed snapshot ` +
+          `${resource.url}`,
+      );
+    }
+  }
+}
+
+for (const file of ["docs/research/landscape.md", "docs/research/watchlist.md"]) {
+  for (const [id, block] of blocksByFile.get(file)) {
+    const resource = resourcesById.get(id);
+    if (!resource) continue;
+    const displayedName = resourceDisplayName(block) ?? "";
+    if (!displayedNameMatches(displayedName, resource.name)) {
+      failures.push(`${file}: ${id} block does not identify registry name ${resource.name}`);
+    }
+    if (
+      file === "docs/research/watchlist.md" &&
+      typeof resource.status === "string" &&
+      resource.status.startsWith("watchlist") &&
+      !block.includes(resource.reviewStatus)
+    ) {
+      failures.push(
+        `${file}: ${id} block does not state reviewStatus ${resource.reviewStatus}`,
+      );
+    }
   }
 }
 
@@ -159,32 +198,32 @@ for (const [english, chinese] of [
 }
 
 const rootMarkers = markersByFile.get("README.md");
-const expectedRoot = resources
-  .filter(
-    (resource) =>
-      resource.kind === "official" ||
-      (resource.kind === "related-list" && resource.currentScope),
-  )
-  .map((resource) => resource.id);
-if (!sameSequence(rootMarkers, expectedRoot)) {
+const expectedRoot = expectedRootIds(resources);
+if (!sameMembership(rootMarkers, expectedRoot)) {
   failures.push(
-    `README.md: official/current-related markers must match registry order\n` +
+    `README.md: official/current-related/featured-community marker membership differs\n` +
       `  Expected: ${expectedRoot.join(", ")}\n  Found: ${rootMarkers.join(", ")}`,
   );
 }
+for (const group of expectedRootIdGroups(resources)) {
+  const groupIds = new Set(group.ids);
+  const found = rootMarkers.filter((id) => groupIds.has(id));
+  if (!sameSequence(found, group.ids)) {
+    failures.push(
+      `README.md: ${group.label} resource marker order differs from registry\n` +
+        `  Expected: ${group.ids.join(", ")}\n  Found: ${found.join(", ")}`,
+    );
+  }
+}
 
 const landscapeMarkers = markersByFile.get("docs/research/landscape.md");
-const expectedLandscape = resources
-  .filter((resource) => resource.kind === "related-list")
-  .map((resource) => resource.id);
+const expectedLandscape = expectedLandscapeIds(resources);
 if (!sameSequence(landscapeMarkers, expectedLandscape)) {
   failures.push("docs/research/landscape.md: related-list markers do not match registry");
 }
 
 const watchlistMarkers = markersByFile.get("docs/research/watchlist.md");
-const expectedWatchlist = resources
-  .filter((resource) => resource.kind === "community")
-  .map((resource) => resource.id);
+const expectedWatchlist = expectedWatchlistIds(resources);
 if (!sameSequence([...watchlistMarkers].sort(), [...expectedWatchlist].sort())) {
   failures.push(
     `docs/research/watchlist.md: community markers must match registry membership\n` +
@@ -206,6 +245,6 @@ if (failures.length > 0) {
     `Resource validation passed: ${resources.length} unique resources ` +
       `(${counts.official?.length ?? 0} official, ` +
       `${counts["related-list"]?.length ?? 0} related, ` +
-      `${counts.community?.length ?? 0} community/deferred).`,
+      `${counts.community?.length ?? 0} community).`,
   );
 }

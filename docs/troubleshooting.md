@@ -29,20 +29,73 @@ This playbook targets Pi v0.83.0. Check the current
    session/compaction, RPC/SDK, update, or shutdown.
 5. **Select the smallest isolation ladder below.**
 
+<!-- sync:trouble-router -->
+
+<a id="symptom-router"></a>
+
+## Symptom router
+
+Start from the first observable symptom, not a guessed root cause. Capture the
+original error before running the first comparison.
+
+| Observable symptom | First route | First safe comparison | Result to record |
+| --- | --- | --- | --- |
+| `pi` is not found or reports an engine error | [Install/update](#install-update) | `command -v pi`, `pi --version`, `node --version` | Resolved executable, distribution and runtime. |
+| 401/403, missing auth, unknown model, quota or provider timeout | [Provider/model/auth](#provider-model-auth) | One-line, no-tool prompt with explicit provider/model | Exact error class, status and whether any retry occurred. |
+| Only one repository/cwd fails | [Trust/resources](#trust-resources) | Original cwd versus an empty directory with `-nc --no-approve` | Which directory/resource boundary toggles the failure. |
+| Failure begins after a package/extension is loaded | [Extension/package](#extension-package) | Disable all, then add back one pinned artifact | Exact artifact/ref and first failing lifecycle phase. |
+| A tool edits the wrong file, hangs or truncates output | [Tool/shell](#tool-shell) | Built-ins only, smallest input, finite command timeout | Registered tool identity, side effect and truncation/cancel state. |
+| Old session fails while a fresh run works | [Session/compaction](#session-compaction) | Same prompt with `--no-session` | Session ID/format/compaction boundary that changes the result. |
+| TUI freezes or renders incorrectly but print mode works | [Terminal/TUI](#terminal-tui) | Same prompt/model in `-p` mode | Terminal, keybinding, renderer or interactive-extension difference. |
+| JSON consumer or RPC client hangs/misparses | [JSON/RPC/SDK](#json-rpc-sdk) | Drain stderr separately and test one LF-delimited exchange | Last complete event/response, pending correlation and child status. |
+| Failure occurs only on native Windows/WSL | [Windows](#windows-route) | Record shell/path/terminal and compare the supported counterpart | Platform-specific path, signal, permission or terminal difference. |
+| Evidence may contain a secret or private data | [Sanitized evidence](#sanitized-evidence-bundle) | Stop sharing; search the smallest local artifact | Exposure surface, revocation/deletion action and retained safe excerpt. |
+
+If two rows seem to apply, begin with the comparison that removes the most
+components without changing data or state. If the symptom can cause deletion,
+credential exposure, production mutation or repeated external side effects,
+skip diagnosis-in-place and follow the [stop conditions](#stop-conditions).
+
 ## Sterile baseline
 
 <!-- sync:trouble-baseline -->
 
-Use a disposable directory and test credential. This command removes discovered
-project instructions/resources and all discovered optional resource types,
-uses no session file, and exposes only built-in read-oriented tools:
+The following is a POSIX-shell example. Use a disposable directory and a test
+credential. `PI_CODING_AGENT_DIR` gives both commands the same fresh Pi
+profile; credentials stored in the normal profile are deliberately absent, so
+provider credentials must come from the explicitly prepared test environment.
+Record the generated path so it can be inspected and removed after the trial.
 
 ```bash
-pi --no-approve --no-context-files --no-extensions --no-skills \
+trial_root="$(mktemp -d)"
+trial_profile="$trial_root/pi-profile"
+trial_work="$trial_root/work"
+mkdir "$trial_work"
+cd "$trial_work"
+PI_CODING_AGENT_DIR="$trial_profile" \
+pi --offline --no-approve --no-context-files --no-extensions --no-skills \
+  --no-prompt-templates --no-themes --list-models
+```
+
+Replace `PROVIDER` and `MODEL` with an entry from the command above. The next
+command removes discovered project instructions/resources and all discovered
+optional resource types, uses no session file, and exposes only built-in
+read-oriented tools:
+
+```bash
+PI_CODING_AGENT_DIR="$trial_profile" \
+pi --offline --no-approve --no-context-files --no-extensions --no-skills \
   --no-prompt-templates --no-themes --no-session \
   --tools read,grep,find,ls \
-  --provider PROVIDER --model MODEL -p "Reply with the word OK."
+  --provider PROVIDER --model MODEL -p "Reply exactly PI_BASELINE_OK."
 ```
+
+The core baseline passes when the process exits successfully and the final
+output contains `PI_BASELINE_OK`. Record startup warnings and stderr separately;
+do not redefine a warning as success. Confirm that no session file was created,
+inspect everything under the exact `trial_root`, then remove that disposable
+directory through the platform's normal safe deletion mechanism. Never use a
+broad home/config path as the cleanup target.
 
 Interpretation:
 
@@ -53,7 +106,9 @@ Interpretation:
   terminal mode in that order.
 
 This is a minimal workflow baseline, not a security sandbox. Use an OS boundary
-for untrusted code and network/credential containment.
+for untrusted code and network/credential containment. `--offline` disables
+Pi's startup update/catalog/telemetry operations, not the selected provider
+request or arbitrary network access by the process.
 
 ## Isolation ladder
 
@@ -77,6 +132,8 @@ That may make the symptom disappear without identifying the cause.
 
 ## Installation and update failures
 
+<a id="install-update"></a>
+
 <!-- sync:trouble-install -->
 
 ### Checks
@@ -94,8 +151,8 @@ That may make the symptom disappear without identifying the cause.
 3. Separate update surfaces:
 
    - `pi update --self` updates Pi.
-   - `pi update --extensions` updates unpinned packages and reconciles pinned
-     Git refs.
+   - `pi update --extensions` updates unpinned packages. Pinned Git refs are
+     skipped; move one deliberately with `pi install git:HOST/PATH@NEW_REF`.
    - `pi update --models` refreshes model catalogs.
    - `pi update --all` combines Pi and package updates.
 
@@ -128,6 +185,8 @@ That may make the symptom disappear without identifying the cause.
 
 ## Provider, model, and authentication failures
 
+<a id="provider-model-auth"></a>
+
 <!-- sync:trouble-provider -->
 
 ### Classify before retrying
@@ -152,6 +211,8 @@ retry separately. Keep the layers distinct so Pi can classify quota and
 overflow errors.
 
 ## Project Trust and resource-loading surprises
+
+<a id="trust-resources"></a>
 
 <!-- sync:trouble-trust -->
 
@@ -179,6 +240,8 @@ Extensions can override built-in tool names. Reproduce with
 inspect startup warnings/resource lists.
 
 ## Extension and package failures
+
+<a id="extension-package"></a>
 
 <!-- sync:trouble-extension -->
 
@@ -208,6 +271,8 @@ Use the [extension review](extension-review.md) before re-enabling the artifact.
 
 ## Tool and shell failures
 
+<a id="tool-shell"></a>
+
 <!-- sync:trouble-tools -->
 
 | Symptom | Check |
@@ -225,6 +290,8 @@ Capture full output to a deliberate file when needed. Never remove truncation
 markers to make a result look complete.
 
 ## Session and compaction failures
+
+<a id="session-compaction"></a>
 
 <!-- sync:trouble-session -->
 
@@ -261,6 +328,8 @@ documented argument-preparation compatibility hook when appropriate.
 
 ## Terminal and TUI failures
 
+<a id="terminal-tui"></a>
+
 <!-- sync:trouble-terminal -->
 
 First run the same prompt in print mode. If print mode passes:
@@ -282,6 +351,8 @@ Do not report a terminal rendering problem as a provider failure merely because
 the final response looks truncated.
 
 ## JSON, RPC, and SDK failures
+
+<a id="json-rpc-sdk"></a>
 
 <!-- sync:trouble-integration -->
 
@@ -321,6 +392,8 @@ Do not send CLI-RPC JSON to the post-v0.83.0 framed-CBOR
 
 ## Windows-specific split
 
+<a id="windows-route"></a>
+
 <!-- sync:trouble-windows -->
 
 Determine first whether Pi is running:
@@ -334,6 +407,44 @@ Then check path separator/drive/UNC behavior, shell selection, CRLF, executable
 suffixes, quoting, code page/UTF-8, terminal keybindings, symlinks, antivirus
 locks, file watcher behavior, and process-tree cancellation. Do not combine
 native and WSL paths in one minimal reproducer.
+
+<!-- sync:trouble-resolution -->
+
+## Close a diagnosis with a verified resolution
+
+Every branch in this playbook should end in the same auditable loop:
+
+1. **Symptom:** preserve the exact failure, timestamp and smallest affected
+   artifact before changing anything.
+2. **Comparison:** change one variable and record both commands, effective
+   environments, expected results, actual results and exit states.
+3. **Attribution:** name the narrowest layer that the comparison implicates;
+   keep alternative explanations when the observation is not unique.
+4. **Remediation:** choose the smallest reversible change. State files,
+   settings, package refs, credentials and external state it will affect.
+5. **Reverification:** reproduce the old failure case, run the focused check,
+   run the relevant regression/negative checks, and confirm cleanup.
+6. **Prevention:** add a regression test, version guard, clearer diagnostic,
+   runbook update or monitoring signal when justified.
+
+Use this compact record for each attempted fix:
+
+```text
+Hypothesis:
+One changed variable:
+Before command / expected / actual / exit:
+After command / expected / actual / exit:
+Implicated layer and remaining alternatives:
+Remediation and affected state:
+Focused / regression / negative results:
+Rollback performed or rehearsed:
+Cleanup and retained artifacts:
+Owner / next step / retest trigger:
+```
+
+A disappearing symptom is not enough: if the run also changed the model,
+provider, session, package set and working directory, classify it as an
+unresolved workaround and continue with controlled comparisons.
 
 ## Sanitized evidence bundle
 
@@ -386,4 +497,6 @@ Stop testing and escalate privately when you observe:
 For expected local-agent behavior—full user permissions, prompt injection from
 untrusted content, or dangerous third-party instructions—first improve
 containment and documentation. Follow Pi's current security reporting policy
-for a genuine boundary bypass.
+for a genuine boundary bypass. For exposed evidence or a vulnerability in this
+guide's own scripts/content, use this repository's [security policy](../SECURITY.md),
+which identifies the private reporting route and data-minimization rules.
