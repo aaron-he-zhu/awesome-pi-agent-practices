@@ -15,6 +15,7 @@ the Pi coding agent.
 ## Contents
 
 - [Start Here](#start-here)
+- [Pi Ecosystem at a Glance](#pi-ecosystem-at-a-glance)
 - [Practice Areas](#practice-areas)
 - [Official Building Blocks](#official-building-blocks)
 - [Evidence and Research](#evidence-and-research)
@@ -39,6 +40,68 @@ The shortest safe path through the collection:
 
 Read the complete [thirty-practice guide](docs/practice-guide.md), then use the
 [troubleshooting playbook](docs/troubleshooting.md) when a check fails.
+
+<!-- sync:root-ecosystem -->
+
+## Pi Ecosystem at a Glance
+
+The Pi ecosystem is more than the `pi` terminal command. At this repository's
+stable **v0.83.0** baseline, four primary packages cover the multi-provider AI
+API, agent runtime, coding-agent CLI, and TUI. Prompt templates, skills,
+extensions, themes, and Pi packages then provide a customization path from
+reusable text to in-process code, while JSON, RPC, and the SDK expose distinct
+programmatic integration levels.
+
+### Four primary packages
+
+| Package                                                                                                                                                 | Concrete responsibility                                                                                       | Use it when                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [`@earendil-works/pi-ai`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/ai/README.md)                     | Normalizes provider streaming, messages, tool calls, usage, and cross-provider transformations.               | You need model/provider primitives without the coding-agent UX.                        |
+| [`@earendil-works/pi-agent-core`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/agent/README.md)          | Provides the agent loop, state, events, tool execution, and transport primitives.                             | You are building an agent runtime rather than using the ready-made CLI.                |
+| [`@earendil-works/pi-coding-agent`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/README.md) | Provides the `pi` CLI, coding tools, sessions, resource loading, and TUI, print, JSON, RPC, and SDK surfaces. | You want the interactive agent, headless automation, or application embedding surface. |
+| [`@earendil-works/pi-tui`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/tui/README.md)                   | Supplies terminal components, differential rendering, input, layout, and width handling.                      | You are building a terminal interface or custom Pi UI.                                 |
+
+[Pi's design principles](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#design-principles)
+keep the mandatory core small. MCP, subagents, permission popups, plan mode,
+to-dos, and background Bash are not built-in workflows in v0.83.0; they can be
+implemented through extensions or packages, or composed with external tools
+such as containers and tmux.
+
+### Customization and distribution
+
+| Primitive                                                                                                                                            | What it concretely does                                                                                                             | Boundary to remember                                                                                     |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| [Context file](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#context-files) | Hierarchically loads `AGENTS.md` or `CLAUDE.md` instructions.                                                                       | Declining Project Trust does not disable discovery; use `-nc`. Context is not an OS permission boundary. |
+| [Prompt template](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/prompt-templates.md) | Expands reusable Markdown through an explicit slash command such as `/review`.                                                      | It is text expansion, not an automatic runtime hook or tool policy.                                      |
+| [Skill](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/skills.md)                     | Loads an on-demand workflow with optional scripts, references, and assets.                                                          | A skill can direct tool or executable use and still requires source review.                              |
+| [Extension](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/extensions.md)             | Runs TypeScript/JavaScript in-process and can add events, tools, commands, UI, providers, policy, and tool routing.                 | It executes with the Pi process user's authority; a tool allowlist is not a sandbox.                     |
+| [Theme](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/themes.md)                     | Configures terminal presentation through JSON.                                                                                      | A package containing a theme may also contain executable extensions or dependencies.                     |
+| [Pi package](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/packages.md)              | Bundles extensions, skills, prompts, and themes; sources may be npm, Git, or local paths, while the CLI manages configured entries. | Distribution and catalog presence do not prove identity, compatibility, quality, or safety.              |
+
+### Integration paths
+
+| Interface                                                                                                                                             | Data/control shape                                                                           | Ownership boundary                                                                        |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [Interactive and print](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#modes) | Human-facing TUI or one-shot final output.                                                   | Print mode is not automatically sessionless; use `--no-session` when required.            |
+| [JSON mode](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/json.md)                    | One-way JSON Lines event stream for logs, pipelines, and custom consumers.                   | It is not a bidirectional controller and consumers must handle streamed events.           |
+| [CLI RPC](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/rpc.md)                       | Bidirectional requests, responses, and asynchronous events over LF-delimited JSONL on stdio. | Pin the Pi version and separately drain stderr; RPC is not JSON mode.                     |
+| [TypeScript SDK](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/sdk.md)                | In-process construction and ownership of sessions, resources, tools, models, and events.     | The host owns policy, credentials, persistence, cancellation, subscriptions, and cleanup. |
+
+The [source-reviewed community capability map](docs/research/landscape.md#community-capability-map)
+tracks concrete leads for VM isolation (Gondolin), subagent/workflow
+orchestration (pi-subagents and pi-crew), MCP (pi-mcp-adapter), web/browser
+access (pi-web-access and pi-agent-browser-native), human review (Plannotator),
+code analysis (pi-lens), memory (pi-hermes-memory), tracing
+(braintrust-pi-extension), an Emacs UI, and a broad operating layer
+(gentle-pi). These are research leads, not featured recommendations; each still
+requires a named, reproducible human trial.
+
+For discovery, use the
+[directory chooser](docs/research/ecosystem-directories.md#quick-chooser), then
+verify each candidate at its canonical source. Older material may still use
+`badlogic/pi-mono`, `earendil-works/pi-mono`, or `@mariozechner/*`; check the
+current repository, npm publisher/scope, peer dependencies, and install target
+against the [scope-migration note](docs/research/landscape.md#scope-migration-and-stale-instructions).
 
 <!-- sync:root-areas -->
 
