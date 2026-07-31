@@ -5,7 +5,7 @@
 <!-- sync:docs-scope -->
 
 This repository is a practice guide, not a mirror of Pi's documentation and not
-another exhaustive package directory. It answers four questions:
+another exhaustive package directory. It answers six questions:
 
 1. What should a careful Pi user do before, during, and after a task?
 2. Which Pi primitive fits a workflow: context file, prompt template, skill,
@@ -13,6 +13,10 @@ another exhaustive package directory. It answers four questions:
 3. What evidence supports each recommendation, and against which version?
 4. How should a maintainer evaluate community material without turning the list
    into an unreviewed feed?
+5. Which stage gate, artifact, owner, and stop condition applies throughout a
+   real task?
+6. Which official/community capability areas are covered, empty, deferred, or
+   still only discovery leads?
 
 The research snapshot is **2026-07-31**. Stable behavior was checked against
 **v0.83.0** (`845d6ff1…`); post-release facts from `main` are pinned to
@@ -24,6 +28,8 @@ The research snapshot is **2026-07-31**. Stable behavior was checked against
 
 | If you want to… | Start with | Then read |
 | --- | --- | --- |
+| Run a task from intake through cleanup | [Operating playbook](operating-playbook.md) | [Filled worked example](worked-example.md) |
+| Follow a concrete recipe with failure and cleanup branches | [Scenario cookbook](scenario-cookbook.md) | [Troubleshooting](troubleshooting.md) |
 | Use Pi safely on a real repository | [Practice guide](practice-guide.md) | [Troubleshooting](troubleshooting.md) |
 | Understand the moving parts | [Architecture](architecture.md) | [Official source map](research/source-map.md) |
 | Adopt a third-party package | [Extension review](extension-review.md) | [Landscape](research/landscape.md) |
@@ -32,13 +38,21 @@ The research snapshot is **2026-07-31**. Stable behavior was checked against
 | Reproduce dated dynamic counts | [Exact query log](research/query-log.md) | [Ecosystem landscape](research/landscape.md) |
 | Propose a new practice | [Contributing](../CONTRIBUTING.md) | [Practice template](../templates/practice-proposal.md) |
 | Find ecosystem directories | [Ecosystem directory guide](research/ecosystem-directories.md) | [Extension review](extension-review.md) |
+| Audit what the ecosystem research misses | [Coverage matrix](research/coverage-matrix.md) | [Methodology](research/methodology.md) |
 
 <!-- sync:docs-library -->
 
 ## Practice library
 
+- [Operating playbook](operating-playbook.md) — R0–R3 risk classes, RACI,
+  three-axis decisions, eight stage gates, parallel/long-task controls, data
+  handling, validation, handoff, and cleanup.
+- [Scenario cookbook](scenario-cookbook.md) — twelve end-to-end recipes with
+  prerequisites, exact v0.83.0 commands or host pseudocode, expected results,
+  failure branches, verification, cleanup, rollback, and linked practices.
 - [Architecture and decision guide](architecture.md) — stable and experimental
-  layers, resource loading, trust boundaries, sessions, and integration modes.
+  layers, runtime data flow, startup/resource loading, threat boundaries,
+  sessions, and integration modes.
 - [End-to-end practice guide](practice-guide.md) — thirty reproducible practices
   with rationale, action, verification, and primary evidence.
 - [Extension and package review](extension-review.md) — source, dependency,
@@ -47,6 +61,9 @@ The research snapshot is **2026-07-31**. Stable behavior was checked against
   for provider, extension, terminal, session, and installation failures.
 - [Glossary](glossary.md) — precise meanings for Pi-specific terms that are easy
   to conflate.
+- [Filled worked example](worked-example.md) — a fictional, explicitly
+  unexecuted record showing commands, expected versus actual evidence, failure
+  branches, rollback, and handoff without pretending to be a hands-on result.
 
 <!-- sync:docs-research -->
 
@@ -56,6 +73,9 @@ The research snapshot is **2026-07-31**. Stable behavior was checked against
   search coverage, scoring, exclusions, limitations, and update procedure.
 - [Ecosystem and issue landscape](research/landscape.md) — quantitative
   snapshot, recurring problem clusters, and opportunity map.
+- [Ecosystem coverage matrix](research/coverage-matrix.md) — official surfaces
+  and community capability categories, with current evidence, boundary,
+  explicit gaps, discovery methods, and promotion work.
 - [Ecosystem discovery directories](research/ecosystem-directories.md) —
   official, curated, automated, synthesized, and historical discovery
   surfaces, with selection and verification boundaries.
@@ -67,6 +87,23 @@ The research snapshot is **2026-07-31**. Stable behavior was checked against
   for every numbered practice.
 - [Community watchlist](research/watchlist.md) — source-reviewed candidates that
   still require hands-on maintainer validation before recommendation.
+
+<!-- sync:docs-artifacts -->
+
+## Operational artifacts
+
+| Artifact | Use it for | Do not confuse it with |
+| --- | --- | --- |
+| [Task brief](../templates/task-brief.md) | Outcome, scope, preservation rules, acceptance and handoff. | A model prompt that grants broader authority. |
+| [Run manifest](../templates/run-manifest.md) | Version, model, resources, policy, containment and result provenance. | A place to store credential values or full private logs. |
+| [Repository instructions](../templates/AGENTS.md) | Stable, reviewable commands and constraints near the code they govern. | A sandbox or per-task plan. |
+| [Practice proposal](../templates/practice-proposal.md) | Claim, evidence, trial and bilingual review for new guidance. | Proof that the practice has been executed. |
+| [Hands-on review](../templates/hands-on-review.md) | Source, authority, data-flow and behavior review of a pinned third-party artifact. | Security certification or automatic featured status. |
+| [Evaluation record](../templates/evaluation-record.md) | Fixed cases, command/expected/actual/evidence, gates, metrics, cost, rollback and human attestation. | A blank scorecard, CI badge or AI summary counted as observed evidence. |
+
+Store completed records in a reviewable project location with a stable name,
+then link them from the decision or registry entry they support. Never overwrite
+a blank template with a project-specific result.
 
 <!-- sync:docs-status -->
 

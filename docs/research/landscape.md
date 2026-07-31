@@ -40,6 +40,19 @@ preserved in the [query log](query-log.md) and the
 These findings define this repository's niche: bilingual, reproducible,
 evidence-led, safety-aware practices rather than a package inventory.
 
+## Coverage matrix
+
+<!-- sync:landscape-coverage -->
+
+The [ecosystem coverage matrix](coverage-matrix.md) separates the stable
+official surface, main-only or experimental source, extension/package
+capabilities, external services, and OS enforcement boundaries. It also maps
+the 15 community registry records to explicit capability categories: 12 are
+source-reviewed, none is hands-on-verified or featured, and three are
+deferred. Empty rows are research gaps, not claims that no implementation
+exists; catalog and directory leads remain discovery-only until they pass the
+documented gates.
+
 ## Upstream project snapshot
 
 <!-- sync:landscape-upstream -->

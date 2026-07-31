@@ -133,6 +133,29 @@ Only `featured` third-party items appear in the root curated section. Promotion
 requires direct human use and editorial judgment; a numeric score, CI, package
 catalog entry, or maintainer reputation cannot promote an item automatically.
 
+<!-- sync:contrib-state-map -->
+
+The lifecycle above, registry fields, and publication location are separate
+dimensions. Until the registry schema splits them further, use this mapping for
+community resources:
+
+| Lifecycle meaning | `reviewStatus` | Allowed `status` shape | Required evidence and publication action |
+| --- | --- | --- | --- |
+| Discovered only | `catalog-only`, `collection-needs-item-review`, `legacy-scope`, or `blocked` as applicable | Normally `deferred`; never `featured` | Preserve canonical URL/ref and discovery reason; list only in research/coverage material. |
+| Source reviewed | `source-reviewed` | A `watchlist*` risk/disposition value | Record exact ref, license, entry points, dependencies, authority/data flow, tests/CI and unresolved trial questions in both watchlists. |
+| Hands-on verified | `hands-on-verified` | Remains `watchlist*` until a separate editorial decision | Attach a completed [hands-on review](templates/hands-on-review.md) with named human, expected/actual evidence, cleanup, residual risks and expiry. |
+| Featured | `hands-on-verified` | `featured` | Obtain independent editorial and bilingual review; add paired root resource blocks and remove the paired watchlist blocks. |
+| Stale | Preserve the last evidence stage; do not imply it is current | `stale` | Remove from the root list, state the expiry trigger, and queue a pinned retest or removal decision. |
+| Rejected | Preserve the evidence stage that justified the decision, or `blocked` | `rejected` | Keep a concise reason and immutable evidence so the same unsafe/unfit artifact is not repeatedly rediscovered. |
+
+`watchlist-data-access`, `watchlist-data-egress`, `watchlist-high-risk`,
+`watchlist-privacy`, and `watchlist-trust-sensitive` are risk-oriented display
+variants, not stronger evidence stages. `deferred` and `rejected` are
+dispositions, not proof that source or hands-on review happened. The
+`hands-on-review` form cannot itself award `featured`; that separate decision
+checks comparative usefulness, conflicts, expiration, wording, and bilingual
+parity.
+
 ## AI assistance
 
 <!-- sync:contrib-ai -->

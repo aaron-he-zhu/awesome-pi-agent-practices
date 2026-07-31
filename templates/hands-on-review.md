@@ -6,6 +6,9 @@
 
 ## Identity and provenance
 
+This blank form is not evidence. Keep `NOT RUN` and `NOT OBSERVED` explicit;
+only a named human may report an observed result.
+
 - Project/repository:
 - Artifact/package:
 - Exact reviewed commit/tag/version:
@@ -15,6 +18,7 @@
 - Relationship/conflict disclosure:
 - Material AI assistance:
 - Current or legacy Pi scope:
+- Execution status: `not-run` / `partially-run` / `executed`.
 
 Stop if identity, source mapping, or reuse license cannot be established.
 
@@ -54,26 +58,27 @@ Stop if identity, source mapping, or reuse license cannot be established.
 
 ## Behavioral matrix
 
-For each row, record exact command, expected, actual, pass/fail/skip, sanitized
-evidence, and cleanup.
+Use one row per independently repeatable case. Record `skip` only with an
+applicability reason. A required failed or unexplained case blocks
+`hands-on-verified`; do not hide details in a combined prose result.
 
-| Case | Required question | Result |
-| --- | --- | --- |
-| Install | Did files, processes, scripts, downloads, and network match the source map? |  |
-| Startup denied trust | Was there any unexplained action or protected resource load? |  |
-| Happy path | Did the smallest documented example work? |  |
-| Missing credential | Did it fail clearly without finding a broader credential? |  |
-| Network denied | Did it time out finitely and preserve state? |  |
-| File denied/out of scope | Did it fail closed without partial destructive work? |  |
-| Invalid/oversized input | Did schema/validation reject safely? |  |
-| Concurrency | Did shared state/files remain correct? |  |
-| Cancellation | Did child work stop and clean up? |  |
-| Oversized output | Was truncation explicit and continuation retrievable? |  |
-| Reload/session replacement | Were handlers/resources rebound exactly once? |  |
-| Shutdown mid-work | Were processes, ports, timers, and temporary secrets removed? |  |
-| Offline/data flow | Were outbound hosts and payload categories exactly as disclosed? |  |
-| Update/rollback | Could the reviewed ref be restored? |  |
-| Uninstall/delete | Did loading stop and documented state/cache get removed? |  |
+| Case | Applicability / skip reason | Exact command or procedure | Expected | Actual | Result (`pass` / `fail` / `skip`) | Sanitized evidence | Cleanup / rollback |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Install: files, processes, scripts, downloads, network |  |  |  |  |  |  |  |
+| Startup with trust denied: actions and protected resource loading |  |  |  |  |  |  |  |
+| Happy path: smallest documented example |  |  |  |  |  |  |  |
+| Missing credential: clear failure without broader credential discovery |  |  |  |  |  |  |  |
+| Network denied: finite timeout and preserved state |  |  |  |  |  |  |  |
+| File denied/out of scope: fail closed without partial destructive work |  |  |  |  |  |  |  |
+| Invalid/oversized input: safe schema/validation rejection |  |  |  |  |  |  |  |
+| Concurrency: correct shared state/files |  |  |  |  |  |  |  |
+| Cancellation: child work stopped and cleaned up |  |  |  |  |  |  |  |
+| Oversized output: explicit truncation and retrievable continuation |  |  |  |  |  |  |  |
+| Reload/session replacement: exactly-once handler/resource binding |  |  |  |  |  |  |  |
+| Shutdown mid-work: processes, ports, timers, temporary secrets removed |  |  |  |  |  |  |  |
+| Offline/data flow: outbound hosts and payload categories match disclosure |  |  |  |  |  |  |  |
+| Update/rollback: reviewed ref restored |  |  |  |  |  |  |  |
+| Uninstall/delete: loading stopped and documented state/cache removed |  |  |  |  |  |  |  |
 
 <!-- sync:trial-observations -->
 
@@ -92,7 +97,8 @@ evidence, and cleanup.
 
 ## Decision
 
-- Decision: rejected / `source-reviewed` / `hands-on-verified` / `featured`.
+- Decision: rejected / `source-reviewed` / `hands-on-verified`.
+- Separate editorial promotion requested and decision-record link:
 - Why it is unusually useful:
 - Failed/skipped cases:
 - Blocking issues:
@@ -103,5 +109,5 @@ evidence, and cleanup.
 - Verification expires:
 - Human-authored recommendation draft:
 
-Passing this review does not certify safety. The `featured` status requires separate
-maintainer editorial judgment and bilingual review.
+Passing this review does not certify safety or award `featured`. Promotion requires
+a separate maintainer editorial decision and bilingual review.

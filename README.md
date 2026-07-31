@@ -15,6 +15,7 @@ the Pi coding agent.
 ## Contents
 
 - [Start Here](#start-here)
+- [Operate Pi as a System](#operate-pi-as-a-system)
 - [Pi Ecosystem at a Glance](#pi-ecosystem-at-a-glance)
 - [Practice Areas](#practice-areas)
 - [Official Building Blocks](#official-building-blocks)
@@ -25,7 +26,91 @@ the Pi coding agent.
 
 ## Start Here
 
-The shortest safe path through the collection:
+Choose a version track before copying any command:
+
+| Track                 | Use it when                                                         | Rule                                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Reproducible baseline | You are reproducing this repository's claims or comparing behavior. | Use Pi **v0.83.0** and the pinned sources in the [official source map](docs/research/source-map.md#canonical-entry-points).                                              |
+| Current release       | You are starting ordinary work on the newest Pi you installed.      | Check the [current quickstart](https://pi.dev/docs/latest/quickstart), record the exact version, and treat differences from v0.83.0 as version-sensitive until verified. |
+
+### Five-minute read-only baseline
+
+This baseline verifies the executable, provider authentication, model selection,
+and a resource-minimized run. It is deliberately **not** an installation guide
+or a sandbox.
+
+1. In a repository containing no sensitive data, record the starting state:
+
+   ```bash
+   command -v pi
+   pi --version
+   node --version
+   git status --short
+   ```
+
+2. List models with the same optional-resource controls used by the trial:
+
+   ```bash
+   pi --offline --no-approve --no-context-files --no-extensions --no-skills \
+     --no-prompt-templates --no-themes --list-models
+   ```
+
+   Select a real entry, then replace `PROVIDER` and `MODEL` below. Use a test
+   account or the narrowest credential that can make one model request. This
+   still uses the current global Pi profile; use the troubleshooting guide's
+   [sterile baseline](docs/troubleshooting.md#sterile-baseline) when the profile
+   itself must be excluded.
+
+3. Run one ephemeral, read-only inspection with project context and optional
+   resources disabled:
+
+   ```bash
+   pi --offline --no-approve --no-context-files --no-extensions --no-skills \
+     --no-prompt-templates --no-themes --no-session \
+     --tools read,grep,find,ls \
+     --provider PROVIDER --model MODEL -p \
+     "Inspect only. Name the repository root and list the checks you would run. Do not modify files."
+   ```
+
+   This is read-only at the registered-tool level, not at the operating-system
+   level. `read`, `grep`, `find`, and `ls` can access any path readable by the
+   Pi process, and returned content may be sent to the selected provider. Use
+   an external boundary when that reach is unacceptable. `--offline` suppresses
+   Pi's startup update/catalog/telemetry network operations; it does not block
+   the selected provider request and is not a network firewall.
+
+4. Treat the baseline as passed only when the command exits successfully, the
+   response identifies the intended repository, `git status --short` is
+   unchanged, and no project resource was required. Authentication, network,
+   or model errors go to [provider troubleshooting](docs/troubleshooting.md#provider-model-auth);
+   repository-only failures go through the [isolation ladder](docs/troubleshooting.md#isolation-ladder).
+
+5. Before allowing writes, fill the [task brief](templates/task-brief.md),
+   classify risk in the [operating playbook](docs/operating-playbook.md), and
+   create a recoverable Git baseline. An unchanged `git status` proves only the
+   repository state; a tool allowlist limits registered tools but does not
+   contain the host process.
+
+### Choose the path that matches the job
+
+| Job                                       | Start with                                                                                         | Required artifact before completion                                                |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| First supervised repository task          | [Operating playbook](docs/operating-playbook.md#how-to-use-this-playbook)                          | Task brief, Git baseline, validation and handoff summary.                          |
+| Read-only review or triage                | [Reconnaissance gate](docs/operating-playbook.md#stage-4--reconnoiter-and-plan)                    | Findings tied to files and a statement that no write was authorized.               |
+| Long or parallel change                   | [Playbook: checkpoints and parallel work](docs/operating-playbook.md#checkpoint-and-parallel-work) | Owned paths/worktrees, checkpoint records, merge order, final integrated checks.   |
+| Unknown repository or third-party package | [Extension review](docs/extension-review.md#gate-0--identify-the-exact-artifact)                   | Source map, authority/data-flow review, isolated trial and cleanup.                |
+| CI or unattended run                      | [P25–P27](docs/practice-guide.md#p25--select-the-interface-from-the-ownership-boundary)            | Explicit trust/tool/session policy, finite timeout/retry, machine-readable result. |
+| JSON, RPC, or SDK integration             | [Architecture: integration modes](docs/architecture.md#integration-modes)                          | Lifecycle tests for startup, stream, cancellation, failure and shutdown.           |
+| Failure investigation                     | [Symptom router](docs/troubleshooting.md#symptom-router)                                           | Minimal reproducer, one-variable comparison and sanitized evidence.                |
+| Upgrade                                   | [P29](docs/practice-guide.md#p29--upgrade-through-a-pinned-staged-reversible-path)                 | Before/after matrix and a tested rollback.                                         |
+| Evaluate a workflow or model change       | [Evaluation record](templates/evaluation-record.md)                                                | Fixed cases, gates, metrics, costs and reviewer decision.                          |
+
+For concrete commands, expected outcomes, failure branches, verification, and
+cleanup across twelve common jobs, use the [scenario cookbook](docs/scenario-cookbook.md).
+
+### Eight controls for every real task
+
+The shortest safe path through the thirty practices is:
 
 | Step | Practice                                                                                                                               | Observable result                                                         |
 | ---: | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -40,6 +125,40 @@ The shortest safe path through the collection:
 
 Read the complete [thirty-practice guide](docs/practice-guide.md), then use the
 [troubleshooting playbook](docs/troubleshooting.md) when a check fails.
+
+<!-- sync:root-operating -->
+
+## Operate Pi as a System
+
+A dependable run controls five independent planes. Passing one plane does not
+imply that another is safe or correct.
+
+| Control plane            | Question                                                                                                                | Minimum evidence                                                |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Intent and scope         | What observable outcome is authorized, and what is excluded?                                                            | Task brief with acceptance and stop conditions.                 |
+| Context and knowledge    | Which repository instructions, files, session history, and model-visible outputs are relevant?                          | Loaded-resource inventory and bounded context.                  |
+| Capability and authority | Which tools/code can act, and which files, processes, network targets, credentials, or external systems can they reach? | Risk class, containment decision and explicit capability set.   |
+| Execution and state      | How are checkpoints, branches/worktrees, sessions, retries, cancellation and cleanup owned?                             | Run manifest, recovery point and lifecycle record.              |
+| Evidence and quality     | How will correctness, regression, security, efficiency and reproducibility be judged?                                   | Named checks, results, final diff, residual risks and rollback. |
+
+The [operating playbook](docs/operating-playbook.md) turns these planes into an
+eight-stage lifecycle: intake, baseline, boundary selection, reconnaissance,
+plan, controlled execution, layered validation, and handoff/cleanup. The
+[worked example](docs/worked-example.md) shows the artifacts and failure
+branches filled in rather than leaving them as blank templates.
+
+Use these risk classes as routing, not as a claim that Pi enforces policy:
+
+| Class                                    | Typical task                                                                                          | Required control                                                                                                                |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| R0 — observe                             | Public or synthetic data; read-only analysis; no external mutation.                                   | Explicit read-only tools, no unnecessary session/resources, verify unchanged state.                                             |
+| R1 — reversible local change             | Code/docs edits in a trusted repository.                                                              | Known Git baseline, scoped writes, project checks, diff review and rollback.                                                    |
+| R2 — privileged or external effect       | Package install, credential, network write, issue/PR/message, shared environment.                     | Scoped test identity, isolated trial, human review before the effect, audit and cleanup.                                        |
+| R3 — destructive or production-sensitive | Deletion, production mutation, security response, regulated/private data, unattended privileged work. | Purpose-built containment and policy, explicit owner approval, dry run/canary, independent verification and rehearsed recovery. |
+
+If a task moves to a higher class, stop at a checkpoint and obtain the new
+boundary and authority before continuing. Project Trust, prompt wording,
+worktrees and tool-name allowlists do not replace OS or service-side controls.
 
 <!-- sync:root-ecosystem -->
 
@@ -165,6 +284,7 @@ endorsements.
 | [Research methodology](docs/research/methodology.md)                | Review source tiers, inclusion gates, scoring, AI disclosure, and update procedure.                 |
 | [Exact query log](docs/research/query-log.md)                       | Re-run the dated GitHub, catalog, registry, RFC, source, and community-review queries.              |
 | [Ecosystem landscape](docs/research/landscape.md)                   | Inspect the dated project, catalog, issue-cluster, directory, and opportunity snapshot.             |
+| [Ecosystem coverage matrix](docs/research/coverage-matrix.md)       | See every tracked official/community capability area, evidence state, explicit gap, and next gate.  |
 | [Ecosystem directory guide](docs/research/ecosystem-directories.md) | Choose among official, curated, automated, synthesized, and historical discovery surfaces.          |
 | [Extension review](docs/extension-review.md)                        | Audit identity, install scripts, dependencies, authority, lifecycle, data flow, tests, and removal. |
 | [Glossary](docs/glossary.md)                                        | Disambiguate Project Trust, session operations, tool limits, RPC, SDK, and containment.             |
@@ -184,6 +304,12 @@ subagents, workflows, MCP, web and browser access, human review, code analysis,
 memory, tracing, alternate UI, and broad operating layers. Each entry records
 why it merits a trial and the specific authority, privacy, supply-chain,
 lifecycle, or compatibility boundary that must be tested.
+
+The [coverage matrix](docs/research/coverage-matrix.md#community-capability-coverage) separately tracks
+twenty-five community capability categories. Thirteen currently have no
+source-reviewed representative; an empty category means “not yet evidenced by
+this repository,” not “no implementation exists.” Discovery links remain
+leads until they pass the documented source and hands-on gates.
 
 There are intentionally **no third-party featured entries yet**. Promotion
 requires a named human reviewer, immutable artifact, disclosed relationship,

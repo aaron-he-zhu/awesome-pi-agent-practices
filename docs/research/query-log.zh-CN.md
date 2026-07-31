@@ -139,10 +139,21 @@ Release Time、Commit Time、Changelog Date 与本地日期可以不同。应保
 
 <!-- sync:query-community -->
 
-12 个 Watchlist 与三个 Deferred Repository 在
-[`data/resources.json`](../../data/resources.json)中都有完整 40 位
-`reviewedRef`。Watchlist 同时链接移动的 Repository 与不可变 Reviewed Tree。
-可这样验证保存的 Ref：
+Snapshot 分开记录 Community Population、Evidence Stage、Disposition 与 Immutable
+Ref Coverage：
+
+| Snapshot Field | Value | 解释 |
+| --- | ---: | --- |
+| `communityResources` | 15 | Registry 中 `kind` 为 `community` 的全部 Record。 |
+| `sourceReviewed` | 12 | `reviewStatus` 为 `source-reviewed` 的 Record。 |
+| `reviewedResources` | 12 | `sourceReviewed` 的兼容 Alias，不表示 Community 总量。 |
+| `handsOnVerified` | 0 | `reviewStatus` 为 `hands-on-verified` 的 Record。 |
+| `deferred` | 3 | Curation `status` 为 `deferred` 的 Record。 |
+| `pinnedRefs` | 15 | 具有完整 40 位 `reviewedRef` 的 Community Record。 |
+
+12 个 Source-reviewed Watchlist 与三个 Deferred Repository 在
+[`data/resources.json`](../../data/resources.json)中都有完整 Ref。Watchlist 同时
+链接移动的 Repository 与不可变 Reviewed Tree。可这样验证保存的 Ref：
 
 ```text
 GET https://api.github.com/repos/{owner}/{repo}/commits/{reviewedRef}

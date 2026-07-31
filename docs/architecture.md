@@ -20,6 +20,8 @@ flowchart TB
   Agent --> Coding["@earendil-works/pi-coding-agent<br/>CLI, sessions, resources, modes"]
   TUI["@earendil-works/pi-tui<br/>terminal components and rendering"] --> Coding
   Storage["@earendil-works/pi-storage-sqlite-node<br/>Node SQLite harness backend"] -. "optional" .-> Agent
+  Evals["@earendil-works/pi-evals<br/>private evaluation workspace"] -. "tests" .-> AI
+  Evals -. "tests" .-> Coding
   Coding --> Interactive["Interactive TUI"]
   Coding --> Print["Print mode"]
   Coding --> JSON["JSON event stream"]
@@ -34,6 +36,7 @@ flowchart TB
 | `pi-coding-agent` | You want the ready CLI, extensions, skills, prompts, packages, sessions, SDK, JSON mode, or RPC mode. | Its project trust prompt is a sandbox. |
 | `pi-tui` | You are building terminal components or custom extension UI. | TUI behavior is identical in every terminal emulator. |
 | `pi-storage-sqlite-node` | You embed the agent core and need the Node SQLite session store. | It replaces the coding agent's JSONL session semantics automatically. |
+| `@earendil-works/pi-evals` | You are studying or running the private evaluation workspace in the pinned source tree. | It is a published, supported benchmarking product or proof that a workflow is better. |
 | `@earendil-works/pi-server` | You are researching the upstream experimental server. | Its CLI, API, or behavior is stable; its README explicitly says otherwise. |
 
 The upstream root README's “All Packages” table lists four primary packages:
@@ -41,6 +44,68 @@ The upstream root README's “All Packages” table lists four primary packages:
 tree also contains the optional SQLite storage package, a private evaluation
 workspace, and install artifacts. `@earendil-works/pi-server` is present but
 explicitly experimental.
+
+<!-- sync:architecture-runtime -->
+
+## System context and runtime data flow
+
+The diagram below is a control model, not an exact call graph. It shows which
+component owns each boundary during a coding-agent run.
+
+```mermaid
+flowchart LR
+  Human["Human operator"] --> Surface["Interactive / print"]
+  Host["Host application"] --> Machine["JSON / RPC / SDK"]
+  Surface --> Coding["pi-coding-agent"]
+  Machine --> Coding
+  Resources["Settings, context, skills,<br/>prompts, packages, extensions"] --> Loader["Resource loader"]
+  Loader --> Coding
+  Sessions["Session JSONL / host storage"] <--> Coding
+  Coding --> Agent["pi-agent-core"]
+  Agent --> AI["pi-ai message and provider layer"]
+  AI <--> Provider["Selected provider / model"]
+  Agent --> Registry["Registered and overridden tools"]
+  Extensions["In-process extension hooks/code"] --> Registry
+  Extensions --> Coding
+  Registry --> HostOS["Files, processes, network,<br/>credentials, sockets, services"]
+  Coding --> Output["TUI / stdout / JSON events / RPC events"]
+```
+
+A single tool-using turn has two loops: the model loop and the durable record
+loop. Extension hooks may observe or alter several stages, so the diagram must
+not be read as an extension security boundary.
+
+```mermaid
+sequenceDiagram
+  participant U as Human or host
+  participant C as Coding agent
+  participant S as Session/event sink
+  participant A as Agent core
+  participant P as Provider/model
+  participant T as Tool/extension/OS
+  U->>C: Prompt, files, policy, cancellation handle
+  C->>S: Record input and runtime events
+  C->>A: Model-visible context and registered tools
+  A->>P: Provider-normalized request
+  P-->>A: Stream text/reasoning or tool request
+  A->>A: Resolve registered tool and validate arguments
+  A->>T: Execute unless the pre-tool gate (extension tool_call) blocks
+  T-->>A: Result, error, usage, or cancellation
+  A->>P: Tool result and next model request
+  P-->>A: Final stream
+  A-->>C: Events and updated state
+  C->>S: Persist selected session/events
+  C-->>U: TUI, final output, JSON, or RPC event
+```
+
+| Data asset | Created or selected by | Possible destination | Main handling question |
+| --- | --- | --- | --- |
+| Prompt, attached files, context and skill text | Human/host and resource loader | Model provider, session, event consumer | Is every item authorized for that provider and retention path? |
+| Provider/model credential | Operator, login flow or host | Pi/provider process and child environment where exposed | Is it scoped, short-lived, redacted and revoked when the trial ends? |
+| Tool arguments/results | Model, tool and extensions | OS/service, model context, session/event output | Are side effects, output bounds and sensitive fields declared? |
+| Session JSONL and compaction entries | Coding agent or host | Session directory, export, backup, share service | What is retained, who can read it and how is it deleted? |
+| stdout, stderr and debug/full logs | CLI, extensions, child processes | Terminal, CI log, collector, artifact store | Can output reveal paths, source, credentials or provider metadata? |
+| Package/cache/native artifacts | Package manager and lifecycle scripts | User/project directories and execution paths | Which exact artifact ran, what remains after removal and how is it rolled back? |
 
 <!-- sync:architecture-main-only -->
 
@@ -96,6 +161,61 @@ These layers are complementary, not a power ranking:
 **Inference:** prefer the least powerful layer that meets the need. This reduces
 ambient code execution, review surface, startup coupling, and upgrade risk.
 
+<!-- sync:architecture-startup -->
+
+## Startup, settings, and resource-loading controls
+
+This sequence focuses on control-relevant checkpoints. It intentionally avoids
+claiming a stable internal call order beyond the behavior documented for
+v0.83.0.
+
+```mermaid
+sequenceDiagram
+  participant CLI as CLI or host options
+  participant SM as Settings/resource manager
+  participant G as User/global and CLI extensions
+  participant T as Project Trust decision
+  participant P as Project resources
+  participant R as Runtime/session
+  CLI->>SM: cwd, mode, flags, paths, session/model choices
+  SM->>G: Load user/global and explicit CLI -e extensions for pre-trust
+  G-->>T: First project_trust handler may return a decision
+  SM->>T: Resolve saved decision, one-run override, extension decision, or fallback
+  alt project trusted
+    T->>P: Enable project settings/packages/resources
+  else project not trusted
+    T-->>P: Skip protected project resources
+  end
+  Note over SM,R: Context files are Trust-independent unless -nc; relative order is not an API
+  SM->>R: Assemble final allowed resources and start mode/model/tools/session
+```
+
+The resulting sources are not one linear “configuration file precedence”
+chain. They have different merge and trust rules:
+
+| Source | Typical location or flag | Project Trust? | Can execute or direct execution? | Key rule |
+| --- | --- | --- | --- | --- |
+| Global settings/resources | `~/.pi/agent/` | No project decision required | Global extensions execute; skills/prompts direct model work | Treat the user profile as part of the run envelope, not a clean default. |
+| Context files | Global, ancestor and cwd `AGENTS.md`/`CLAUDE.md` | No; discovered unless `-nc` | Text can influence model/tool choices | Declining Project Trust alone does not remove them. |
+| Explicit CLI resources | `-e`, `--skill`, `--prompt-template`, `--theme` | Explicitly selected; `-e` may load before project trust | Extensions execute in process | Record exact paths/specs; `--no-*` plus explicit flags creates a narrow set. |
+| Project settings/resources | `.pi/settings.json`, `.pi/`, project packages, `.agents/skills` | Yes | May install dependencies, execute extensions or direct tools | Non-interactive modes cannot ask; state `--approve` or `--no-approve`. |
+| Session/history | `--session`, `--fork`, `-c`, `-r`, default session directory | Separate from Project Trust | Prior model/tool content affects later turns | Use `--no-session` for intentional ephemerality. |
+| Host/CLI policy | Mode, model, tool/resource flags, cwd, timeouts, host callbacks | Host-owned | Can narrow or expand the actual run | Persist the effective choice in a run manifest. |
+
+Documented v0.83.0 precedence facts include:
+
+- project settings override global settings, while nested objects are merged;
+- `--session-dir` overrides `PI_CODING_AGENT_SESSION_DIR`, which overrides the
+  session directory setting;
+- `--approve` and `--no-approve` override Project Trust for one run;
+- resource `--no-*` flags can be combined with explicit resource paths to load
+  only the named items.
+
+Do not generalize those examples into an undocumented universal precedence
+rule. When behavior matters, preserve the two settings files, CLI arguments and
+startup resource list in the reproduction. See the pinned
+[settings source](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/settings.md).
+
 <!-- sync:architecture-trust -->
 
 ## Trust and execution boundary
@@ -135,6 +255,30 @@ flowchart TD
 For untrusted or unattended work, the meaningful boundary is outside Pi:
 container, VM, micro-VM, remote sandbox, or policy-controlled sandbox with
 minimal files, credentials, and network access.
+
+<!-- sync:architecture-threats -->
+
+## Threat model and control placement
+
+The useful question is not “Is Pi safe?” but “Which actor can cause which
+effect through which surface, and where is that effect actually blocked?”
+
+| Threat or failure | Entry surface | Potential effect | Control that belongs outside prompt text | Verification probe |
+| --- | --- | --- | --- | --- |
+| Malicious repository instruction | Context file, source, issue text or tool output | Prompt injection, unsafe tool choice, data disclosure | Disable/review context, least tools, OS/service containment | Compare `-nc --no-approve` with the original directory and inspect changed behavior. |
+| Malicious or compromised extension/package | In-process code, install script, dependency, binary | Arbitrary user-level file/process/network/credential access | Pin/source review, disposable environment, restricted mounts/network/identity | Inventory processes, files, hosts and persistent paths during install/start/shutdown. |
+| Model mistake or over-broad task | Tool call or host API | Out-of-scope edit, deletion, external mutation | Narrow service credential, filesystem boundary, staged human gate, recoverable baseline | Use a canary/dry run and verify that an out-of-scope action is denied. |
+| Secret or private-source leakage | Prompt, attachment, command output, session/export/log | Provider or third-party retention, public artifact | Data classification, redaction, separate test data, retention/deletion policy | Search sanitized artifacts and inspect configured outbound destinations. |
+| Supply-chain substitution | Moving npm/Git ref, registry account, lifecycle download | Different code executes on reinstall/update | Exact version/commit, integrity/provenance, lockfile, controlled update | Reinstall in a clean environment and compare resolved ref/hash/dependency graph. |
+| Retry/cancellation failure | Provider retry, agent retry, child process, RPC host | Cost/latency amplification, duplicate side effect, orphan process | Single retry owner, idempotency key where supported, timeout and process supervision | Force timeout/cancel and check finite attempts plus child/process cleanup. |
+| Session or share exposure | JSONL, HTML export, gist/share link, backup | Long-lived disclosure of prompts, code and tool results | Minimal retention, access review, redaction and deletion procedure | Locate every copy/link and confirm access/revocation behavior before sharing. |
+| Host escape through exposed surfaces | Mounted socket, broad home mount, SSH agent, cloud metadata/network | Control of host or unrelated infrastructure | Do not expose the surface; use a stronger VM/micro-VM/service boundary | From inside the boundary, the unrelated file/socket/network target must be unreachable. |
+
+Controls compose only when they address different surfaces. For example,
+Project Trust can stop project extensions from loading, a tool allowlist can
+limit registered calls, a container can limit files/process/network, and a
+service credential can limit the remote action. None of the four implies the
+other three.
 
 <!-- sync:architecture-sessions -->
 

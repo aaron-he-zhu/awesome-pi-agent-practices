@@ -27,19 +27,65 @@
    Update 或 Shutdown。
 5. **选择下面最小的隔离阶梯。**
 
+<!-- sync:trouble-router -->
+
+<a id="symptom-router"></a>
+
+## 症状路由
+
+从第一个可观察症状出发，不要从猜测的根因出发。执行第一次对照前，先保存原始错误。
+
+| 可观察症状 | 首个入口 | 第一次安全对照 | 必须记录的结果 |
+| --- | --- | --- | --- |
+| 找不到 `pi` 或出现 Engine Error | [安装/更新](#install-update) | `command -v pi`、`pi --version`、`node --version` | 实际执行文件、分发方式和 Runtime。 |
+| 401/403、缺少认证、未知模型、Quota 或 Provider Timeout | [Provider/Model/Auth](#provider-model-auth) | 指定 Provider/Model 的单行无 Tool Prompt | 精确错误类别、状态和是否发生 Retry。 |
+| 只有一个仓库/cwd 失败 | [Trust/资源](#trust-resources) | 原 cwd 对比空目录中的 `-nc --no-approve` | 哪个目录/资源边界能开关故障。 |
+| 加载 Package/Extension 后开始失败 | [Extension/Package](#extension-package) | 全部关闭，再逐个加入固定制品 | 精确制品/Ref 和首次失败的 Lifecycle Phase。 |
+| Tool 写错文件、挂起或截断输出 | [Tool/Shell](#tool-shell) | 只用 Built-in、最小输入、有限 Command Timeout | 已注册 Tool 身份、副作用和 Truncation/Cancel 状态。 |
+| 旧 Session 失败而新运行正常 | [Session/Compaction](#session-compaction) | 同一 Prompt 加 `--no-session` | 改变结果的 Session ID/Format/Compaction Boundary。 |
+| TUI 卡住或渲染错误，但 Print 正常 | [Terminal/TUI](#terminal-tui) | 相同 Prompt/Model 使用 `-p` | Terminal、Keybinding、Renderer 或 Interactive Extension 差异。 |
+| JSON Consumer 或 RPC Client 挂起/误解析 | [JSON/RPC/SDK](#json-rpc-sdk) | 单独 Drain stderr，并测试一次 LF 分隔交换 | 最后一条完整 Event/Response、待关联请求和子进程状态。 |
+| 只在 Native Windows/WSL 失败 | [Windows](#windows-route) | 记录 Shell/Path/Terminal，并对比受支持环境 | 平台特有的 Path、Signal、Permission 或 Terminal 差异。 |
+| 证据可能含 Secret 或私密数据 | [脱敏证据](#脱敏证据包) | 停止分享；只搜索最小本地制品 | 暴露 Surface、撤销/删除动作和保留的安全片段。 |
+
+若同时符合两行，先选择“在不改变数据或状态的前提下移除最多组件”的对照。若症状可能
+导致删除、凭据泄露、生产修改或重复外部副作用，跳过原地诊断，直接执行
+[停止条件](#停止条件)。
+
 ## 干净基线
 
 <!-- sync:trouble-baseline -->
 
-使用可丢弃目录和测试 Credential。以下命令移除已发现的项目指令/资源以及所有可选
-Resource Type，不保存 Session，只提供内建只读型 Tool：
+下面是 POSIX Shell 示例。使用可丢弃目录和测试凭据；`PI_CODING_AGENT_DIR` 会让
+两条命令使用同一个全新 Pi Profile。日常 Profile 中保存的凭据会被有意排除，
+Provider 凭据必须来自显式准备的测试环境。记录生成的精确路径，试用后先检查再删除。
 
 ```bash
-pi --no-approve --no-context-files --no-extensions --no-skills \
+trial_root="$(mktemp -d)"
+trial_profile="$trial_root/pi-profile"
+trial_work="$trial_root/work"
+mkdir "$trial_work"
+cd "$trial_work"
+PI_CODING_AGENT_DIR="$trial_profile" \
+pi --offline --no-approve --no-context-files --no-extensions --no-skills \
+  --no-prompt-templates --no-themes --list-models
+```
+
+用上面命令中的真实条目替换 `PROVIDER` 与 `MODEL`。下一条命令会移除发现到的项目
+指令/资源和全部可选资源类型，不使用 Session File，只暴露偏读取的内建 Tool：
+
+```bash
+PI_CODING_AGENT_DIR="$trial_profile" \
+pi --offline --no-approve --no-context-files --no-extensions --no-skills \
   --no-prompt-templates --no-themes --no-session \
   --tools read,grep,find,ls \
-  --provider PROVIDER --model MODEL -p "只回复 OK。"
+  --provider PROVIDER --model MODEL -p "只回复 PI_BASELINE_OK。"
 ```
+
+当进程成功退出且最终输出含 `PI_BASELINE_OK` 时，核心基线通过。单独记录启动 Warning
+与 stderr；不要把 Warning 重新定义为成功。确认没有创建 Session File，检查精确的
+`trial_root` 下的全部内容，再通过平台正常的安全删除机制移除该可丢弃目录。绝不能
+把宽泛的 Home/Config 路径当作清理目标。
 
 解释：
 
@@ -49,7 +95,8 @@ pi --no-approve --no-context-files --no-extensions --no-skills \
   Resource Type、一个 Package/Extension、原 Tool、Session 与 Terminal Mode。
 
 这是最小工作流基线，不是安全 Sandbox。不可信代码和 Network/Credential
-Containment 仍需要 OS Boundary。
+Containment 仍需要 OS Boundary。`--offline` 关闭的是 Pi 启动时的 Update、Catalog
+与 Telemetry 操作，不会阻止所选 Provider 请求或进程的任意网络访问。
 
 ## 隔离阶梯
 
@@ -73,6 +120,8 @@ Containment 仍需要 OS Boundary。
 
 ## 安装与更新失败
 
+<a id="install-update"></a>
+
 <!-- sync:trouble-install -->
 
 ### 检查
@@ -90,7 +139,8 @@ Containment 仍需要 OS Boundary。
 3. 分开 Update Surface：
 
    - `pi update --self` 更新 Pi。
-   - `pi update --extensions` 更新未固定 Package，并协调 Pinned Git Ref。
+   - `pi update --extensions` 更新未固定 Package。固定的 Git Ref 会被跳过；需要移动时
+     显式使用 `pi install git:HOST/PATH@NEW_REF`。
    - `pi update --models` 刷新模型目录。
    - `pi update --all` 组合 Pi 与 Package Update。
 
@@ -121,6 +171,8 @@ Containment 仍需要 OS Boundary。
 
 ## Provider、模型与认证失败
 
+<a id="provider-model-auth"></a>
+
 <!-- sync:trouble-provider -->
 
 ### 重试前分类
@@ -143,6 +195,8 @@ Pi v0.83.0 的 Provider-level Retry 默认为 `0`，Agent-level Retry 单独记�
 保持各层分离，才能让 Pi 正确分类 Quota 与 Overflow Error。
 
 ## Project Trust 与资源加载意外
+
+<a id="trust-resources"></a>
 
 <!-- sync:trouble-trust -->
 
@@ -170,6 +224,8 @@ List。
 
 ## Extension 与 Package 失败
 
+<a id="extension-package"></a>
+
 <!-- sync:trouble-extension -->
 
 1. 固定 Exact Artifact，并复制 Settings。
@@ -196,6 +252,8 @@ List。
 
 ## Tool 与 Shell 失败
 
+<a id="tool-shell"></a>
+
 <!-- sync:trouble-tools -->
 
 | 症状 | 检查 |
@@ -213,6 +271,8 @@ List。
 Truncation Marker。
 
 ## Session 与 Compaction 失败
+
+<a id="session-compaction"></a>
 
 <!-- sync:trouble-session -->
 
@@ -244,6 +304,8 @@ Argument-preparation Compatibility Hook。
 
 ## Terminal 与 TUI 失败
 
+<a id="terminal-tui"></a>
+
 <!-- sync:trouble-terminal -->
 
 先在 Print Mode 运行同一 Prompt。若 Print 通过：
@@ -264,6 +326,8 @@ Argument-preparation Compatibility Hook。
 Provider Failure。
 
 ## JSON、RPC 与 SDK 失败
+
+<a id="json-rpc-sdk"></a>
 
 <!-- sync:trouble-integration -->
 
@@ -298,6 +362,8 @@ Provider Failure。
 
 ## Windows 特定分流
 
+<a id="windows-route"></a>
+
 <!-- sync:trouble-windows -->
 
 先确定 Pi 运行在：
@@ -311,6 +377,40 @@ Provider Failure。
 Quoting、Code Page/UTF-8、Terminal Keybinding、Symlink、Antivirus Lock、File
 Watcher 与 Process-tree Cancellation。不要在一个 Minimal Reproducer 中混合
 Native 与 WSL Path。
+
+<!-- sync:trouble-resolution -->
+
+## 用已验证的解决方案闭合诊断
+
+本手册的每条分支都应以同一套可审计循环结束：
+
+1. **症状：**修改前保存精确 Failure、Timestamp 和最小受影响 Artifact。
+2. **对照：**只改变一个变量，记录两条命令、最终生效环境、预期、实际与退出状态。
+3. **归因：**指出对照所能支持的最窄层；观察并不唯一时保留其他解释。
+4. **修复：**选择最小、可逆的修改；说明会影响哪些文件、Settings、Package Ref、
+   凭据和外部状态。
+5. **复验：**重新执行原失败案例、Focused Check、相关 Regression/Negative Check，
+   并确认清理完成。
+6. **预防：**确有必要时增加 Regression Test、Version Guard、更清楚的 Diagnostic、
+   Runbook 更新或 Monitoring Signal。
+
+每次尝试修复时填写下面的紧凑记录：
+
+```text
+Hypothesis:
+One changed variable:
+Before command / expected / actual / exit:
+After command / expected / actual / exit:
+Implicated layer and remaining alternatives:
+Remediation and affected state:
+Focused / regression / negative results:
+Rollback performed or rehearsed:
+Cleanup and retained artifacts:
+Owner / next step / retest trigger:
+```
+
+症状消失还不够：如果一次运行同时改变了 Model、Provider、Session、Package Set 与
+Working Directory，应把它标为“未解决的 Workaround”，继续做受控对照。
 
 ## 脱敏证据包
 
@@ -361,4 +461,6 @@ Label 替换，使重复值仍可关联。
 
 对于预期的 Local-agent Behavior——完整用户权限、来自不可信内容的 Prompt
 Injection 或危险第三方指令——应先改善 Containment 与文档。真正的 Boundary
-Bypass 则遵循 Pi 当前 Security Reporting Policy。
+Bypass 则遵循 Pi 当前 Security Reporting Policy。若是证据泄露，或本指南自身
+Script/内容中的漏洞，使用本仓库的[安全政策](../SECURITY.zh-CN.md)；其中说明了私密
+报告渠道与数据最小化规则。

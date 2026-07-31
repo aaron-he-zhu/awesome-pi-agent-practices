@@ -159,7 +159,12 @@
   "communityReview": {
     "registry": "./resources.json",
     "commitEndpointTemplate": "GET https://api.github.com/repos/{owner}/{repo}/commits/{reviewedRef}",
-    "reviewedResources": 15
+    "communityResources": 15,
+    "sourceReviewed": 12,
+    "reviewedResources": 12,
+    "handsOnVerified": 0,
+    "deferred": 3,
+    "pinnedRefs": 15
   },
   "manualSampling": {
     "usedForQuantitativeClaims": false,

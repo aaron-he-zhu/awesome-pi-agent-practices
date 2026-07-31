@@ -45,13 +45,14 @@ Workspace 都稳定或已经发布。
 | `@earendil-works/pi-agent-core` | [README](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/agent/README.md) · [Package Manifest](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/agent/package.json) | Agent Loop、State、Event、Tool 与 Transport。 |
 | `@earendil-works/pi-coding-agent` | [README](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/README.md) · [Package Manifest](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/package.json) | CLI、Coding Tool、Session、Resource、TUI Mode、SDK、JSON 与 RPC。 |
 | `@earendil-works/pi-tui` | [README](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/tui/README.md) · [Package Manifest](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/tui/package.json) | Terminal Component、Rendering、Input、Layout 与 Width Handling。 |
+| `@earendil-works/pi-evals` | [Private Package Manifest](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/evals/package.json) · [Scripts](https://github.com/earendil-works/pi/tree/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/evals/scripts) | 私有源码树评测 Workspace；源码存在不表示它是受支持的公开评测产品，也不构成质量结果。 |
 | `@earendil-works/pi-storage-sqlite-node` | [Source Directory](https://github.com/earendil-works/pi/tree/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/storage/sqlite-node) | Agent Harness 的可选 Node SQLite Backend；不会自动替代 Coding-agent JSONL Session。 |
 | `@earendil-works/pi-server` | [Experimental README](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/server/README.md) | v0.83.0 源码树中的实验 Server；API/CLI/Behavior 可以改变或消失。 |
 
-快照时，Registry Check 在 `0.83.0` 找到以上五个命名的
-`@earendil-works/*` Package（不含实验 Server）；
-`@earendil-works/pi-server` 与发布后的 `@earendil-works/pi-protocol` 都不是
-稳定已发布 Registry Package。安装前始终重新验证当前 Registry。
+快照时，Registry Check 在 `0.83.0` 找到四个主要 Package 和 SQLite Storage
+Package。私有 Evals Workspace、实验性 `@earendil-works/pi-server` 与发布后的
+`@earendil-works/pi-protocol` 都不是稳定已发布 Registry Package。安装前始终
+重新验证当前 Registry。
 
 ## 安全、信任与隔离
 

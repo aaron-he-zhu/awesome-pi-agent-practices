@@ -4,17 +4,20 @@
   "private": true,
   "description": "A bilingual, evidence-led collection of reproducible practices for earendil-works/pi.",
   "license": "CC0-1.0",
+  "packageManager": "npm@10.9.8",
   "engines": {
     "node": ">=22.19.0"
   },
   "scripts": {
-    "check": "npm run check:markdown && npm run check:bilingual && npm run check:resources && npm run check:research && npm run check:links",
+    "check": "npm run check:markdown && npm run check:bilingual && npm run check:resources && npm run check:research && npm run check:links && npm run test:validators",
     "check:awesome": "awesome-lint README.md",
     "check:bilingual": "node scripts/check-bilingual.mjs",
     "check:links": "node scripts/check-local-links.mjs",
     "check:markdown": "markdownlint-cli2",
     "check:research": "node scripts/check-research-snapshot.mjs",
-    "check:resources": "node scripts/check-resources.mjs"
+    "check:resources": "node scripts/check-resources.mjs",
+    "test": "npm run test:validators",
+    "test:validators": "node --test tests/*.test.mjs"
   },
   "devDependencies": {
     "ajv": "8.20.0",
