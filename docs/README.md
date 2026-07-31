@@ -31,7 +31,7 @@ The research snapshot is **2026-07-31**. Stable behavior was checked against
 | Verify this repository's claims | [Methodology](research/methodology.md) | [Evidence ledger](research/evidence-ledger.md) |
 | Reproduce dated dynamic counts | [Exact query log](research/query-log.md) | [Ecosystem landscape](research/landscape.md) |
 | Propose a new practice | [Contributing](../CONTRIBUTING.md) | [Practice template](../templates/practice-proposal.md) |
-| Find ecosystem directories | [Related lists](../README.md#related-lists) | [Research watchlist](research/watchlist.md) |
+| Find ecosystem directories | [Ecosystem directory guide](research/ecosystem-directories.md) | [Extension review](extension-review.md) |
 
 <!-- sync:docs-library -->
 
@@ -56,6 +56,9 @@ The research snapshot is **2026-07-31**. Stable behavior was checked against
   search coverage, scoring, exclusions, limitations, and update procedure.
 - [Ecosystem and issue landscape](research/landscape.md) — quantitative
   snapshot, recurring problem clusters, and opportunity map.
+- [Ecosystem discovery directories](research/ecosystem-directories.md) —
+  official, curated, automated, synthesized, and historical discovery
+  surfaces, with selection and verification boundaries.
 - [Exact query log](research/query-log.md) — preserved endpoints, query strings,
   immutable refs, capture limits, and re-run procedure for the dated snapshot.
 - [Official source map](research/source-map.md) — version-pinned primary links

@@ -30,7 +30,7 @@
 | 验证本仓库的结论 | [研究方法](research/methodology.zh-CN.md) | [证据台账](research/evidence-ledger.zh-CN.md) |
 | 复现带日期的动态数字 | [精确查询日志](research/query-log.zh-CN.md) | [生态全景](research/landscape.zh-CN.md) |
 | 提议新实践 | [贡献指南](../CONTRIBUTING.zh-CN.md) | [实践模板](../templates/practice-proposal.zh-CN.md) |
-| 查找生态目录 | [相关列表](../README.zh-CN.md#相关列表) | [研究观察名单](research/watchlist.zh-CN.md) |
+| 查找生态目录 | [生态目录指南](research/ecosystem-directories.zh-CN.md) | [Extension 审查](extension-review.zh-CN.md) |
 
 <!-- sync:docs-library -->
 
@@ -54,6 +54,8 @@
   评分、排除项、局限性和更新步骤。
 - [生态与 Issue 全景](research/landscape.zh-CN.md) — 定量快照、反复出现的问题簇
   和实践机会图。
+- [生态发现目录](research/ecosystem-directories.zh-CN.md) — Official、Curated、
+  Automated、Synthesized 与 Historical Discovery Surface，以及选择和核验边界。
 - [精确查询日志](research/query-log.zh-CN.md) — 保存该日期快照的 Endpoint、
   Query String、Immutable Ref、Capture Limit 与重跑步骤。
 - [官方来源地图](research/source-map.zh-CN.md) — 按问题分组、固定版本的一手链接。

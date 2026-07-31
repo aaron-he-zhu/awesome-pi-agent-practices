@@ -97,6 +97,7 @@ Customization Layer、Trust Boundary、Session Semantics 与 Integration Mode。
 | [研究方法](docs/research/methodology.zh-CN.md)     | 检查 Source Tier、Inclusion Gate、Scoring、AI Disclosure 与 Update Procedure。                |
 | [精确查询日志](docs/research/query-log.zh-CN.md)   | 重跑带日期的 GitHub、Catalog、Registry、RFC、Source 与 Community-review Query。                |
 | [生态全景](docs/research/landscape.zh-CN.md)       | 查看带日期的 Project、Catalog、Issue Cluster、Directory 与 Opportunity Snapshot。             |
+| [生态目录指南](docs/research/ecosystem-directories.zh-CN.md) | 在 Official、Curated、Automated、Synthesized 与 Historical Discovery Surface 之间选择。 |
 | [Extension 审查](docs/extension-review.zh-CN.md)   | 审计 Identity、Install Script、Dependency、Authority、Lifecycle、Data Flow、Test 与 Removal。 |
 | [术语表](docs/glossary.zh-CN.md)                   | 区分 Project Trust、Session Operation、Tool Limit、RPC、SDK 与 Containment。                  |
 
@@ -132,6 +133,10 @@ Retest Trigger。
 <!-- resource:related-automated-directory -->
 
 - [awesome-pi-coding-agent](https://github.com/shaftoe/awesome-pi-coding-agent) - 为 Breadth/Discovery 优化、自动且频繁更新的 Directory。
+
+<!-- resource:related-package-index -->
+
+- [Pi Package Index](https://github.com/getpipher/pi-package-index) - 非官方、每日刷新的 npm Package Index，提供可搜索的 Maintenance Metadata 与 Public JSON API。
 
 <!-- resource:related-ecosystem-wiki -->
 

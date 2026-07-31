@@ -158,13 +158,24 @@ Prevalence。
 是 MIT 下自动、频繁刷新的 Directory。强项是 Breadth/Recency；Automated
 Selection/Description 不等于 Human Hands-on Curation。
 
+<!-- resource:related-package-index -->
+
+### Pi Package Index
+
+[getpipher/pi-package-index](https://github.com/getpipher/pi-package-index) 是
+非官方、采用 MIT 许可且每日刷新的 npm Package Index，提供可搜索的
+[Web Interface](https://pi-package.rectorspace.com/)与 Public
+[JSON API](https://pi-package.rectorspace.com/api/packages)。它用 GitHub 与
+Maintenance Signal 丰富 npm Metadata。这些 Signal 有助于 Discovery/Filtering，
+不等于 Quality、Compatibility 或 Security Review。
+
 <!-- resource:related-archived-awesome -->
 
 ### awesome-pi-agent
 
 [qualisero/awesome-pi-agent](https://github.com/qualisero/awesome-pi-agent)
-曾经突出，但已 Archived，并自述 Retired/Outdated。它适合 Ecosystem History，
-不是当前 Compatibility Source。
+是较早的生态目录，但已 Archived，并自述 Retired/Outdated。它适合 Ecosystem
+History，不是当前 Compatibility Source。
 
 <!-- resource:related-ecosystem-wiki -->
 
@@ -174,10 +185,40 @@ Selection/Description 不等于 Human Hands-on Curation。
 聚焦 Architecture、Comparison 与 Ecosystem Synthesis。Generated/Secondary
 Claim 应当作为 Discovery Lead，直到用一手来源验证。
 
+<!-- resource:related-extension-registry-snapshot -->
+
+### Traveler0014 的 awesome-pi-agent
+
+[Traveler0014/awesome-pi-agent](https://github.com/Traveler0014/awesome-pi-agent)
+使用 Structured YAML Registry、Schema Validation、Generated README 与
+Scheduled Metadata Workflow。审查时 Scheduled Updater 失败，内容没有越过六月
+初始快照；README 与 License File 的 Metadata 也不一致，因此未进入导航。
+
+<!-- resource:related-awesome-pi-mono-snapshot -->
+
+### awesome-pi-mono
+
+[afoofaa/awesome-pi-mono](https://github.com/afoofaa/awesome-pi-mono) 是五月完成
+Seed 的 MIT 人工分类列表。审查时没有可见的后续实质更新，仍保留旧 Upstream
+Path，初始 Link Check 也失败，因此未进入导航。
+
+### 未晋级的专用 Registry
+
+[Leoguy77/pi-packages.nix](https://github.com/Leoguy77/pi-packages.nix) 是活跃的
+Nix-native Generated Registry，包含 Integrity Hash 与可选 Binary Cache。它不是
+通用 Awesome Directory。在
+[`ab97786…`](https://github.com/Leoguy77/pi-packages.nix/commit/ab977868c85409142df3c7dc1b3e98281dde5617)，
+README 声明 MIT，但 Tree 中没有独立 License File，GitHub 也未识别 SPDX
+License。其文档中的 Fallback/Build Path 还可能需要关闭 Nix Sandbox 与 TLS
+Verification。因此它仍是专用 Supply-chain Research Lead，而不是根 Discovery
+Recommendation。
+
 ### 官方 Catalog
 
 官方 Package Catalog 比任何人工 List 都更广。这些来源合起来已经很好地回答
-“存在什么？”
+“存在什么？”[生态目录指南](./ecosystem-directories.zh-CN.md)链接官方
+Resource-type Filter，比较 Update Model，并区分活跃导航与 Historical/
+Context-only Source。
 
 ### 不重复的范围
 
@@ -190,8 +231,8 @@ Claim 应当作为 Discovery Lead，直到用一手来源验证。
 - 哪个 Source 证明基础事实？
 - 人类是否实际安装并测试过 Third-party Artifact？
 
-本仓库在 Related Lists 链接现有目录，把未试用 Candidate 放入明显分开的
-Watchlist。
+本仓库在 Related Lists 链接当前目录，在生态目录指南中保留更完整的 Directory
+Inventory，并把未试用 Candidate 放入明显分开的 Watchlist。
 
 ## 社区能力地图
 
