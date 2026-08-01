@@ -299,8 +299,10 @@ recommendation ordering.
 - Do not call Project Trust, a tool allowlist, a worktree, or a subprocess an OS
   sandbox.
 - Do not call GitHub secret/unlisted gists access-controlled private documents.
-- Keep the root README thin; detailed methodology, dynamic numbers, and untested
-  candidates belong under `docs/research/`.
+- The root README may include a dated, status-labeled, data-backed ecosystem
+  research snapshot. Only `featured` third-party entries are formal curated
+  recommendations; detailed methodology, ledgers, raw dynamic results, and
+  reproducible evidence remain under `data/` and `docs/research/`.
 - Formal root Awesome items use `- [Name](URL) - Description.` with a
   concrete, capitalized, punctuated description.
 - Internal navigation should use tables or text-first bullets so

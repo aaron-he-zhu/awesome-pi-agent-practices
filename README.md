@@ -21,6 +21,16 @@ the Pi coding agent.
 - [Official Building Blocks](#official-building-blocks)
 - [Evidence and Research](#evidence-and-research)
 - [Community Review Queue](#community-review-queue)
+  - [Status snapshot](#status-snapshot)
+  - [Source-reviewed community projects — all 12](#source-reviewed-community-projects--all-12)
+  - [Deferred community records — all 3](#deferred-community-records--all-3)
+  - [Preliminary discovery candidates — all 13](#preliminary-discovery-candidates--all-13)
+  - [Capability coverage and gaps — all 25](#capability-coverage-and-gaps--all-25)
+  - [Architecture strata — all 11](#architecture-strata--all-11)
+  - [Pi relationship types — all 13](#pi-relationship-types--all-13)
+  - [Catalogs, directories, and historical context](#catalogs-directories-and-historical-context)
+  - [Discovery limits and what may still be missing](#discovery-limits-and-what-may-still-be-missing)
+  - [Promotion gate](#promotion-gate)
 
 <!-- sync:root-start -->
 
@@ -206,21 +216,30 @@ such as containers and tmux.
 | [CLI RPC](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/rpc.md)                       | Bidirectional requests, responses, and asynchronous events over LF-delimited JSONL on stdio. | Pin the Pi version and separately drain stderr; RPC is not JSON mode.                     |
 | [TypeScript SDK](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/sdk.md)                | In-process construction and ownership of sessions, resources, tools, models, and events.     | The host owns policy, credentials, persistence, cancellation, subscriptions, and cleanup. |
 
-The [source-reviewed community capability map](docs/research/landscape.md#community-capability-map)
-tracks concrete leads for VM isolation (Gondolin), subagent/workflow
-orchestration (pi-subagents and pi-crew), MCP (pi-mcp-adapter), web/browser
-access (pi-web-access and pi-agent-browser-native), human review (Plannotator),
-code analysis (pi-lens), memory (pi-hermes-memory), tracing
-(braintrust-pi-extension), an Emacs UI, and a broad operating layer
-(gentle-pi). These are research leads, not featured recommendations; each still
-requires a named, reproducible human trial.
+<!-- sync:root-ecosystem-evidence -->
 
-For discovery, use the
-[directory chooser](docs/research/ecosystem-directories.md#quick-chooser), then
-verify each candidate at its canonical source. Older material may still use
-`badlogic/pi-mono`, `earendil-works/pi-mono`, or `@mariozechner/*`; check the
-current repository, npm publisher/scope, peer dependencies, and install target
-against the [scope-migration note](docs/research/landscape.md#scope-migration-and-stale-instructions).
+### How to read the ecosystem map
+
+The tables below are a dated, checked-in research map, not a popularity ranking
+or a recommendation list. “In the ecosystem” means that immutable primary
+evidence establishes a relevant technical or historical relationship to Pi; it
+does not mean the project is current, compatible, safe, maintained, or endorsed.
+
+| Evidence state                   | Current count | What has actually been established                                                                                               | Adoption consequence                                                                 |
+| -------------------------------- | ------------: | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Official building block          |             6 | Upstream repository, current documentation, releases, examples, package catalog, or RFC index.                                   | Still pin versions and distinguish a proposal, `main`, and a stable release.         |
+| `source-reviewed` community      |            12 | A bounded review of a pinned ref covered purpose, code, license, dependencies, authority/data flow, tests, CI, and obvious risk. | Useful trial leads only; no maintainer in this repository has installed or run them. |
+| Deferred community record        |             3 | The source was inspected but is mixed, legacy-scoped, unlicensed, privacy-blocked, or needs item-by-item decomposition.          | Do not treat the repository as an atomic capability or current adoption path.        |
+| `preliminary-evidence-collected` |            13 | Pinned evidence establishes identity and a provisional Pi relationship; the complete source-review gate has not started.         | `awaiting-source-review`, `not-evaluated`, and untrusted.                            |
+| `hands-on-verified` / `featured` |             0 | A named human has not yet supplied a reproducible trial and a separate editorial promotion decision for any third party.         | There are intentionally no third-party recommendations yet.                          |
+
+The resource registry was captured at **2026-07-31T15:56:32+08:00**; the
+discovery-candidate registry was captured at
+**2026-08-01T15:28:59+08:00**. The complete itemized map appears later in
+Community Review Queue. Older material may still use
+`badlogic/pi-mono`, `earendil-works/pi-mono`, or `@mariozechner/*`; resolve the
+current repository, publisher/scope, peer dependencies, and install target
+before following it.
 
 <!-- sync:root-areas -->
 
@@ -300,27 +319,250 @@ pinned to `main@9b50b046d328d589a81400d2e184175d0bf19734` and labeled
 
 ## Community Review Queue
 
-The [source-review watchlist](docs/research/watchlist.md) contains twelve
-source-reviewed candidates pending hands-on verification across VM isolation,
-subagents, workflows, MCP, web and browser access, human review, code analysis,
-memory, tracing, alternate UI, and broad operating layers. Each entry records
-why it merits a trial and the specific authority, privacy, supply-chain,
-lifecycle, or compatibility boundary that must be tested.
+This section puts the complete checked-in decision map in the README. The
+canonical machine records remain the resource registry, candidate registry,
+taxonomy, and generated coverage data; the deeper watchlist preserves the
+item-by-item review trail. Entries in these research tables are not formal
+Awesome items and do not receive `resource:` markers unless they later become
+`featured`.
 
-The [coverage matrix](docs/research/coverage-matrix.md#community-capability-coverage) separately tracks
-twenty-five community capability categories. The
-machine-generated summary derives the current source-review, hands-on,
-deferred, candidate, and architecture counts from checked-in data so prose
-cannot silently drift. An empty category means
-“not yet evidenced by this repository,” not “no implementation exists.” A
-candidate remains an untrusted lead until it passes the documented source and
-hands-on gates.
+<!-- sync:root-queue-snapshot -->
+
+### Status snapshot
+
+| Dimension                                              | Checked-in state                                                                                                                   | Interpretation                                                                                                                                 |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Resource registry](data/resources.json)               | 28 records: 6 official, 7 directory/related, and 15 community.                                                                     | The 15 community records split into 12 `source-reviewed` and 3 deferred records.                                                               |
+| [Discovery candidates](data/discovery-candidates.json) | 13 candidates; every item is `preliminary-evidence-collected`, `awaiting-source-review`, and `not-evaluated`.                      | Identity and Pi relationship evidence are pinned; ordinary source review is still incomplete.                                                  |
+| [Machine taxonomy](data/practice-taxonomy.json)        | 25 capability categories, 11 architecture types, and 13 Pi relationship types.                                                     | Categories say what a project does; architectures say how it runs; relationships say how it connects to Pi.                                    |
+| [Coverage data](data/coverage-summary.json)            | 275 category × architecture cells: 82 nonempty, 42 with source-review evidence, 0 with hands-on evidence.                          | One project can occupy several cells, so 82 nonempty cells do not mean 82 projects.                                                            |
+| Source-review gaps                                     | 9 of 25 categories have no source-reviewed primary or secondary representative; 14 have no source-reviewed primary representative. | Five of the 14 primary gaps have only secondary coverage; an empty cell means no checked-in evidence, not proof that no implementation exists. |
+| Hands-on and recommendation state                      | 25 of 25 categories have no hands-on-verified representative; 0 third-party entries are featured.                                  | More candidate links cannot substitute for named, reproducible human trials.                                                                   |
+
+`P` and `S` below mean primary and secondary category placement. Counts are
+overlapping unless explicitly described as totals.
+
+<!-- sync:root-queue-reviewed -->
+
+### Source-reviewed community projects — all 12
+
+These projects passed a bounded source and metadata review at the linked
+immutable ref on **2026-07-31**. They were not installed or executed by this
+repository's maintainer. They remain untrusted trial leads pending a named
+human review; see the [full source-review watchlist](docs/research/watchlist.md)
+for entry points, tests, and trial questions.
+
+| Project and reviewed evidence                                                                                                                                                                                     | Capability, architecture, and Pi relationship                                                                                                                               | What source review established                                                                                             | Critical boundary before any hands-on use                                                                                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [Gondolin @ `29fa74d`](https://github.com/earendil-works/gondolin/tree/29fa74d802112f29c720990aced26165e0d57d84) · Apache-2.0 · macOS/Linux · extensive tests, passing CI                                         | P: VM/tool isolation; S: permission/guardrails. OS/virtualization boundary + in-process example; official-adjacent Pi resource.                                             | Micro-VM isolation research with a concrete Pi tool-routing example and substantial security/limitation documentation.     | The example is not an installable Pi package, mounts the project read-write at `/workspace`, and documents QEMU, same-user processes, and denial of service as non-goals.                              |
+| [pi-subagents @ `89de10e`](https://github.com/nicobailon/pi-subagents/tree/89de10e4bc8895e7948704c38620a5b35ddcd17e) · MIT · current scope · unit/integration/E2E, passing CI                                     | P: subagents/workflows; S: task/goal loops and Git/review. In-process extension; Pi package/resource.                                                                       | Subagent, parallel, chained, background, lifecycle, and worktree orchestration patterns.                                   | Subprocesses, worktrees, and tool restrictions are not OS isolation; bound child tools/models, inherited environment, concurrency, cost, background cancellation, durable state, and parallel writers. |
+| [pi-crew @ `c694ebf`](https://github.com/baphuongna/pi-crew/tree/c694ebfd5d0f49d9479870d6919be4bbf9738291) · MIT · current scope · unit/integration/package tests, mixed CI                                       | P: subagents/workflows; S: task/goal loops and Git/review. In-process extension + external service; Pi package/resource + service/infrastructure.                           | Durable multi-agent workflows, parallel orchestration, and optional worktree isolation.                                    | Dynamic `.dwf.ts` runs unsandboxed JavaScript/TypeScript; a “confirmation” flag is not necessarily human approval; the Unix broker and retained state require explicit review and cleanup.             |
+| [pi-mcp-adapter @ `6a3e840`](https://github.com/nicobailon/pi-mcp-adapter/tree/6a3e840219a49f9ae5350542b7a707aa1e83fedf) · MIT · current scope · unit/OAuth/conformance/package tests, passing CI                 | P: MCP integration. In-process extension + external service; Pi package/resource + service/infrastructure.                                                                  | Lazy-proxy and direct MCP paths with OAuth, packaging, protocol, and conformance coverage.                                 | MCP server commands and secret resolvers execute with local-user authority; shared multiplexers share state and credentials. Pin, inspect, and contain every server separately.                        |
+| [pi-web-access @ `c702b3b`](https://github.com/nicobailon/pi-web-access/tree/c702b3be11bfbc832489eb7cfe31d9bbbbb2cc27) · MIT · current scope · tests present, no repository CI observed                           | P: web search/fetch. In-process extension + external service; Pi package/resource + service/infrastructure.                                                                 | Search, fetch, repository, PDF, YouTube, and local-video workflows in one package.                                         | Queries, URLs, pages, video, and browser cookies may reach several providers or fallback routes; review data flow, redirects/SSRF, size limits, retention, timeouts, and offline failure per provider. |
+| [pi-agent-browser-native @ `211a012`](https://github.com/fitchmultz/pi-agent-browser-native/tree/211a012c9b199d758768e8ba729f35e11e661f65) · MIT · Pi `>=0.80.6` · extensive tests, no repository CI observed     | P: authenticated-browser automation; S: alternate UI/editor. In-process extension + external service; Pi package/resource + service/infrastructure.                         | A structured Pi tool surface over the separate `agent-browser` CLI for browser, Electron, profile, and download workflows. | It can reach login state, cookies, clipboard, downloads, and screenshots; project configuration is trust-sensitive. Use only a dedicated test profile and verify CLI/version pairing and cleanup.      |
+| [Plannotator @ `80065c8`](https://github.com/backnotprop/plannotator/tree/80065c84624e80bf60dc1ad862c17c3ea3f2bd80) · root Apache-2.0; Pi extension MIT OR Apache-2.0 · Pi `>=0.74.0` · passing CI                | P: human review/planning; S: Git/review and session sharing. In-process extension + frontend/controller + external service; three matching Pi relationships.                | Human review surfaces for plans, Markdown/HTML, and code diffs, with Pi runtime smoke coverage.                            | Optional sharing uploads encrypted ciphertext. Encryption does not remove URL-fragment, history, metadata, endpoint, or retention risk; disable sharing for sensitive trials.                          |
+| [pi-hermes-memory @ `5aafe2c`](https://github.com/chandra447/pi-hermes-memory/tree/5aafe2ca04cb55b62204b159389c8381894038ce) · MIT · current scope · unit/check/lint, passing CI                                  | P: persistent memory; S: context optimization. In-process extension + external service; Pi package/resource + service/infrastructure.                                       | Cross-session memory, SQLite full-text session search, and procedural-memory workflows.                                    | Persistent indexes extend privacy and stored-prompt-injection lifetime; scanners are incomplete, native SQLite has ABI risk, and model-based consolidation reads and rewrites memory.                  |
+| [pi-coding-agent for Emacs @ `df5ce0a`](https://github.com/dnouri/pi-coding-agent/tree/df5ce0a176ce634ccb4883042c415a74a5637c37) · GPL-3.0-only · Pi `>=0.79.1` · unit/integration/GUI/lint, passing CI           | P: alternate UI/editor. RPC/JSON consumer + frontend/controller; matching RPC and frontend relationships.                                                                   | A tested Emacs UI over Pi RPC and a concrete headless project-trust case study.                                            | The documented default passes `--approve`; unknown repositories need an explicit non-approving policy plus a separate decision about context files and shared authentication storage.                  |
+| [pi-lens @ `a4baa3a`](https://github.com/apmantza/pi-lens/tree/a4baa3a94ecaf71f8af9f48ab27c8d7f6da8fdb2) · MIT · current scope · install/grammar/tool compatibility CI                                            | P: code intelligence. In-process extension + external service; Pi package/resource + service/infrastructure.                                                                | Structured LSP, lint, formatting, AST/tree-sitter, and optional scanning tools.                                            | Build and lifecycle paths can download grammars/tools; analysis can mutate files. A compatibility smoke pinned to Pi 0.80.10 does not prove complete v0.83.0 support.                                  |
+| [braintrust-pi-extension @ `c8f1aea`](https://github.com/braintrustdata/braintrust-pi-extension/tree/c8f1aea1236f47c2681c0104be143b832bc9058c) · MIT · recent-minor matrix · integration/package/compatibility CI | P: tracing/observability. In-process extension + external service; Pi package/resource + service/infrastructure.                                                            | Tracing for sessions, turns, model calls, tools, and compaction.                                                           | When enabled it can upload raw input, normalized context, output, tool arguments, and tool results; classify, redact, sample, set retention/deletion, and test failure isolation first.                |
+| [gentle-pi @ `3b6b3d2`](https://github.com/Gentleman-Programming/gentle-pi/tree/3b6b3d2183dbbc4d45b16a1a0f127728c0a2435c) · MIT · current scope · unit/package/publish, passing CI                                | P: broad operating layer; S: guardrails, subagents, task/goal loops. Package suite + in-process extension + external service; Pi package/resource + service/infrastructure. | A broad case study in specification-driven development, TDD, review, subagents, and local authority/policy design.         | `postinstall` obtains or builds a native runtime, the current RDD path is marked unstable, the companion surface is large, and the threat model excludes malicious same-user replacement.              |
+
+<!-- sync:root-queue-deferred -->
+
+### Deferred community records — all 3
+
+Deferred records have already been inspected enough to identify a blocking
+condition, but they do not count as source-reviewed evidence.
+
+| Project and reviewed evidence                                                                                                                               | Capability and form                                                                                                                     | Why it is retained                                                            | Blocking condition and reopen gate                                                                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [pi-extensions @ `60d70f2`](https://github.com/tmustier/pi-extensions/tree/60d70f24825446205c45e89f98813688e52823f3) · MIT · `collection-needs-item-review` | P: package suites/alternate distributions; S: UI/statusline/accessibility, themes, prompt packs. Package suite + in-process extensions. | A mixed collection may contain individually useful extensions.                | It is not one atomic capability; tests/CI vary and some docs retain legacy links. Reopen only as separate item-level reviews.                                                           |
+| [pi-skills @ `90bb51c`](https://github.com/badlogic/pi-skills/tree/90bb51cae36515a648515b633a81c0c6efc8c74d) · MIT · `legacy-scope`                         | P: individual skills; S: browser and web access. Resource-only + external service.                                                      | Historical browser, Google-service, transcription, and API workflow examples. | Legacy `@mariozechner/*` guidance, heterogeneous high authority, and no observed tests/CI require migration plus a separate authority review for every skill.                           |
+| [pi-share-hf @ `21c1d96`](https://github.com/badlogic/pi-share-hf/tree/21c1d9629187b553a2d59f26c5ef28eb33bb4e70) · `NOASSERTION` · `blocked`                | P: session export/sharing/publishing. In-process extension + external service.                                                          | A historical session-sharing flow with several redaction stages.              | No detected license, legacy scope, no observed tests/CI, and intentional public Hugging Face upload block reuse; scanners and model review cannot prove all private content is removed. |
+
+<!-- sync:root-queue-candidates -->
+
+### Preliminary discovery candidates — all 13
+
+Every row is `preliminary-evidence-collected`, `awaiting-source-review`, and
+`not-evaluated`. All repositories declared MIT metadata at the snapshot, but
+license scope itself has not passed the source-review gate. The 28 evidence
+links below are immutable; they establish only the stated relationship.
+
+| Candidate and pinned evidence                                                                                                                                                                                                                                                                                                                 | Capability and architecture                                                                                                                                 | Evidence-backed Pi relationship                                                                                                                                            | Still unresolved before source review                                                                                                                |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [OpenClaw](https://github.com/openclaw/openclaw) · aliases Warelay, Clawdbot, Moltbot · npm `openclaw` · [five-source chain below](#why-openclaw-is-in-this-map)                                                                                                                                                                              | P: remote control/messaging/collaboration; S: broad operating layer and package suites. Frontend/controller + derived/internalized runtime + package suite. | Pi package consumer + historical SDK embedder + frontend/controller + derived/internalized-from-Pi.                                                                        | Current scope, compatibility, authority, data flow, tests, maintenance, and complete license boundary; no current Pi v0.83 compatibility conclusion. |
+| [oh-my-pi](https://github.com/can1357/oh-my-pi) · npm `@oh-my-pi/pi-coding-agent` · [identity](https://github.com/can1357/oh-my-pi/blob/fcf6d65140a1d53a55de3edb0d413bd2b8433bb0/README.md) · [manifest](https://github.com/can1357/oh-my-pi/blob/fcf6d65140a1d53a55de3edb0d413bd2b8433bb0/packages/coding-agent/package.json)                | P: package suites/alternate distributions; S: alternate UI. Frontend + fork + derived runtime + suite.                                                      | A Pi fork publishing its own terminal, SDK, RPC, native ACP, and `@oh-my-pi/*` family; those are fork-owned surfaces, not proof of consuming upstream through SDK/RPC/ACP. | Inherited versus independent behavior, divergence, compatibility, authority, tests, and maintenance.                                                 |
+| [Senpi](https://github.com/code-yeongyu/senpi) · npm `@code-yeongyu/senpi` · [identity](https://github.com/code-yeongyu/senpi/blob/f4705697bb63e880140d9d885fe5bd5540b52d77/README.md) · [manifest](https://github.com/code-yeongyu/senpi/blob/f4705697bb63e880140d9d885fe5bd5540b52d77/packages/coding-agent/package.json)                   | P: package suites/alternate distributions; S: alternate UI. Frontend + fork + derived runtime.                                                              | A pi-mono fork/rebrand used as Dori's coding-agent runtime.                                                                                                                | Exact fork point, independent changes, present upstream relationship, compatibility, risk, tests, and maintenance.                                   |
+| [piclaw](https://github.com/rcarmo/piclaw) · [workspace claim](https://github.com/rcarmo/piclaw/blob/4de5e92aa96bdf809de772e68da767c2eb4957dd/README.md) · [Pi 0.83 manifest](https://github.com/rcarmo/piclaw/blob/4de5e92aa96bdf809de772e68da767c2eb4957dd/package.json)                                                                    | P: alternate UI/editor; S: remote control/collaboration. SDK embedder + frontend/controller.                                                                | A self-hosted web workspace whose pinned manifest directly depends on all four Pi 0.83.0 packages.                                                                         | Authentication, process/session lifecycle, data boundaries, effective compatibility, tests, and cleanup.                                             |
+| [pi-vscode-extension](https://github.com/Zetaphor/pi-vscode-extension) · [identity](https://github.com/Zetaphor/pi-vscode-extension/blob/526df5ead8e0104ea5d176bb5e6fa25e6d75844a/README.md) · [session construction](https://github.com/Zetaphor/pi-vscode-extension/blob/526df5ead8e0104ea5d176bb5e6fa25e6d75844a/src/pi/session.ts)        | P: alternate UI/editor. SDK embedder + frontend/controller.                                                                                                 | A VS Code frontend that imports Pi APIs and constructs the agent session inside the editor extension.                                                                      | Project trust, editor authority, session lifecycle, cancellation, compatibility, and cleanup.                                                        |
+| [pi-vscode](https://github.com/pithings/pi-vscode) · historical alias `pi0/pi-vscode` · [identity](https://github.com/pithings/pi-vscode/blob/8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c/README.md) · [RPC spawn](https://github.com/pithings/pi-vscode/blob/8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c/src/pi.ts)                                | P: alternate UI/editor. RPC/JSON consumer + frontend/controller.                                                                                            | A VS Code bridge that starts Pi in RPC mode and attaches the frontend to that process.                                                                                     | Redirect lineage, project trust, process lifecycle, cancellation, compatibility, and cleanup.                                                        |
+| [pi-acp](https://github.com/svkozak/pi-acp) · npm `pi-acp` · [protocol claim](https://github.com/svkozak/pi-acp/blob/d1cffc047ab37a096ee70ca39cfc1de463db8d12/README.md) · [RPC process](https://github.com/svkozak/pi-acp/blob/d1cffc047ab37a096ee70ca39cfc1de463db8d12/src/pi-rpc/process.ts)                                               | P: alternate UI/editor. RPC/JSON consumer + ACP consumer.                                                                                                   | An adapter that launches Pi RPC and maps it to ACP over stdio for clients such as Zed.                                                                                     | Protocol completeness, authorization, cancellation, error mapping, child supervision, compatibility, and cleanup.                                    |
+| [acpx](https://github.com/openclaw/acpx) · npm `acpx` · [agent mapping](https://github.com/openclaw/acpx/blob/504040facb1992453cf16a2a096a1094fc4e48d4/src/agent-registry.ts) · [manifest](https://github.com/openclaw/acpx/blob/504040facb1992453cf16a2a096a1094fc4e48d4/package.json)                                                       | P: alternate UI/editor. ACP consumer + frontend/controller.                                                                                                 | An indirect `acpx → pi-acp → Pi` relationship; it is not a direct Pi SDK embedder.                                                                                         | Indirect dependency and protocol boundaries, authorization, lifecycle, compatibility, tests, and maintenance.                                        |
+| [pi-coding-agent-action](https://github.com/shaftoe/pi-coding-agent-action) · [action entry](https://github.com/shaftoe/pi-coding-agent-action/blob/1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1/action.yml) · [Pi 0.82.1 manifest](https://github.com/shaftoe/pi-coding-agent-action/blob/1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1/package.json) | P: Git/review automation. SDK embedder.                                                                                                                     | A GitHub/Forgejo action directly embedding Pi coding-agent, AI, and agent-core 0.82.1.                                                                                     | Token scope, checkout mutation, remote writes, approval, rollback, failure isolation, and current compatibility.                                     |
+| [Polpo](https://github.com/pugliatechs/polpo) · [remote-controller claim](https://github.com/pugliatechs/polpo/blob/ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477/README.md) · [RPC launcher](https://github.com/pugliatechs/polpo/blob/ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477/src/agent/pi-agent.js)                                            | P: remote control/messaging/collaboration; S: alternate UI. RPC/JSON consumer + frontend/controller.                                                        | A phone-oriented remote controller that starts and connects to Pi through RPC.                                                                                             | Identity, authorization, replay resistance, disconnect behavior, retention, process cleanup, and compatibility.                                      |
+| [pi-nvim](https://github.com/carderne/pi-nvim) · npm `pi-nvim` · [extension entry](https://github.com/carderne/pi-nvim/blob/fbc6f12652234f03d2fe729adbcc3ff61ca7d39a/extension.ts)                                                                                                                                                            | P: alternate UI/editor. In-process extension + frontend/controller.                                                                                         | A Pi-loaded extension opening a Unix JSON socket for a Neovim frontend; it does not construct `AgentSession` and is not an SDK runtime embedder.                           | Buffer/editor authority, project trust, socket/process lifecycle, cancellation, compatibility, and cleanup.                                          |
+| [pi-mobile](https://github.com/p1rallels/pi-mobile) · [product claim](https://github.com/p1rallels/pi-mobile/blob/4cc9b712254d84c90a00373c972c8a417fd26fb9/README.md) · [session runtime](https://github.com/p1rallels/pi-mobile/blob/4cc9b712254d84c90a00373c972c8a417fd26fb9/src/session-runtime.ts)                                        | P: alternate UI/editor; S: remote control/collaboration. SDK embedder + frontend/controller.                                                                | A web/mobile frontend whose pinned runtime directly constructs and manages a Pi agent session.                                                                             | Authentication, transport authorization, retention, disconnect behavior, compatibility, tests, and cleanup.                                          |
+| [my-pi](https://github.com/spences10/my-pi) · npm `my-pi` · [suite claim](https://github.com/spences10/my-pi/blob/c0bca00ef69c20c2192d7457827b45e3d3d401bb/README.md) · [session API](https://github.com/spences10/my-pi/blob/c0bca00ef69c20c2192d7457827b45e3d3d401bb/src/api.ts)                                                            | P: package suites/alternate distributions; S: MCP, code intelligence, evals, broad operating layer. SDK embedder + fork + suite.                            | A Pi SDK wrapper/alternate distribution spanning MCP, LSP, team, and evaluation-telemetry surfaces.                                                                        | Every bundled artifact's authority, data flow, behavior, compatibility, tests, and maintenance; no suite-level conclusion yet.                       |
+
+<!-- sync:root-queue-openclaw -->
+
+#### Why OpenClaw is in this map
+
+OpenClaw is explicitly included at the preliminary-candidate layer. The
+evidence supports historical SDK embedding, retained Pi provenance, and later
+runtime internalization. It does **not** show that current OpenClaw still embeds
+the upstream runtime or that it is compatible with Pi v0.83.0.
+
+1. The pinned [naming history](https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/docs/start/lore.md) records Warelay → Clawdbot → Moltbot → OpenClaw.
+2. Historical [Pi integration documentation](https://github.com/openclaw/openclaw/blob/99b27cde64d6616a9e41f52f4a699577cf60f1d6/docs/pi.md) describes direct `AgentSession` integration of coding-agent, AI, agent-core, and TUI.
+3. The pinned [provenance notice](https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/THIRD_PARTY_NOTICES.md) records code adapted from Pi/pi-mono and a retained Pi TUI dependency.
+4. The [internalization migration](https://github.com/openclaw/openclaw/commit/bb46b79d3c1479f194a90afcf3dd69a1858a7898) introduced OpenClaw-owned agent core, removed the former Pi runtime layout, and retained third-party provenance.
+5. The pinned [root manifest](https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/package.json) uses the npm identity `openclaw` and retains `@earendil-works/pi-tui` 0.82.1.
+
+This kind of project is easy to miss with name/current-dependency search alone:
+its current name does not contain Pi, it passed through three older names, and
+its relationship changed from direct embedding to derived/internalized lineage.
+The original 13-lead search was reconstructed and non-replayable, so these are
+plausible omission mechanisms, not a claim about one proven historical cause.
+
+<!-- sync:root-queue-coverage -->
+
+### Capability coverage and gaps — all 25
+
+Every category still has a hands-on gap. `P` and `S` preserve the primary versus
+secondary distinction; deferred records never increase source-review coverage,
+and preliminary candidates never count as reviewed evidence.
+
+| Capability                                      | Source-reviewed representatives                | Deferred records  | Preliminary candidates                                                                                                     | Next evidence gap                                                                 |
+| ----------------------------------------------- | ---------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| VM/tool isolation                               | Gondolin (P)                                   | —                 | —                                                                                                                          | Hands-on trial.                                                                   |
+| Permission and guardrails                       | Gondolin (S), gentle-pi (S)                    | —                 | —                                                                                                                          | Primary representative and hands-on trial.                                        |
+| Subagents and workflow orchestration            | pi-subagents (P), pi-crew (P), gentle-pi (S)   | —                 | —                                                                                                                          | Hands-on trial across distinct orchestration forms.                               |
+| MCP integration                                 | pi-mcp-adapter (P)                             | —                 | my-pi (S)                                                                                                                  | Hands-on trial; suite candidate still needs source review.                        |
+| Web search and fetch                            | pi-web-access (P)                              | pi-skills (S)     | —                                                                                                                          | Hands-on data-flow trial.                                                         |
+| Browser and authenticated-profile automation    | pi-agent-browser-native (P)                    | pi-skills (S)     | —                                                                                                                          | Hands-on dedicated-profile trial.                                                 |
+| Human review and planning                       | Plannotator (P)                                | —                 | —                                                                                                                          | Hands-on local/share-disabled trial.                                              |
+| Code intelligence                               | pi-lens (P)                                    | —                 | my-pi (S)                                                                                                                  | Hands-on trial; suite candidate still needs source review.                        |
+| Persistent memory                               | pi-hermes-memory (P)                           | —                 | —                                                                                                                          | Hands-on privacy, retention, and prompt-injection trial.                          |
+| Tracing and observability                       | braintrust-pi-extension (P)                    | —                 | —                                                                                                                          | Hands-on redaction, retention, and failure-isolation trial.                       |
+| Alternate UI and editor integration             | Emacs frontend (P), browser-native (S)         | —                 | piclaw (P), two VS Code projects (P), pi-acp (P), acpx (P), pi-nvim (P), pi-mobile (P), oh-my-pi (S), Senpi (S), Polpo (S) | Source-review candidates by integration form, then hands-on trials.               |
+| Broad operating layer                           | gentle-pi (P)                                  | —                 | OpenClaw (S), my-pi (S)                                                                                                    | Hands-on scoped slice; both candidates need source review.                        |
+| Context optimization                            | pi-hermes-memory (S)                           | —                 | —                                                                                                                          | Primary representative and hands-on trial.                                        |
+| Task, goal, and loop engineering                | pi-subagents (S), pi-crew (S), gentle-pi (S)   | —                 | —                                                                                                                          | Primary representative and hands-on trial.                                        |
+| UI, statusline, notification, and accessibility | —                                              | pi-extensions (S) | —                                                                                                                          | Itemize the collection, source review, then hands-on trial.                       |
+| Themes and theme tooling                        | —                                              | pi-extensions (S) | —                                                                                                                          | Itemize the collection, source review, then hands-on trial.                       |
+| Prompt-template packs                           | —                                              | pi-extensions (S) | —                                                                                                                          | Itemize the collection, source review, then hands-on trial.                       |
+| Individual skills                               | —                                              | pi-skills (P)     | —                                                                                                                          | Migrate and review individual skills, then hands-on trial.                        |
+| Custom providers and model gateways             | —                                              | —                 | —                                                                                                                          | Discover a credible public lead, source review, and hands-on trial.               |
+| Local-model runtimes                            | —                                              | —                 | —                                                                                                                          | Discover a credible public lead, source review, and hands-on trial.               |
+| Remote control, messaging, and collaboration    | —                                              | —                 | OpenClaw (P), Polpo (P), piclaw (S), pi-mobile (S)                                                                         | Source review each trust/transport model, then hands-on trial.                    |
+| Package suites and alternate distributions      | —                                              | pi-extensions (P) | oh-my-pi (P), Senpi (P), my-pi (P), OpenClaw (S)                                                                           | Source review inherited versus independent behavior, then hands-on trial.         |
+| Git and review automation                       | pi-subagents (S), pi-crew (S), Plannotator (S) | —                 | pi-coding-agent-action (P)                                                                                                 | Primary source review beyond the candidate, then hands-on remote-write trial.     |
+| Evals and benchmarking                          | —                                              | —                 | my-pi (S)                                                                                                                  | Source review an eval-specific slice or representative, then hands-on validation. |
+| Session export, sharing, and publishing         | Plannotator (S)                                | pi-share-hf (P)   | —                                                                                                                          | Primary active representative and hands-on privacy trial.                         |
+
+Across primary and secondary placement, 16 categories have source-review
+evidence and 9 do not. Three of those 9 have candidates; six have no active
+registered candidate, although four retain deferred material. Candidate primary
+placement is strongly concentrated: 7 alternate UI/editor, 3 package
+suite/distribution, 2 remote/collaboration, and 1 Git/review. It is not a
+balanced sample of the 25 categories.
+
+<!-- sync:root-queue-architectures -->
+
+### Architecture strata — all 11
+
+Architecture describes how a project executes or is composed. A project can
+occupy several rows, so counts cannot be summed into project totals.
+
+| Architecture                 | Source-reviewed records | Preliminary candidates | Operational boundary                                                                                                                  |
+| ---------------------------- | ----------------------: | ---------------------: | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Resource-only                |                       0 |                      0 | Declarative prompts, themes, templates, or skills still influence model/tool use; current examples are deferred rather than reviewed. |
+| In-process extension         |                      11 |                      1 | Code runs with the Pi process user's filesystem, process, credential, and network authority.                                          |
+| SDK embedder                 |                       0 |                      5 | The host application owns policy, sessions, tools, credentials, cancellation, subscriptions, persistence, and cleanup.                |
+| RPC/JSON consumer            |                       1 |                      3 | A controller owns subprocess startup, protocol framing, stderr draining, event handling, cancellation, restart, and shutdown.         |
+| ACP consumer                 |                       0 |                      2 | An adapter/client adds protocol mapping, authorization, capability, error, cancellation, and lifecycle boundaries.                    |
+| Frontend/controller          |                       2 |                     10 | Editor, web, mobile, messaging, or remote UI policy determines who can see and command a Pi-backed session.                           |
+| External service             |                       9 |                      0 | Credentials, outbound data, tenancy, retention, availability, backpressure, and deletion extend beyond the local process.             |
+| OS/virtualization boundary   |                       1 |                      0 | Containment depends on mounts, network, secrets, host process, reset, and documented threat-model exclusions.                         |
+| Fork/alternate distribution  |                       0 |                      3 | Identity, inherited versus changed behavior, package scope, update path, and divergence from upstream must be separated.              |
+| Derived/internalized runtime |                       0 |                      3 | Historical provenance may remain even after upstream runtime dependencies disappear; inherited claims need revalidation.              |
+| Package suite                |                       1 |                      3 | Each bundled executable/resource and their combined authority must be reviewed; one safe component cannot validate a whole suite.     |
+
+<!-- sync:root-queue-relations -->
+
+### Pi relationship types — all 13
+
+Relationship describes why a project belongs in the Pi ecosystem map, not its
+quality or compatibility. Relationships overlap and later internalization or
+renaming does not erase historical provenance.
+
+| Pi relationship                 | Source-reviewed records | Preliminary candidates | Meaning                                                                                                                             |
+| ------------------------------- | ----------------------: | ---------------------: | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Pi package or resource          |                      11 |                      2 | Loaded by, distributed for, or directly built around Pi's extension/resource system.                                                |
+| SDK embedder                    |                       0 |                      5 | Constructs Pi sessions or imports Pi runtime APIs inside another application.                                                       |
+| Historical SDK embedder         |                       0 |                      1 | Immutable historical evidence shows direct SDK embedding that is no longer necessarily current.                                     |
+| Pi package consumer             |                       0 |                      1 | Consumes at least one Pi package without necessarily embedding the full current runtime.                                            |
+| RPC/JSON consumer               |                       1 |                      3 | Starts or consumes Pi's CLI protocol/event surfaces.                                                                                |
+| ACP consumer                    |                       0 |                      2 | Connects through ACP directly or through a bridge.                                                                                  |
+| Frontend or controller          |                       2 |                     10 | Presents or remotely controls a Pi-backed user/session surface.                                                                     |
+| Fork or alternate distribution  |                       0 |                      3 | Republishes, renames, or materially redistributes Pi-derived code or behavior.                                                      |
+| Derived or internalized from Pi |                       0 |                      3 | Retains Pi-derived code/provenance after internalizing or changing the runtime boundary.                                            |
+| Service or infrastructure       |                       9 |                      0 | Adds an external/local service, broker, backend, or infrastructure dependency to a Pi workflow.                                     |
+| Official-adjacent               |                       1 |                      0 | Maintained within the upstream organization or presented as an adjacent reference, without becoming Pi core.                        |
+| Historical or archived          |                       0 |                      0 | Records a legacy or retired relationship; current counted examples are deferred, so they do not increase reviewed/candidate totals. |
+| Indirect consumer               |                       0 |                      1 | Reaches Pi through another adapter or dependency rather than embedding or launching it directly.                                    |
+
+<!-- sync:root-queue-directories -->
+
+### Catalogs, directories, and historical context
+
+The official catalog and four current related directories are navigation
+surfaces, not quality or compatibility oracles. At the dated 2026-07-31
+snapshot, the catalog reported 5,351 packages and overlapping filters of 3,059
+extensions, 360 skills, 109 themes, and 78 prompts; those filter counts are not
+additive.
+
+| Surface                                                                           | Registry status                 | Appropriate use                                                       | Boundary                                                                                               |
+| --------------------------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Pi Package Catalog                                                                | Official discovery              | Broad package discovery.                                              | Catalog presence is not source, license, safety, maintenance, compatibility, or hands-on review.       |
+| awesome-pi                                                                        | Current related list            | Active bilingual human-curated package/resource navigation.           | Discovery scope differs from evidence-backed operating practice.                                       |
+| awesome-pi-coding-agent                                                           | Current related list            | Automated, frequently refreshed breadth.                              | Generated discovery and descriptions are not human trials.                                             |
+| Pi Package Index                                                                  | Current related list            | Daily npm metadata, maintenance signals, search, and public JSON API. | Unofficial metadata and popularity/maintenance signals are not endorsement.                            |
+| pi-ecosystem-wiki                                                                 | Current related list            | Architecture, comparison, and ecosystem synthesis.                    | Secondary/generated claims remain leads until checked against primary sources.                         |
+| [awesome-pi-agent](https://github.com/qualisero/awesome-pi-agent)                 | Archived historical context     | Understand an earlier directory and naming surface.                   | Explicitly retired/outdated; do not use for current compatibility.                                     |
+| [Traveler0014/awesome-pi-agent](https://github.com/Traveler0014/awesome-pi-agent) | Rejected as a current directory | Schema-backed catalog-design reference.                               | Scheduled metadata updates were failing and content had not advanced beyond the initial June snapshot. |
+| [awesome-pi-mono](https://github.com/afoofaa/awesome-pi-mono)                     | Rejected as a current directory | Early manual taxonomy/directory context.                              | No substantive update followed the May seed, so continuing maintenance was not demonstrated.           |
+
+<!-- sync:root-queue-limits -->
+
+### Discovery limits and what may still be missing
+
+“All” in the headings above means every record currently checked into this
+repository, not every Pi-related project in existence.
+
+| Blind spot                                           | Why a real project can be absent                                                                                                                               | Current handling and remaining limitation                                                                                                                                                 |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Non-replayable initial batch                         | The 13-lead historical search did not preserve original queries, ranking, pages, duplicates, rejected results, failures, or pre-filter denominator.            | The run is honestly marked `reconstructed-non-replayable`, truncated, and incomplete; it cannot support an ecosystem-completeness claim.                                                  |
+| Bounded current probe                                | The configured probe has 9 GitHub query families—6 code and 3 repository—and reads only the first page, at most 50 results per query.                          | It records limits, truncation, errors, attempts, and dispositions; lower-ranked and differently worded projects can still be missed.                                                      |
+| Code-search authentication                           | The repository-scoped default Actions token does not provide the separate public code-search context used by this project.                                     | Repository searches run, while all 6 code searches are explicitly `skipped` with zero attempts unless a public-only `DISCOVERY_SEARCH_TOKEN` is configured.                               |
+| GitHub-only discovery                                | Other forges, personal sites, documentation-only products, binaries, or registry-only packages may expose no discoverable GitHub repository.                   | Catalog, registry, directory, and referral cross-checks help, but do not make coverage exhaustive.                                                                                        |
+| Private/internal/ambiguous visibility                | Publishing these identities could disclose information or contaminate public counts.                                                                           | The probe fails closed and clears identities/counts for the whole affected query; such projects are intentionally absent from public artifacts.                                           |
+| Renames, moves, forks, deletion, and internalization | Canonical URLs and current dependency names can hide historical aliases, redirects, provenance, and independent forks.                                         | Preserve aliases, package identities, immutable evidence, and explicit relationship types; undiscovered lineage can remain.                                                               |
+| Search vocabulary, language, ranking, and indexing   | A product may omit “Pi,” use another language, call protocols indirectly, or appear beyond the ranked page.                                                    | Queries cover package symbols, RPC strings, provenance, and product terms, but no finite vocabulary is complete.                                                                          |
+| Registry and manifest variation                      | Relevant imports may occur only in a lockfile, generated file, monorepo subdirectory, another language, or an unpublished source archive.                      | Resolve publisher, artifact, repository, ref, and install target during source review; current queries do not cover every form.                                                           |
+| Dynamic compatibility                                | Pi, Node/Bun, package scopes, providers, terminals, platforms, and external services evolve independently.                                                     | Pin snapshots and keep relationship, source review, hands-on verification, and recommendation as separate claims.                                                                         |
+| Evidence imbalance                                   | The candidate batch is concentrated in frontends, SDK embedders, forks, and suites, while 6 categories have neither reviewed evidence nor an active candidate. | Prioritize custom provider/model gateway, local-model runtime, UI/statusline/accessibility, theme, prompt-pack, and individual-skill discovery—without hiding the universal hands-on gap. |
+
+### Promotion gate
 
 There are intentionally **no third-party featured entries yet**. Promotion
 requires a named human reviewer, immutable artifact, disclosed relationship,
-isolated trial, exact environment and commands, expected/actual results,
-cleanup, residual risks, bilingual fact review, and an expiration/retest
-trigger.
+isolated trial, exact environment and commands, expected and actual results,
+negative cases, cleanup and rollback, residual risks, bilingual fact review,
+and an expiration/retest trigger. Stars, downloads, catalog presence, passing
+CI, declared license metadata, or a source review cannot replace those steps.
 
 <!-- sync:root-related -->
 
@@ -362,7 +604,8 @@ This independent community repository is not maintained by or affiliated with
 Earendil Works. “Pi” and linked project names belong to their respective
 owners.
 
-Research snapshot: **2026-07-31, Asia/Singapore**. Dynamic counts, package
+Curated/source-review snapshot: **2026-07-31, Asia/Singapore**. Discovery-
+candidate snapshot: **2026-08-01, Asia/Singapore**. Dynamic counts, package
 metadata, provider behavior, and `latest` documentation may have changed.
 
 The central Awesome project's
