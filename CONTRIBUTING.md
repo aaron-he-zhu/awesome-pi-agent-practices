@@ -82,7 +82,22 @@ needs:
 Avoid renumbering existing practices. If a practice is retired, preserve its ID
 in the decision history so external links do not silently change meaning.
 
-### Watchlist candidate
+### Discovery candidate
+
+Use the lightweight [ecosystem candidate issue form](.github/ISSUE_TEMPLATE/ecosystem-candidate.yml)
+to preserve a public lead before doing a full review. Supply:
+
+- a canonical public URL;
+- the smallest public evidence of a possible Pi relationship;
+- aliases, package names, discovery query/source, and immutable ref when known;
+- a relationship disclosure.
+
+Uncertainty, an unknown license, or a missing immutable ref may remain explicit
+at discovery time. Maintainers normalize accepted leads into
+`data/discovery-candidates.json`. Candidate presence is not source review,
+compatibility evidence, or endorsement.
+
+### Source-review or watchlist nomination
 
 A link alone is insufficient. Submit:
 
@@ -124,8 +139,9 @@ One successful happy path is not hands-on verification of a broad package.
 <!-- sync:contrib-states -->
 
 ```text
-discovered -> source-reviewed -> hands-on-verified -> featured
-                    \-> rejected          \-> rejected
+discovered -> relation-confirmed -> source-reviewed -> hands-on-verified -> featured
+discovered / relation-confirmed -> deferred or rejected
+source-reviewed / hands-on-verified -> rejected
 featured -> stale -> retest or remove
 ```
 
@@ -141,7 +157,9 @@ community resources:
 
 | Lifecycle meaning | `reviewStatus` | Allowed `status` shape | Required evidence and publication action |
 | --- | --- | --- | --- |
-| Discovered only | `catalog-only`, `collection-needs-item-review`, `legacy-scope`, or `blocked` as applicable | Normally `deferred`; never `featured` | Preserve canonical URL/ref and discovery reason; list only in research/coverage material. |
+| Discovered only | Candidate registry uses `discovery-only`; curated registry fields do not apply yet | `awaiting-source-review`, `deferred`, or `rejected` in the candidate registry | Preserve identity, provenance, relation hypothesis, category/architecture, and disposition; never publish as reviewed evidence. |
+| Relationship confirmed | Candidate registry uses `preliminary-evidence-collected` | Normally `awaiting-source-review` | Pin primary evidence showing the direct, indirect, historical, or derived Pi relationship; this is still not a source review. |
+| Source review underway | Candidate registry uses `source-review-in-progress` | `source-review-in-progress` | Pin the exact artifact and inspect the full source gate; do not publish it as source reviewed until the gate is complete. |
 | Source reviewed | `source-reviewed` | A `watchlist*` risk/disposition value | Record exact ref, license, entry points, dependencies, authority/data flow, tests/CI and unresolved trial questions in both watchlists. |
 | Hands-on verified | `hands-on-verified` | Remains `watchlist*` until a separate editorial decision | Attach a completed [hands-on review](templates/hands-on-review.md) with named human, expected/actual evidence, cleanup, residual risks and expiry. |
 | Featured | `hands-on-verified` | `featured` | Obtain independent editorial and bilingual review; add paired root resource blocks and remove the paired watchlist blocks. |
@@ -219,8 +237,39 @@ quality. Human bilingual review remains required.
 
 <!-- sync:contrib-registry -->
 
-`data/resources.json` is a validation ledger, not a README generator. Keep
-Markdown human-edited.
+The repository has three deliberately separate ledgers:
+
+- `data/discovery-candidates.json` preserves inexpensive, untrusted leads,
+  aliases, relationship evidence, categories/architectures, and dispositions;
+- `data/discovery-runs.json` preserves exact bounded queries, raw result order,
+  normalization, and a disposition for every result in the claimed batch;
+  historical imports without that evidence must be marked
+  `reconstructed-non-replayable`, incomplete, and truncated;
+- `data/resources.json` preserves reviewed or explicitly deferred curated
+  records.
+
+None of the three ledgers is a README generator. Keep curated Markdown human-edited and
+regenerate only the machine coverage summary.
+
+For each discovery candidate:
+
+- preserve the canonical URL, aliases, exact discovery source, and full ref;
+- use the machine taxonomy for primary/secondary category and architecture;
+- start with `reviewStatus: discovery-only`, use
+  `preliminary-evidence-collected` only after relationship evidence is pinned,
+  and use `source-review-in-progress` while the full gate is underway;
+  `endorsementStatus` remains `not-evaluated` throughout the candidate ledger;
+- require `resourceId` only for `promoted-to-resource` and preserve the
+  candidate as an auditable redirect; when promoted, candidate `resourceId`
+  and resource `sourceCandidateId` must point to one another.
+
+For each discovery run, retain every raw result in source order. Map it to a
+candidate or record an explicit duplicate, deferred, rejected, out-of-scope, or
+lookup-failed disposition. State truncation and the exact denominator claimed;
+never describe a bounded batch as the complete ecosystem. Keep the returned
+`sourceUrl` separate from the normalized `resolvedCandidateUrl`, because a
+package, catalog, provenance, or redirected source need not use the repository
+URL.
 
 For each resource:
 
@@ -229,6 +278,8 @@ For each resource:
 - never fill reviewer/test fields with inferred results;
 - use `NOASSERTION` when no license is detected instead of guessing;
 - state current/legacy Pi scope;
+- assign one primary category, optional secondary categories, architecture
+  types, and Pi relationship types from the machine taxonomy;
 - keep `reason` distinct from `riskSummary`;
 - update corresponding resource markers in both language files.
 
@@ -264,9 +315,13 @@ Use the repository's required Node version:
 
 ```bash
 npm ci --ignore-scripts
+npm run generate:coverage
 npm run check
 npm run check:awesome
 ```
+
+Run `generate:coverage` only after intentional registry, candidate, or taxonomy
+changes. CI runs it in check mode and fails when generated coverage is stale.
 
 Also:
 

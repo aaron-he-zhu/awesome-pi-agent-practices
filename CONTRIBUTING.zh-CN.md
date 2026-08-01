@@ -79,7 +79,21 @@ Package Directory。有用的贡献应帮助读者做出或验证 Operational De
 避免重新编号已有 Practice。Practice Retired 时，在 Decision History 保留 ID，
 不要让 External Link 静默改变含义。
 
-### 观察名单候选
+### 发现候选
+
+完整审查前，使用轻量[生态候选 Issue Form](.github/ISSUE_TEMPLATE/ecosystem-candidate.yml)
+保存公开线索。提供：
+
+- Canonical Public URL；
+- 证明可能存在 Pi 关系的最小公开证据；
+- 已知时提供 Alias、Package Name、Discovery Query/Source 与 Immutable Ref；
+- Relationship Disclosure。
+
+发现阶段允许明确保留不确定性、未知 License 或缺失 Immutable Ref。维护者把接受的
+线索规范化到 `data/discovery-candidates.json`。候选收录不等于 Source Review、
+兼容性证据或背书。
+
+### 源码审查或观察名单提名
 
 仅链接远远不够。提交：
 
@@ -121,8 +135,9 @@ Package Directory。有用的贡献应帮助读者做出或验证 Operational De
 <!-- sync:contrib-states -->
 
 ```text
-discovered -> source-reviewed -> hands-on-verified -> featured
-                    \-> rejected          \-> rejected
+discovered -> relation-confirmed -> source-reviewed -> hands-on-verified -> featured
+discovered / relation-confirmed -> deferred or rejected
+source-reviewed / hands-on-verified -> rejected
 featured -> stale -> retest or remove
 ```
 
@@ -137,7 +152,9 @@ Reputation 都不能自动晋级。
 
 | 生命周期含义 | `reviewStatus` | 允许的 `status` 形态 | 必需证据与发布动作 |
 | --- | --- | --- | --- |
-| 仅发现 | 按情况使用 `catalog-only`、`collection-needs-item-review`、`legacy-scope` 或 `blocked` | 通常为 `deferred`；绝不能是 `featured` | 保存 Canonical URL/Ref 与发现理由；只进入 Research/Coverage 材料。 |
+| 仅发现 | 候选注册表使用 `discovery-only`；尚不适用策展注册表字段 | 候选注册表中的 `awaiting-source-review`、`deferred` 或 `rejected` | 保存 Identity、Provenance、Relation Hypothesis、类别/架构与 Disposition；绝不作为已审查证据发布。 |
+| 已确认关系 | 候选注册表使用 `preliminary-evidence-collected` | 通常为 `awaiting-source-review` | 固定能证明直接、间接、历史或派生 Pi 关系的一手证据；这仍不等于 Source Review。 |
+| 源码审查进行中 | 候选注册表使用 `source-review-in-progress` | `source-review-in-progress` | 固定精确制品并完成全部 Source Gate；Gate 完成前不得作为已审源码发布。 |
 | 已审源码 | `source-reviewed` | 某个 `watchlist*` 风险/处置值 | 在双语 Watchlist 记录精确 Ref、License、入口、依赖、Authority/Data Flow、Test/CI 与未决试用问题。 |
 | 已亲测 | `hands-on-verified` | 在独立编辑决定前仍为 `watchlist*` | 附上已完成的[亲测审查](templates/hands-on-review.zh-CN.md)，包含具名人类、Expected/Actual 证据、Cleanup、残余风险与到期时间。 |
 | 已精选 | `hands-on-verified` | `featured` | 完成独立编辑与双语审查；加入成对的根 Resource Block，并移除成对的 Watchlist Block。 |
@@ -209,8 +226,34 @@ Quality。仍需要 Human Bilingual Review。
 
 <!-- sync:contrib-registry -->
 
-`data/resources.json` 是 Validation Ledger，不是 README Generator。Markdown 必须
-由人类编辑。
+仓库刻意分开三本 Ledger：
+
+- `data/discovery-candidates.json` 保存低成本、不受信任的线索、Alias、关系证据、
+  类别/架构与 Disposition；
+- `data/discovery-runs.json` 保存精确有界 Query、Raw Result 顺序、Normalization，
+  以及 Claimed Batch 中每条结果的 Disposition；缺少这些证据的历史导入必须标记为
+  `reconstructed-non-replayable`、不完整且已截断；
+- `data/resources.json` 保存已审查或明确 Deferred 的策展记录。
+
+三者都不是 README Generator。策展 Markdown 必须由人类编辑；只有机器覆盖摘要
+按脚本重新生成。
+
+每个发现候选：
+
+- 保存 Canonical URL、Alias、精确 Discovery Source 与完整 Ref；
+- 使用机器分类法填写 Primary/Secondary Category 与 Architecture；
+- 初始使用 `reviewStatus: discovery-only`；固定关系证据后才能使用
+  `preliminary-evidence-collected`，完整 Gate 审查期间使用
+  `source-review-in-progress`；Candidate Ledger 中的 `endorsementStatus` 始终为
+  `not-evaluated`；
+- 只有 `promoted-to-resource` 才要求 `resourceId`，并把候选保留为可审计 Redirect；
+  晋级时 Candidate `resourceId` 与 Resource `sourceCandidateId` 必须互相指向。
+
+每次 Discovery Run 都要按 Source Order 保留全部 Raw Result。把它映射到 Candidate，
+或记录明确的 Duplicate、Deferred、Rejected、Out-of-scope、Lookup-failed
+Disposition。说明 Truncation 与声称的精确 Denominator；绝不能把有界 Batch 描述为
+完整生态。分开保存返回的 `sourceUrl` 与规范化后的 `resolvedCandidateUrl`，因为
+Package、Catalog、Provenance 或 Redirect Source 未必使用 Repository URL。
 
 每个 Resource：
 
@@ -219,6 +262,8 @@ Quality。仍需要 Human Bilingual Review。
 - 不能用推断结果填写 Reviewer/Test Field；
 - 没检测到 License 时使用 `NOASSERTION`，不能猜；
 - 写明 Current/Legacy Pi Scope；
+- 从机器分类法分配一个 Primary Category、可选 Secondary Category、Architecture
+  Type 与 Pi Relationship Type；
 - 区分 `reason` 与 `riskSummary`；
 - 在两种语言文件中更新对应 Resource Marker。
 
@@ -252,9 +297,13 @@ Quality。仍需要 Human Bilingual Review。
 
 ```bash
 npm ci --ignore-scripts
+npm run generate:coverage
 npm run check
 npm run check:awesome
 ```
+
+只有 Registry、Candidate 或 Taxonomy 发生有意修改后才运行 `generate:coverage`。
+CI 使用 Check Mode；机器生成覆盖过期时会失败。
 
 另外：
 

@@ -1,0 +1,96 @@
+{
+  "$schema": "./discovery-queries.schema.json",
+  "schemaVersion": 1,
+  "queries": [
+    {
+      "id": "current-coding-agent-package-consumers",
+      "endpoint": "code",
+      "query": "\"@earendil-works/pi-coding-agent\" filename:package.json",
+      "sort": "indexed",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Find direct consumers whose repository or product name may not mention Pi."
+    },
+    {
+      "id": "current-agent-core-package-consumers",
+      "endpoint": "code",
+      "query": "\"@earendil-works/pi-agent-core\" filename:package.json",
+      "sort": "indexed",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Find current in-process agent-core embedders."
+    },
+    {
+      "id": "current-tui-package-consumers",
+      "endpoint": "code",
+      "query": "\"@earendil-works/pi-tui\" filename:package.json",
+      "sort": "indexed",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Find alternate interfaces and derived products that still consume the Pi TUI package."
+    },
+    {
+      "id": "historical-coding-agent-package-consumers",
+      "endpoint": "code",
+      "query": "\"@mariozechner/pi-coding-agent\" filename:package.json",
+      "sort": "indexed",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Retain historical package-scope recall across repository and npm identity migration."
+    },
+    {
+      "id": "pi-rpc-process-consumers",
+      "endpoint": "code",
+      "query": "\"pi --mode rpc\" language:TypeScript",
+      "sort": "indexed",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Find external controllers and protocol bridges that spawn Pi rather than importing its SDK."
+    },
+    {
+      "id": "pi-provenance-notices",
+      "endpoint": "code",
+      "query": "\"adapted from Pi\" filename:THIRD_PARTY_NOTICES.md",
+      "sort": "indexed",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Find derived or internalized runtimes through provenance instead of product branding."
+    },
+    {
+      "id": "pi-coding-agent-repositories",
+      "endpoint": "repositories",
+      "query": "\"pi coding agent\" in:name,description,topics is:public",
+      "sort": "updated",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Find recently updated repositories with an explicit Pi coding-agent identity."
+    },
+    {
+      "id": "pi-agent-repositories",
+      "endpoint": "repositories",
+      "query": "pi-agent in:name,description,topics is:public",
+      "sort": "updated",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Find repositories using the broader Pi agent naming convention."
+    },
+    {
+      "id": "pi-extension-repositories",
+      "endpoint": "repositories",
+      "query": "\"pi extension\" in:name,description,topics is:public",
+      "sort": "updated",
+      "order": "desc",
+      "page": 1,
+      "perPage": 50,
+      "rationale": "Find explicit extension repositories while preserving a separate product/provenance search family."
+    }
+  ]
+}

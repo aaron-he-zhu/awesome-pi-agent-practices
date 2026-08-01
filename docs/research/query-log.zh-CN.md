@@ -178,6 +178,16 @@ Runtime Test、Security Certification 或 Endorsement。
 探索性 GitHub Repository Search 只用于发现。已选 Community Source State 可由
 `reviewedRef` 重建；Search Funnel 不是完整性声明。
 
+这一局限仍属于历史 2026-07-31 Snapshot。[发现运行 Ledger](../../data/discovery-runs.json)
+中首批 13 条 Gap Lead 被明确标记为 `reconstructed-non-replayable`：它把新规范化线索
+链接到[候选注册表](../../data/discovery-candidates.json)，但没有保存原始 Query、
+Ranking、被过滤结果与分母，因此不能修复历史抽样缺口。从新定时 Artifact 导出的已审
+Ledger Import 与新的人工运行遵循[发现协议](discovery-protocol.zh-CN.md)：导入前保存
+Raw Result Identifier 与顺序，并为每条结果记录 Candidate Mapping 或明确
+Disposition。定时 Probe Artifact 本身只是 Pre-triage Signal，不自动成为 Ledger Run；
+经过审查的导入还必须补全 Run-level Status/Error/Attempt Metadata 与逐结果
+Normalization Contract。
+
 ## 重跑与保存协议
 
 <!-- sync:query-rerun -->
@@ -186,9 +196,13 @@ Runtime Test、Security Certification 或 Endorsement。
 2. 记录 `capturedOn`、Time Zone、Finalization Time、Stable Tag、Stable Commit
    与 Research `main` Commit。
 3. 重跑每个精确 Endpoint/Query，同时保留旧数字与新数字。
-4. 定性抽样保存 Ordering、Sample Size、Selection Rule 与 Issue ID。
-5. 阅读结论前把每个 Community Default Branch 解析成完整 Commit；只有审查 Diff
+4. 生态发现保存精确 Query、Client/Endpoint、Sort、Page/Cursor、Limit、返回顺序中
+   的每个 Raw Result Identifier、Redirect/Alias、Error 与 Truncation Boundary。
+5. 把每条 Raw Result 映射到稳定 Candidate ID，或明确的 Duplicate、Rejected、
+   Deferred、Out-of-scope Disposition；绝不静默丢弃。
+6. 定性 Issue 抽样保存 Ordering、Sample Size、Selection Rule 与 Issue ID。
+7. 阅读结论前把每个 Community Default Branch 解析成完整 Commit；只有审查 Diff
    后才更新 `reviewedRef`。
-6. 同时更新 English/Chinese Landscape。
-7. 运行 `npm run check`；它会交叉检查 Snapshot、两份 Landscape、Registry 与
-   Watchlist Immutable Link。
+8. 运行 `npm run generate:coverage`，再同时更新 English/Chinese Text。
+9. 运行 `npm run check`；它会交叉检查 Snapshot、Candidate/Reviewed Registry、
+   机器生成的类别/架构覆盖、两份 Landscape 与 Watchlist Immutable Link。

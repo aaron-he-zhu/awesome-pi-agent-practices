@@ -1,0 +1,474 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:awesome-pi-agent-practices:discovery-candidates-schema:1",
+  "title": "Awesome Pi Agent Practices discovery candidate registry",
+  "description": "A high-recall lead registry. Inclusion records discovery evidence only and does not imply source review, hands-on verification, compatibility, security, quality, or endorsement.",
+  "type": "object",
+  "required": ["$schema", "schemaVersion", "snapshotAt", "candidates"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "./discovery-candidates.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "snapshotAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/candidate"
+      }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "nonBlankString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "httpsUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^/?#\\s]+(?:[/?#]|$)"
+    },
+    "fullCommitRef": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "relationType": {
+      "$ref": "#/$defs/slug"
+    },
+    "category": {
+      "$ref": "#/$defs/slug"
+    },
+    "architecture": {
+      "$ref": "#/$defs/slug"
+    },
+    "packageIdentity": {
+      "type": "object",
+      "required": ["ecosystem", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "ecosystem": {
+          "enum": ["npm", "github-release", "other"]
+        },
+        "name": {
+          "$ref": "#/$defs/nonBlankString"
+        }
+      }
+    },
+    "discoverySource": {
+      "type": "object",
+      "required": ["id", "kind", "url", "query", "ref", "observedAt", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "kind": {
+          "enum": [
+            "ecosystem-directory",
+            "repository-search",
+            "code-search",
+            "reverse-dependency",
+            "package-registry",
+            "primary-source",
+            "provenance-notice",
+            "manual-gap-audit"
+          ]
+        },
+        "url": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "query": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "ref": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "refReason": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "evidence": {
+          "$ref": "#/$defs/nonBlankString"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "ref": { "type": "null" } },
+            "required": ["ref"]
+          },
+          "then": {
+            "required": ["refReason"],
+            "properties": { "refReason": {} }
+          },
+          "else": {
+            "not": {
+              "required": ["refReason"]
+            }
+          }
+        }
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "canonicalUrl",
+        "aliases",
+        "packageIdentities",
+        "relationTypes",
+        "firstSeenAt",
+        "lastUpdatedAt",
+        "discoverySources",
+        "snapshotRef",
+        "primaryCategory",
+        "secondaryCategories",
+        "architectureTypes",
+        "licenseStatus",
+        "license",
+        "disposition",
+        "dispositionReasonCode",
+        "dispositionReason",
+        "evidenceSummary",
+        "reviewStatus",
+        "endorsementStatus"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "name": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "canonicalUrl": {
+          "$ref": "#/$defs/httpsUrl"
+        },
+        "aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonBlankString"
+          }
+        },
+        "packageIdentities": {
+          "type": "array",
+          "description": "Package identities published as part of the candidate itself; Pi dependencies belong in pinned relationship evidence, not this collision-checked identity list.",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/packageIdentity"
+          }
+        },
+        "relationTypes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/relationType"
+          }
+        },
+        "firstSeenAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "lastUpdatedAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "discoverySources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/discoverySource"
+          }
+        },
+        "snapshotRef": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "snapshotRefReason": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "primaryCategory": {
+          "$ref": "#/$defs/category"
+        },
+        "secondaryCategories": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/category"
+          }
+        },
+        "architectureTypes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/architecture"
+          }
+        },
+        "licenseStatus": {
+          "enum": ["declared", "not-detected", "ambiguous", "needs-verification"]
+        },
+        "license": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "disposition": {
+          "enum": [
+            "awaiting-source-review",
+            "source-review-in-progress",
+            "deferred",
+            "rejected",
+            "promoted-to-resource"
+          ]
+        },
+        "dispositionReasonCode": {
+          "enum": [
+            "source-review-not-started",
+            "source-review-underway",
+            "capacity-or-priority",
+            "license-needs-resolution",
+            "scope-needs-resolution",
+            "insufficient-relation-evidence",
+            "duplicate-candidate",
+            "out-of-scope",
+            "promoted-after-source-review"
+          ]
+        },
+        "dispositionReason": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "evidenceSummary": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "reviewStatus": {
+          "enum": [
+            "discovery-only",
+            "preliminary-evidence-collected",
+            "source-review-in-progress",
+            "handed-off-to-resource-registry"
+          ]
+        },
+        "endorsementStatus": {
+          "const": "not-evaluated"
+        },
+        "resourceId": {
+          "$ref": "#/$defs/slug"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "snapshotRef": { "type": "null" } },
+            "required": ["snapshotRef"]
+          },
+          "then": {
+            "required": ["snapshotRefReason"],
+            "properties": { "snapshotRefReason": {} }
+          },
+          "else": {
+            "not": {
+              "required": ["snapshotRefReason"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "licenseStatus": {
+                "const": "declared"
+              }
+            },
+            "required": ["licenseStatus"]
+          },
+          "then": {
+            "properties": {
+              "license": {
+                "$ref": "#/$defs/nonBlankString"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "licenseStatus": {
+                "const": "not-detected"
+              }
+            },
+            "required": ["licenseStatus"]
+          },
+          "then": {
+            "properties": {
+              "license": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "awaiting-source-review"
+              }
+            },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "reviewStatus": {
+                "enum": ["discovery-only", "preliminary-evidence-collected"]
+              },
+              "dispositionReasonCode": {
+                "enum": [
+                  "source-review-not-started",
+                  "capacity-or-priority",
+                  "license-needs-resolution",
+                  "scope-needs-resolution",
+                  "insufficient-relation-evidence"
+                ]
+              }
+            },
+            "not": {
+              "properties": {
+                "resourceId": {}
+              },
+              "required": ["resourceId"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "source-review-in-progress"
+              }
+            },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "reviewStatus": {
+                "const": "source-review-in-progress"
+              },
+              "dispositionReasonCode": {
+                "const": "source-review-underway"
+              }
+            },
+            "not": {
+              "properties": {
+                "resourceId": {}
+              },
+              "required": ["resourceId"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "deferred"
+              }
+            },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "reviewStatus": {
+                "enum": ["discovery-only", "preliminary-evidence-collected"]
+              },
+              "dispositionReasonCode": {
+                "enum": [
+                  "capacity-or-priority",
+                  "license-needs-resolution",
+                  "scope-needs-resolution",
+                  "insufficient-relation-evidence"
+                ]
+              }
+            },
+            "not": {
+              "properties": {
+                "resourceId": {}
+              },
+              "required": ["resourceId"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "rejected"
+              }
+            },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "reviewStatus": {
+                "enum": ["discovery-only", "preliminary-evidence-collected"]
+              },
+              "dispositionReasonCode": {
+                "enum": [
+                  "insufficient-relation-evidence",
+                  "duplicate-candidate",
+                  "out-of-scope"
+                ]
+              }
+            },
+            "not": {
+              "properties": {
+                "resourceId": {}
+              },
+              "required": ["resourceId"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "promoted-to-resource"
+              }
+            },
+            "required": ["disposition"]
+          },
+          "then": {
+            "required": ["resourceId"],
+            "properties": {
+              "reviewStatus": {
+                "const": "handed-off-to-resource-registry"
+              },
+              "dispositionReasonCode": {
+                "const": "promoted-after-source-review"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

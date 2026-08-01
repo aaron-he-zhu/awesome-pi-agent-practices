@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:awesome-pi-agent-practices:discovery-runs-schema:1",
+  "title": "Awesome Pi Agent Practices replayable discovery-run ledger",
+  "type": "object",
+  "required": ["$schema", "schemaVersion", "snapshotAt", "runs"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "./discovery-runs.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "snapshotAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "runs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/run"
+      }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "nonBlankString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "httpsUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^/?#\\s]+(?:[/?#]|$)"
+    },
+    "canonicalResultUrl": {
+      "allOf": [
+        { "$ref": "#/$defs/httpsUrl" },
+        {
+          "type": "string",
+          "pattern": "^https://(?![^/?#]*@)[^?#\\s]+$"
+        }
+      ]
+    },
+    "endpointUrl": {
+      "allOf": [
+        { "$ref": "#/$defs/httpsUrl" },
+        {
+          "type": "string",
+          "pattern": "^https://(?![^/?#]*@)[^#\\s]+$"
+        }
+      ]
+    },
+    "rawResult": {
+      "type": "object",
+      "required": [
+        "position",
+        "rawId",
+        "sourceUrl",
+        "resolvedCandidateUrl",
+        "observedIdentity",
+        "candidateId",
+        "disposition",
+        "reasonCode",
+        "note"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rawId": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "sourceUrl": {
+          "$ref": "#/$defs/canonicalResultUrl"
+        },
+        "resolvedCandidateUrl": {
+          "oneOf": [
+            { "$ref": "#/$defs/canonicalResultUrl" },
+            { "type": "null" }
+          ]
+        },
+        "observedIdentity": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "candidateId": {
+          "oneOf": [
+            { "$ref": "#/$defs/slug" },
+            { "type": "null" }
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "candidate-mapped",
+            "duplicate",
+            "rejected",
+            "deferred",
+            "out-of-scope",
+            "lookup-failed"
+          ]
+        },
+        "reasonCode": {
+          "enum": [
+            "normalized-to-candidate",
+            "duplicate-result",
+            "license-needs-resolution",
+            "scope-needs-resolution",
+            "insufficient-relation-evidence",
+            "out-of-scope",
+            "lookup-failed"
+          ]
+        },
+        "note": {
+          "$ref": "#/$defs/nonBlankString"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "disposition": { "const": "candidate-mapped" } },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "candidateId": { "$ref": "#/$defs/slug" },
+              "reasonCode": { "const": "normalized-to-candidate" },
+              "resolvedCandidateUrl": { "$ref": "#/$defs/canonicalResultUrl" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "disposition": { "const": "duplicate" } },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "candidateId": { "$ref": "#/$defs/slug" },
+              "reasonCode": { "const": "duplicate-result" },
+              "resolvedCandidateUrl": { "$ref": "#/$defs/canonicalResultUrl" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "disposition": { "const": "rejected" } },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "candidateId": { "type": "null" },
+              "reasonCode": { "const": "insufficient-relation-evidence" },
+              "resolvedCandidateUrl": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "disposition": { "const": "deferred" } },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "candidateId": { "type": "null" },
+              "resolvedCandidateUrl": { "type": "null" },
+              "reasonCode": {
+                "enum": [
+                  "license-needs-resolution",
+                  "scope-needs-resolution",
+                  "insufficient-relation-evidence"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "disposition": { "const": "out-of-scope" } },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "candidateId": { "type": "null" },
+              "reasonCode": { "const": "out-of-scope" },
+              "resolvedCandidateUrl": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "disposition": { "const": "lookup-failed" } },
+            "required": ["disposition"]
+          },
+          "then": {
+            "properties": {
+              "candidateId": { "type": "null" },
+              "reasonCode": { "const": "lookup-failed" },
+              "resolvedCandidateUrl": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "run": {
+      "type": "object",
+      "required": [
+        "id",
+        "replayability",
+        "status",
+        "error",
+        "requestAttempts",
+        "rateLimit",
+        "executedAt",
+        "sourceKind",
+        "platform",
+        "endpoint",
+        "query",
+        "client",
+        "sort",
+        "pagination",
+        "rawResults",
+        "completeForClaimedBatch",
+        "knownLimitations"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "replayability": {
+          "enum": ["replayable", "reconstructed-non-replayable"]
+        },
+        "status": {
+          "enum": ["completed", "partial", "failed", "reconstructed"]
+        },
+        "error": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["kind", "httpStatus", "message"],
+              "additionalProperties": false,
+              "properties": {
+                "kind": { "$ref": "#/$defs/slug" },
+                "httpStatus": {
+                  "oneOf": [
+                    { "type": "integer", "minimum": 100, "maximum": 599 },
+                    { "type": "null" }
+                  ]
+                },
+                "message": { "$ref": "#/$defs/nonBlankString" }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "requestAttempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rateLimit": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["remaining", "resetAt"],
+              "additionalProperties": false,
+              "properties": {
+                "remaining": {
+                  "oneOf": [
+                    { "type": "integer", "minimum": 0 },
+                    { "type": "null" }
+                  ]
+                },
+                "resetAt": {
+                  "oneOf": [
+                    { "type": "string", "format": "date-time" },
+                    { "type": "null" }
+                  ]
+                }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "executedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sourceKind": {
+          "enum": [
+            "manual-gap-audit",
+            "ecosystem-directory",
+            "repository-search",
+            "code-search",
+            "reverse-dependency",
+            "package-registry",
+            "protocol-search",
+            "provenance-search",
+            "referral"
+          ]
+        },
+        "platform": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "endpoint": {
+          "$ref": "#/$defs/endpointUrl"
+        },
+        "query": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "client": {
+          "$ref": "#/$defs/nonBlankString"
+        },
+        "sort": {
+          "type": "object",
+          "required": ["field", "direction"],
+          "additionalProperties": false,
+          "properties": {
+            "field": {
+              "$ref": "#/$defs/nonBlankString"
+            },
+            "direction": {
+              "enum": ["ascending", "descending", "source-order", "manual-audit-order"]
+            }
+          }
+        },
+        "pagination": {
+          "type": "object",
+          "required": [
+            "method",
+            "pagesAttempted",
+            "pagesCompleted",
+            "resultLimit",
+            "truncated",
+            "truncationReason"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "method": {
+              "$ref": "#/$defs/nonBlankString"
+            },
+            "pagesAttempted": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "pagesCompleted": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "resultLimit": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "truncated": {
+              "type": "boolean"
+            },
+            "truncationReason": {
+              "oneOf": [
+                { "$ref": "#/$defs/nonBlankString" },
+                { "type": "null" }
+              ]
+            }
+          }
+        },
+        "rawResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rawResult"
+          }
+        },
+        "completeForClaimedBatch": {
+          "type": "boolean"
+        },
+        "knownLimitations": {
+          "$ref": "#/$defs/nonBlankString"
+        }
+      }
+    }
+  }
+}

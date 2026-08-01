@@ -190,6 +190,20 @@ Exploratory GitHub repository searches were used only for discovery. The
 selected community source states are reconstructable from their `reviewedRef`;
 the search funnel is not a completeness claim.
 
+This limitation remains part of the historical 2026-07-31 snapshot. The first
+checked-in 13-lead gap batch in the
+[discovery-run ledger](../../data/discovery-runs.json) is explicitly marked
+`reconstructed-non-replayable`: it links the newly normalized leads to the
+[candidate registry](../../data/discovery-candidates.json), but the original
+queries, rankings, filtered results, and denominator were not preserved. It
+therefore does not repair the historical sampling gap. Reviewed ledger imports
+derived from new scheduled artifacts, as well as new human runs, follow the
+[discovery protocol](discovery-protocol.md): before import they preserve raw
+result identifiers and ordering and give every result a candidate mapping or
+explicit disposition. Scheduled probe artifacts are pre-triage signals, not
+ledger runs by themselves; a reviewed import must add the run-level
+status/error/attempt metadata and per-result normalization contract.
+
 ## Rerun and preservation protocol
 
 <!-- sync:query-rerun -->
@@ -200,10 +214,18 @@ the search funnel is not a completeness claim.
    and research `main` commit.
 3. Re-run every exact endpoint/query and retain both the previous and new
    counts.
-4. For qualitative sampling, save ordering, sample size, selection rule, and
-   issue IDs.
-5. Resolve every community default branch to a full commit before reading
+4. For ecosystem discovery, save the exact query, client/endpoint, sort,
+   page/cursor, limits, every raw result identifier in returned order,
+   redirects/aliases, errors, and truncation boundaries.
+5. Map every raw result to a stable candidate ID or an explicit duplicate,
+   rejected, deferred, or out-of-scope disposition; never silently drop a
+   result.
+6. For qualitative issue sampling, save ordering, sample size, selection rule,
+   and issue IDs.
+7. Resolve every community default branch to a full commit before reading
    claims; update `reviewedRef` only after reviewing the diff.
-6. Update English and Chinese landscape text together.
-7. Run `npm run check`; it cross-checks the snapshot, both landscapes, registry,
-   and immutable watchlist links.
+8. Run `npm run generate:coverage`, then update English and Chinese text
+   together.
+9. Run `npm run check`; it cross-checks the snapshots, candidate and reviewed
+   registries, generated category/architecture coverage, both landscapes, and
+   immutable watchlist links.

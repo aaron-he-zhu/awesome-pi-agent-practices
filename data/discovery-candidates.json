@@ -1,0 +1,652 @@
+{
+  "$schema": "./discovery-candidates.schema.json",
+  "schemaVersion": 1,
+  "snapshotAt": "2026-08-01T15:28:59+08:00",
+  "candidates": [
+    {
+      "id": "openclaw",
+      "name": "OpenClaw",
+      "canonicalUrl": "https://github.com/openclaw/openclaw",
+      "aliases": ["Warelay", "Clawdbot", "Moltbot"],
+      "packageIdentities": [
+        {
+          "ecosystem": "npm",
+          "name": "openclaw"
+        }
+      ],
+      "relationTypes": [
+        "pi-package-consumer",
+        "historical-sdk-embedder",
+        "frontend-or-controller",
+        "derived-or-internalized-from-pi"
+      ],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "openclaw-pinned-naming-history",
+          "kind": "primary-source",
+          "url": "https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/docs/start/lore.md",
+          "query": "Inspect the pinned project naming history for OpenClaw and its former product names.",
+          "ref": "a2b97cc950f49f5194c64a58fe24c9eb38d640ce",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned project documentation records the naming sequence Warelay, Clawdbot, Moltbot, and OpenClaw."
+        },
+        {
+          "id": "openclaw-historical-pi-integration",
+          "kind": "primary-source",
+          "url": "https://github.com/openclaw/openclaw/blob/99b27cde64d6616a9e41f52f4a699577cf60f1d6/docs/pi.md",
+          "query": "Inspect the historical in-process Pi SDK integration documentation.",
+          "ref": "99b27cde64d6616a9e41f52f4a699577cf60f1d6",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned document describes direct integration of pi-coding-agent, pi-ai, pi-agent-core, and pi-tui through AgentSession APIs."
+        },
+        {
+          "id": "openclaw-precutoff-provenance",
+          "kind": "provenance-notice",
+          "url": "https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/THIRD_PARTY_NOTICES.md",
+          "query": "Inspect the pre-cutoff provenance notice for retained Pi lineage.",
+          "ref": "a2b97cc950f49f5194c64a58fe24c9eb38d640ce",
+          "observedAt": "2026-08-01",
+          "evidence": "The notice records portions of OpenClaw adapted from Pi/pi-mono and a retained @earendil-works/pi-tui dependency."
+        },
+        {
+          "id": "openclaw-runtime-internalization-commit",
+          "kind": "primary-source",
+          "url": "https://github.com/openclaw/openclaw/commit/bb46b79d3c1479f194a90afcf3dd69a1858a7898",
+          "query": "Inspect the runtime migration commit that introduced the OpenClaw-owned agent core and removed the former embedded Pi runtime layout.",
+          "ref": "bb46b79d3c1479f194a90afcf3dd69a1858a7898",
+          "observedAt": "2026-08-01",
+          "evidence": "The migration commit records extraction of an OpenClaw-owned agent-core package, removal of Pi runtime internals, and preservation of third-party provenance for incorporated code."
+        },
+        {
+          "id": "openclaw-precutoff-package-manifest",
+          "kind": "primary-source",
+          "url": "https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/package.json",
+          "query": "Inspect the pinned root package identity and retained Pi TUI dependency.",
+          "ref": "a2b97cc950f49f5194c64a58fe24c9eb38d640ce",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned root manifest uses the openclaw npm identity and retains @earendil-works/pi-tui at 0.82.1."
+        }
+      ],
+      "snapshotRef": "a2b97cc950f49f5194c64a58fe24c9eb38d640ce",
+      "primaryCategory": "remote-control-messaging-collaboration",
+      "secondaryCategories": [
+        "broad-operating-layer",
+        "package-suite-alternate-distribution"
+      ],
+      "architectureTypes": [
+        "frontend-controller",
+        "derived-internalized-runtime",
+        "package-suite"
+      ],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; current scope, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "OpenClaw historically embedded the Pi coding-agent, AI, agent-core, and TUI packages directly. It later internalized the Pi-shaped runtime as OpenClaw-owned agent core while retaining explicit Pi provenance and, at the pinned pre-cutoff state, a pi-tui dependency. This records historical and derived lineage only; it makes no current Pi v0.83 compatibility conclusion.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "oh-my-pi",
+      "name": "oh-my-pi",
+      "canonicalUrl": "https://github.com/can1357/oh-my-pi",
+      "aliases": [],
+      "packageIdentities": [
+        {
+          "ecosystem": "npm",
+          "name": "@oh-my-pi/pi-coding-agent"
+        }
+      ],
+      "relationTypes": [
+        "frontend-or-controller",
+        "fork-or-alternate-distribution",
+        "derived-or-internalized-from-pi"
+      ],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "oh-my-pi-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/can1357/oh-my-pi/blob/fcf6d65140a1d53a55de3edb0d413bd2b8433bb0/README.md",
+          "query": "Inspect the pinned README for the declared Pi fork lineage and the fork's own product surfaces.",
+          "ref": "fcf6d65140a1d53a55de3edb0d413bd2b8433bb0",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README identifies the project as a fork of Pi and describes its own terminal, SDK, RPC, and native ACP surfaces, including the explicit statement that ACP uses no bridge."
+        },
+        {
+          "id": "oh-my-pi-package-identity",
+          "kind": "primary-source",
+          "url": "https://github.com/can1357/oh-my-pi/blob/fcf6d65140a1d53a55de3edb0d413bd2b8433bb0/packages/coding-agent/package.json",
+          "query": "Inspect the pinned coding-agent manifest for the candidate-owned package identity.",
+          "ref": "fcf6d65140a1d53a55de3edb0d413bd2b8433bb0",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned manifest publishes @oh-my-pi/pi-coding-agent from this fork and depends on the fork's @oh-my-pi package family."
+        }
+      ],
+      "snapshotRef": "fcf6d65140a1d53a55de3edb0d413bd2b8433bb0",
+      "primaryCategory": "package-suite-alternate-distribution",
+      "secondaryCategories": ["alternate-ui-editor-integration"],
+      "architectureTypes": [
+        "frontend-controller",
+        "fork-alternate-distribution",
+        "derived-internalized-runtime",
+        "package-suite"
+      ],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; inherited and independent behavior, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff material identifies a fork of Pi that publishes its own runtime, terminal UI, SDK, RPC, and native ACP surfaces. These are surfaces provided by the fork, not evidence that it consumes upstream Pi through SDK, RPC, or ACP. The boundary between inherited behavior and independent implementation still requires item-level review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "senpi",
+      "name": "Senpi",
+      "canonicalUrl": "https://github.com/code-yeongyu/senpi",
+      "aliases": [],
+      "packageIdentities": [
+        {
+          "ecosystem": "npm",
+          "name": "@code-yeongyu/senpi"
+        }
+      ],
+      "relationTypes": [
+        "frontend-or-controller",
+        "fork-or-alternate-distribution",
+        "derived-or-internalized-from-pi"
+      ],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "senpi-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/code-yeongyu/senpi/blob/f4705697bb63e880140d9d885fe5bd5540b52d77/README.md",
+          "query": "Inspect the pinned README for Senpi's pi-mono fork/rebrand and Dori relationship.",
+          "ref": "f4705697bb63e880140d9d885fe5bd5540b52d77",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README identifies Senpi as a fork and rebrand of pi-mono and states that Dori uses it as the coding-agent runtime."
+        },
+        {
+          "id": "senpi-package-identity",
+          "kind": "primary-source",
+          "url": "https://github.com/code-yeongyu/senpi/blob/f4705697bb63e880140d9d885fe5bd5540b52d77/packages/coding-agent/package.json",
+          "query": "Inspect the pinned coding-agent manifest for Senpi's npm identity.",
+          "ref": "f4705697bb63e880140d9d885fe5bd5540b52d77",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned manifest publishes @code-yeongyu/senpi from the Senpi repository."
+        }
+      ],
+      "snapshotRef": "f4705697bb63e880140d9d885fe5bd5540b52d77",
+      "primaryCategory": "package-suite-alternate-distribution",
+      "secondaryCategories": ["alternate-ui-editor-integration"],
+      "architectureTypes": [
+        "frontend-controller",
+        "fork-alternate-distribution",
+        "derived-internalized-runtime"
+      ],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; lineage, divergence, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff history identifies Senpi as a fork and rebrand of pi-mono used as Dori's coding-agent runtime. The exact fork point, independent changes, and present relationship to upstream still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "piclaw",
+      "name": "piclaw",
+      "canonicalUrl": "https://github.com/rcarmo/piclaw",
+      "aliases": [],
+      "packageIdentities": [],
+      "relationTypes": ["sdk-embedder", "frontend-or-controller"],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "piclaw-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/rcarmo/piclaw/blob/4de5e92aa96bdf809de772e68da767c2eb4957dd/README.md",
+          "query": "Inspect the pinned README for the self-hosted frontend scope and Pi attribution.",
+          "ref": "4de5e92aa96bdf809de772e68da767c2eb4957dd",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README describes a self-hosted frontend and attributes its agent foundation to Pi."
+        },
+        {
+          "id": "piclaw-pi-dependencies",
+          "kind": "primary-source",
+          "url": "https://github.com/rcarmo/piclaw/blob/4de5e92aa96bdf809de772e68da767c2eb4957dd/package.json",
+          "query": "Inspect the pinned manifest for direct Pi SDK package dependencies.",
+          "ref": "4de5e92aa96bdf809de772e68da767c2eb4957dd",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned manifest declares direct Pi 0.83.0 coding-agent, AI, agent-core, and TUI dependencies."
+        }
+      ],
+      "snapshotRef": "4de5e92aa96bdf809de772e68da767c2eb4957dd",
+      "primaryCategory": "alternate-ui-editor-integration",
+      "secondaryCategories": ["remote-control-messaging-collaboration"],
+      "architectureTypes": ["sdk-embedder", "frontend-controller"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; runtime behavior, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "The pinned pre-cutoff package manifest ties this self-hosted web workspace directly to Pi 0.83.0 packages. Its authentication, process lifecycle, data boundaries, and compatibility still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "zetaphor-pi-vscode-extension",
+      "name": "pi-vscode-extension",
+      "canonicalUrl": "https://github.com/Zetaphor/pi-vscode-extension",
+      "aliases": [],
+      "packageIdentities": [],
+      "relationTypes": ["sdk-embedder", "frontend-or-controller"],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "zetaphor-pi-vscode-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/Zetaphor/pi-vscode-extension/blob/526df5ead8e0104ea5d176bb5e6fa25e6d75844a/README.md",
+          "query": "Inspect the pinned README for the VS Code frontend scope.",
+          "ref": "526df5ead8e0104ea5d176bb5e6fa25e6d75844a",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README identifies the project as a VS Code extension for the Pi coding agent."
+        },
+        {
+          "id": "zetaphor-pi-vscode-session-construction",
+          "kind": "primary-source",
+          "url": "https://github.com/Zetaphor/pi-vscode-extension/blob/526df5ead8e0104ea5d176bb5e6fa25e6d75844a/src/pi/session.ts",
+          "query": "Inspect the pinned session implementation for direct Pi SDK construction.",
+          "ref": "526df5ead8e0104ea5d176bb5e6fa25e6d75844a",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned implementation imports Pi agent APIs and creates the agent session inside the editor extension."
+        }
+      ],
+      "snapshotRef": "526df5ead8e0104ea5d176bb5e6fa25e6d75844a",
+      "primaryCategory": "alternate-ui-editor-integration",
+      "secondaryCategories": [],
+      "architectureTypes": ["sdk-embedder", "frontend-controller"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; editor authority, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff source indicates a VS Code frontend that embeds the Pi SDK. Project trust, session lifecycle, editor authority, and cleanup behavior still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "pithings-pi-vscode",
+      "name": "pi-vscode",
+      "canonicalUrl": "https://github.com/pithings/pi-vscode",
+      "aliases": ["pi0/pi-vscode"],
+      "packageIdentities": [],
+      "relationTypes": ["rpc-json-consumer", "frontend-or-controller"],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "pithings-pi-vscode-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/pithings/pi-vscode/blob/8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c/README.md",
+          "query": "Inspect the pinned README for the editor integration and prior identity.",
+          "ref": "8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README presents the project as a VS Code interface for Pi and preserves its prior project identity."
+        },
+        {
+          "id": "pithings-pi-vscode-rpc-spawn",
+          "kind": "primary-source",
+          "url": "https://github.com/pithings/pi-vscode/blob/8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c/src/pi.ts",
+          "query": "Inspect the pinned process implementation for Pi RPC startup.",
+          "ref": "8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned implementation starts Pi with its RPC surface and connects the VS Code frontend to that process."
+        }
+      ],
+      "snapshotRef": "8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c",
+      "primaryCategory": "alternate-ui-editor-integration",
+      "secondaryCategories": [],
+      "architectureTypes": ["rpc-json-consumer", "frontend-controller"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; redirect history, process lifecycle, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff source identifies a VS Code bridge using Pi terminal or RPC behavior, with pi0/pi-vscode retained as a historical repository alias. Redirect lineage and operational boundaries still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "pi-acp",
+      "name": "pi-acp",
+      "canonicalUrl": "https://github.com/svkozak/pi-acp",
+      "aliases": [],
+      "packageIdentities": [
+        {
+          "ecosystem": "npm",
+          "name": "pi-acp"
+        }
+      ],
+      "relationTypes": ["rpc-json-consumer", "acp-consumer"],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "pi-acp-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/svkozak/pi-acp/blob/d1cffc047ab37a096ee70ca39cfc1de463db8d12/README.md",
+          "query": "Inspect the pinned README for the Pi RPC to ACP adapter boundary.",
+          "ref": "d1cffc047ab37a096ee70ca39cfc1de463db8d12",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README says the adapter communicates ACP JSON-RPC over stdio and spawns Pi in RPC mode for clients such as Zed."
+        },
+        {
+          "id": "pi-acp-rpc-process",
+          "kind": "primary-source",
+          "url": "https://github.com/svkozak/pi-acp/blob/d1cffc047ab37a096ee70ca39cfc1de463db8d12/src/pi-rpc/process.ts",
+          "query": "Inspect the pinned process implementation for the actual Pi RPC spawn path.",
+          "ref": "d1cffc047ab37a096ee70ca39cfc1de463db8d12",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned process implementation constructs and supervises the Pi RPC subprocess used by the ACP adapter."
+        }
+      ],
+      "snapshotRef": "d1cffc047ab37a096ee70ca39cfc1de463db8d12",
+      "primaryCategory": "alternate-ui-editor-integration",
+      "secondaryCategories": [],
+      "architectureTypes": ["rpc-json-consumer", "acp-consumer"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; protocol mapping, process lifecycle, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff source indicates an adapter that starts Pi with RPC mode and maps it to ACP for editor clients. Protocol completeness, cancellation, authorization, and cleanup still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "acpx",
+      "name": "acpx",
+      "canonicalUrl": "https://github.com/openclaw/acpx",
+      "aliases": [],
+      "packageIdentities": [
+        {
+          "ecosystem": "npm",
+          "name": "acpx"
+        }
+      ],
+      "relationTypes": [
+        "acp-consumer",
+        "frontend-or-controller",
+        "indirect-consumer"
+      ],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "acpx-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/openclaw/acpx/blob/504040facb1992453cf16a2a096a1094fc4e48d4/src/agent-registry.ts",
+          "query": "Inspect the pinned agent registry for the Pi to pi-acp mapping.",
+          "ref": "504040facb1992453cf16a2a096a1094fc4e48d4",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned registry maps the Pi agent name to the pi-acp adapter, making acpx an indirect ACP client of Pi rather than an SDK embedder."
+        },
+        {
+          "id": "acpx-package-identity",
+          "kind": "primary-source",
+          "url": "https://github.com/openclaw/acpx/blob/504040facb1992453cf16a2a096a1094fc4e48d4/package.json",
+          "query": "Inspect the pinned manifest for the acpx package identity.",
+          "ref": "504040facb1992453cf16a2a096a1094fc4e48d4",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned manifest publishes the acpx npm package from this repository."
+        }
+      ],
+      "snapshotRef": "504040facb1992453cf16a2a096a1094fc4e48d4",
+      "primaryCategory": "alternate-ui-editor-integration",
+      "secondaryCategories": [],
+      "architectureTypes": ["acp-consumer", "frontend-controller"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; indirect dependency boundaries, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff source exposes Pi through an acpx-to-pi-acp path. This is an indirect ACP relationship rather than evidence that acpx embeds the Pi runtime directly.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "pi-coding-agent-action",
+      "name": "pi-coding-agent-action",
+      "canonicalUrl": "https://github.com/shaftoe/pi-coding-agent-action",
+      "aliases": [],
+      "packageIdentities": [],
+      "relationTypes": ["sdk-embedder"],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "pi-coding-agent-action-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/shaftoe/pi-coding-agent-action/blob/1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1/action.yml",
+          "query": "Inspect the pinned action manifest for the GitHub and Forgejo automation entry point.",
+          "ref": "1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned action manifest defines the repository automation entry point."
+        },
+        {
+          "id": "pi-coding-agent-action-dependencies",
+          "kind": "primary-source",
+          "url": "https://github.com/shaftoe/pi-coding-agent-action/blob/1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1/package.json",
+          "query": "Inspect the pinned package manifest for direct Pi SDK dependencies.",
+          "ref": "1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned manifest directly declares Pi 0.82.1 coding-agent, AI, and agent-core dependencies."
+        }
+      ],
+      "snapshotRef": "1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1",
+      "primaryCategory": "git-review-automation",
+      "secondaryCategories": [],
+      "architectureTypes": ["sdk-embedder"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; repository authority, remote-write behavior, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "The pinned pre-cutoff action manifest directly uses Pi SDK 0.82.1 for GitHub or Forgejo automation. Token scope, checkout mutation, remote writes, rollback, and failure isolation still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "polpo",
+      "name": "Polpo",
+      "canonicalUrl": "https://github.com/pugliatechs/polpo",
+      "aliases": [],
+      "packageIdentities": [],
+      "relationTypes": ["rpc-json-consumer", "frontend-or-controller"],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "polpo-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/pugliatechs/polpo/blob/ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477/README.md",
+          "query": "Inspect the pinned README for the phone-oriented remote controller scope.",
+          "ref": "ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README describes a phone-oriented remote interface for controlling Pi sessions."
+        },
+        {
+          "id": "polpo-pi-launcher",
+          "kind": "primary-source",
+          "url": "https://github.com/pugliatechs/polpo/blob/ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477/src/agent/pi-agent.js",
+          "query": "Inspect the pinned launcher for the Pi RPC process integration.",
+          "ref": "ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned launcher starts Pi in RPC mode for the remote frontend."
+        }
+      ],
+      "snapshotRef": "ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477",
+      "primaryCategory": "remote-control-messaging-collaboration",
+      "secondaryCategories": ["alternate-ui-editor-integration"],
+      "architectureTypes": ["rpc-json-consumer", "frontend-controller"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; authentication, transport, process lifecycle, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff source describes a phone-oriented remote controller connected to Pi through RPC. Identity, authorization, replay resistance, disconnect behavior, retention, and process cleanup still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "pi-nvim",
+      "name": "pi-nvim",
+      "canonicalUrl": "https://github.com/carderne/pi-nvim",
+      "aliases": [],
+      "packageIdentities": [
+        {
+          "ecosystem": "npm",
+          "name": "pi-nvim"
+        }
+      ],
+      "relationTypes": ["pi-package-or-resource", "frontend-or-controller"],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "pi-nvim-precutoff-audit",
+          "kind": "manual-gap-audit",
+          "url": "https://github.com/carderne/pi-nvim/blob/fbc6f12652234f03d2fe729adbcc3ff61ca7d39a/extension.ts",
+          "query": "Inspect the pinned extension entry point for Pi-loaded registration and its Neovim Unix-socket control path.",
+          "ref": "fbc6f12652234f03d2fe729adbcc3ff61ca7d39a",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned entry point exports a Pi extension using ExtensionAPI and opens a Unix JSON socket consumed by the Neovim frontend; it does not create AgentSession."
+        }
+      ],
+      "snapshotRef": "fbc6f12652234f03d2fe729adbcc3ff61ca7d39a",
+      "primaryCategory": "alternate-ui-editor-integration",
+      "secondaryCategories": [],
+      "architectureTypes": ["in-process-extension", "frontend-controller"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; editor authority, dependency use, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff source presents a Pi-loaded extension that opens a Unix socket for a Neovim frontend; it does not create an AgentSession or embed the Pi SDK runtime. Buffer authority, project trust, socket/process lifecycle, cancellation, and cleanup still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "pi-mobile",
+      "name": "pi-mobile",
+      "canonicalUrl": "https://github.com/p1rallels/pi-mobile",
+      "aliases": [],
+      "packageIdentities": [],
+      "relationTypes": ["sdk-embedder", "frontend-or-controller"],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "pi-mobile-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/p1rallels/pi-mobile/blob/4cc9b712254d84c90a00373c972c8a417fd26fb9/README.md",
+          "query": "Inspect the pinned README for the web and mobile frontend scope.",
+          "ref": "4cc9b712254d84c90a00373c972c8a417fd26fb9",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README presents a web and mobile interface built around Pi."
+        },
+        {
+          "id": "pi-mobile-session-construction",
+          "kind": "primary-source",
+          "url": "https://github.com/p1rallels/pi-mobile/blob/4cc9b712254d84c90a00373c972c8a417fd26fb9/src/session-runtime.ts",
+          "query": "Inspect the pinned runtime for direct Pi session construction.",
+          "ref": "4cc9b712254d84c90a00373c972c8a417fd26fb9",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned runtime directly constructs and manages a Pi agent session for the frontend."
+        }
+      ],
+      "snapshotRef": "4cc9b712254d84c90a00373c972c8a417fd26fb9",
+      "primaryCategory": "alternate-ui-editor-integration",
+      "secondaryCategories": ["remote-control-messaging-collaboration"],
+      "architectureTypes": ["sdk-embedder", "frontend-controller"],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; authentication, session transport, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff source describes a web or mobile frontend built with the Pi SDK. Authentication, session transport, authorization, retention, disconnect behavior, and cleanup still require review.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    },
+    {
+      "id": "my-pi",
+      "name": "my-pi",
+      "canonicalUrl": "https://github.com/spences10/my-pi",
+      "aliases": [],
+      "packageIdentities": [
+        {
+          "ecosystem": "npm",
+          "name": "my-pi"
+        }
+      ],
+      "relationTypes": [
+        "pi-package-or-resource",
+        "sdk-embedder",
+        "fork-or-alternate-distribution"
+      ],
+      "firstSeenAt": "2026-08-01",
+      "lastUpdatedAt": "2026-08-01",
+      "discoverySources": [
+        {
+          "id": "my-pi-precutoff-audit",
+          "kind": "primary-source",
+          "url": "https://github.com/spences10/my-pi/blob/c0bca00ef69c20c2192d7457827b45e3d3d401bb/README.md",
+          "query": "Inspect the pinned README for the wrapper, distribution, and bundled capability scope.",
+          "ref": "c0bca00ef69c20c2192d7457827b45e3d3d401bb",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned README presents a Pi-based wrapper and distribution with MCP, LSP, team, and evaluation-related surfaces."
+        },
+        {
+          "id": "my-pi-session-construction",
+          "kind": "primary-source",
+          "url": "https://github.com/spences10/my-pi/blob/c0bca00ef69c20c2192d7457827b45e3d3d401bb/src/api.ts",
+          "query": "Inspect the pinned API implementation for direct Pi session construction.",
+          "ref": "c0bca00ef69c20c2192d7457827b45e3d3d401bb",
+          "observedAt": "2026-08-01",
+          "evidence": "The pinned API implementation imports Pi SDK components and constructs agent sessions directly."
+        }
+      ],
+      "snapshotRef": "c0bca00ef69c20c2192d7457827b45e3d3d401bb",
+      "primaryCategory": "package-suite-alternate-distribution",
+      "secondaryCategories": [
+        "mcp-integration",
+        "code-intelligence",
+        "evals-benchmarking",
+        "broad-operating-layer"
+      ],
+      "architectureTypes": [
+        "sdk-embedder",
+        "fork-alternate-distribution",
+        "package-suite"
+      ],
+      "licenseStatus": "declared",
+      "license": "MIT",
+      "disposition": "awaiting-source-review",
+      "dispositionReasonCode": "source-review-not-started",
+      "dispositionReason": "Phase-1 gap lead queued for the normal source-review gate; bundled artifacts, authority, compatibility, risk, tests, maintenance, and license evidence remain unassessed.",
+      "evidenceSummary": "Pinned pre-cutoff source describes a Pi SDK wrapper or alternate distribution spanning MCP, LSP, team, and evaluation telemetry surfaces. Each bundled artifact and capability needs separate review before suite-level conclusions are made.",
+      "reviewStatus": "preliminary-evidence-collected",
+      "endorsementStatus": "not-evaluated"
+    }
+  ]
+}
