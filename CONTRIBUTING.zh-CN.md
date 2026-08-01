@@ -281,8 +281,9 @@ Package、Catalog、Provenance 或 Redirect Source 未必使用 Repository URL�
 - 不把 v0.83.0 CLI RPC 称为永久稳定协议。
 - 不把 Project Trust、Tool Allowlist、Worktree 或 Subprocess 称为 OS Sandbox。
 - 不把 GitHub Secret/Unlisted Gist 称为 Access-controlled Private Document。
-- 保持 Root README 精简；详细 Methodology、Dynamic Number 与 Untested
-  Candidate 放入 `docs/research/`。
+- Root README 可以包含带日期、明确状态并有 Check-in 数据支持的生态研究快照。
+  只有 `featured` 第三方条目是正式策展推荐；详细 Methodology、Ledger、原始
+  Dynamic Result 与可复现证据仍放在 `data/` 和 `docs/research/`。
 - 根文件正式 Awesome Item 使用
   `- [Name](URL) - Description.`，Description 具体、首字母大写并有标点。
 - Internal Navigation 使用 Table 或 Text-first Bullet，避免 `awesome-lint` 把
