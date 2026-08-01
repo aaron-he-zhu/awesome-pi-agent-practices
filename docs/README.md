@@ -76,6 +76,10 @@ The research snapshot is **2026-07-31**. Stable behavior was checked against
 - [Ecosystem coverage matrix](research/coverage-matrix.md) — official surfaces
   and community capability categories, with current evidence, boundary,
   explicit gaps, discovery methods, and promotion work.
+- [Discovery protocol](research/discovery-protocol.md) — replayable query,
+  identity, relationship, disposition, safety, and stratified-sampling rules.
+- [Generated coverage summary](research/coverage-summary.md) — machine-derived
+  reviewed, hands-on, deferred, candidate, category, and architecture counts.
 - [Ecosystem discovery directories](research/ecosystem-directories.md) —
   official, curated, automated, synthesized, and historical discovery
   surfaces, with selection and verification boundaries.

@@ -9,13 +9,16 @@
     "node": ">=22.19.0"
   },
   "scripts": {
-    "check": "npm run check:markdown && npm run check:bilingual && npm run check:resources && npm run check:research && npm run check:links && npm run test:validators",
+    "check": "npm run check:markdown && npm run check:bilingual && npm run check:resources && npm run check:discovery && npm run check:coverage && npm run check:research && npm run check:links && npm run test:validators",
     "check:awesome": "awesome-lint README.md",
     "check:bilingual": "node scripts/check-bilingual.mjs",
+    "check:coverage": "node scripts/generate-coverage.mjs --check",
+    "check:discovery": "node scripts/check-discovery-candidates.mjs && node scripts/check-discovery-runs.mjs && node scripts/discovery-probe.mjs --check-config",
     "check:links": "node scripts/check-local-links.mjs",
     "check:markdown": "markdownlint-cli2",
     "check:research": "node scripts/check-research-snapshot.mjs",
     "check:resources": "node scripts/check-resources.mjs",
+    "generate:coverage": "node scripts/generate-coverage.mjs --write",
     "test": "npm run test:validators",
     "test:validators": "node --test tests/*.test.mjs"
   },

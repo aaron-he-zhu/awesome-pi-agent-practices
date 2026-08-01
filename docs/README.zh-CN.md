@@ -68,6 +68,10 @@
   和实践机会图。
 - [生态覆盖矩阵](research/coverage-matrix.zh-CN.md) — 官方 Surface 与社区能力类别，
   逐项给出当前证据、边界、明确缺口、发现方法和晋级工作。
+- [发现协议](research/discovery-protocol.zh-CN.md) — 可重放 Query、Identity、
+  Relationship、Disposition、安全与分层抽样规则。
+- [机器生成的覆盖摘要](research/coverage-summary.zh-CN.md) — 从机器数据推导
+  Reviewed、Hands-on、Deferred、Candidate、Category 与 Architecture Count。
 - [生态发现目录](research/ecosystem-directories.zh-CN.md) — Official、Curated、
   Automated、Synthesized 与 Historical Discovery Surface，以及选择和核验边界。
 - [精确查询日志](research/query-log.zh-CN.md) — 保存该日期快照的 Endpoint、

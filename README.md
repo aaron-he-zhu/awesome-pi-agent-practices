@@ -282,9 +282,11 @@ endorsements.
 | [Official source map](docs/research/source-map.md)                  | Replace memory/search snippets with version-pinned primary sources.                                 |
 | [Evidence ledger](docs/research/evidence-ledger.md)                 | Trace every P01–P30 recommendation to facts and labeled inference.                                  |
 | [Research methodology](docs/research/methodology.md)                | Review source tiers, inclusion gates, scoring, AI disclosure, and update procedure.                 |
+| [Discovery protocol](docs/research/discovery-protocol.md)           | Preserve replayable searches, identities, relationships, dispositions, and stratified review order. |
 | [Exact query log](docs/research/query-log.md)                       | Re-run the dated GitHub, catalog, registry, RFC, source, and community-review queries.              |
 | [Ecosystem landscape](docs/research/landscape.md)                   | Inspect the dated project, catalog, issue-cluster, directory, and opportunity snapshot.             |
 | [Ecosystem coverage matrix](docs/research/coverage-matrix.md)       | See every tracked official/community capability area, evidence state, explicit gap, and next gate.  |
+| [Generated coverage summary](docs/research/coverage-summary.md)     | Inspect category and architecture counts derived from reviewed resources and discovery candidates.  |
 | [Ecosystem directory guide](docs/research/ecosystem-directories.md) | Choose among official, curated, automated, synthesized, and historical discovery surfaces.          |
 | [Extension review](docs/extension-review.md)                        | Audit identity, install scripts, dependencies, authority, lifecycle, data flow, tests, and removal. |
 | [Glossary](docs/glossary.md)                                        | Disambiguate Project Trust, session operations, tool limits, RPC, SDK, and containment.             |
@@ -306,10 +308,13 @@ why it merits a trial and the specific authority, privacy, supply-chain,
 lifecycle, or compatibility boundary that must be tested.
 
 The [coverage matrix](docs/research/coverage-matrix.md#community-capability-coverage) separately tracks
-twenty-five community capability categories. Thirteen currently have no
-source-reviewed representative; an empty category means “not yet evidenced by
-this repository,” not “no implementation exists.” Discovery links remain
-leads until they pass the documented source and hands-on gates.
+twenty-five community capability categories. The
+machine-generated summary derives the current source-review, hands-on,
+deferred, candidate, and architecture counts from checked-in data so prose
+cannot silently drift. An empty category means
+“not yet evidenced by this repository,” not “no implementation exists.” A
+candidate remains an untrusted lead until it passes the documented source and
+hands-on gates.
 
 There are intentionally **no third-party featured entries yet**. Promotion
 requires a named human reviewer, immutable artifact, disclosed relationship,
