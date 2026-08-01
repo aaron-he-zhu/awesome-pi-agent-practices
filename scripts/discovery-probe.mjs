@@ -146,7 +146,53 @@ function buildRequestUrl(query) {
   return `https://api.github.com/search/${query.endpoint}?${parameters.toString()}`;
 }
 
-async function executeQuery(query, token, knownRoots) {
+function skippedCodeQuery(query) {
+  return {
+    id: query.id,
+    endpoint: query.endpoint,
+    query: query.query,
+    rationale: query.rationale,
+    request: {
+      url: buildRequestUrl(query),
+      sort: query.sort,
+      order: query.order,
+      page: query.page,
+      perPage: query.perPage,
+    },
+    status: "skipped",
+    requestAttempts: 0,
+    skipReason: {
+      kind: "dedicated-code-search-token-unavailable",
+      message:
+        "Code search was not attempted with the repository-scoped Actions token; configure a public-only DISCOVERY_SEARCH_TOKEN to enable this query family.",
+    },
+    error: null,
+    totalCount: null,
+    apiIncomplete: null,
+    paginationTruncated: null,
+    nonPublicResultsRedacted: false,
+    rawResults: [],
+    unregisteredRepositoryUrls: [],
+    rateLimit: { remaining: null, resetAt: null },
+  };
+}
+
+function boundedRetryDelay(result) {
+  const httpStatus = result?.error?.status;
+  const retryable =
+    httpStatus === 429 || (httpStatus === 403 && result?.rateLimit?.remaining === 0);
+  const resetAt = Date.parse(result?.rateLimit?.resetAt ?? "");
+  if (!retryable || !Number.isFinite(resetAt)) return null;
+  const delay = Math.max(1_000, resetAt - Date.now() + 1_000);
+  return delay <= 60_000 ? delay : null;
+}
+
+const wait = (milliseconds) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+
+async function executeQuery(query, token, knownRoots, requestAttempts = 1) {
   const requestUrl = buildRequestUrl(query);
   let response;
   try {
@@ -173,7 +219,7 @@ async function executeQuery(query, token, knownRoots) {
         perPage: query.perPage,
       },
       status: "failed",
-      requestAttempts: 1,
+      requestAttempts,
       error: {
         kind: "network",
         message: `GitHub search request failed before an HTTP response (${error?.name ?? "Error"}).`,
@@ -209,7 +255,7 @@ async function executeQuery(query, token, knownRoots) {
         perPage: query.perPage,
       },
       status: "failed",
-      requestAttempts: 1,
+      requestAttempts,
       error: {
         kind: "github-api",
         status: response.status,
@@ -241,7 +287,7 @@ async function executeQuery(query, token, knownRoots) {
         perPage: query.perPage,
       },
       status: "failed",
-      requestAttempts: 1,
+      requestAttempts,
       error: {
         kind: "invalid-response",
         status: response.status,
@@ -277,7 +323,7 @@ async function executeQuery(query, token, knownRoots) {
         perPage: query.perPage,
       },
       status: "failed",
-      requestAttempts: 1,
+      requestAttempts,
       error: {
         kind: "invalid-response",
         status: response.status,
@@ -308,7 +354,7 @@ async function executeQuery(query, token, knownRoots) {
         perPage: query.perPage,
       },
       status: "failed",
-      requestAttempts: 1,
+      requestAttempts,
       error: {
         kind: "visibility-contaminated",
         message:
@@ -337,12 +383,18 @@ async function executeQuery(query, token, knownRoots) {
       page: query.page,
       perPage: query.perPage,
     },
-    status: "completed",
-    requestAttempts: 1,
-    error: null,
+    status: apiIncomplete ? "partial" : "completed",
+    requestAttempts,
+    error: apiIncomplete
+      ? {
+          kind: "api-incomplete",
+          status: response.status,
+          message: "GitHub Search API marked this response as incomplete.",
+        }
+      : null,
     totalCount,
     apiIncomplete,
-    paginationTruncated: totalCount > (body.items ?? []).length,
+    paginationTruncated: apiIncomplete || totalCount > (body.items ?? []).length,
     nonPublicResultsRedacted: false,
     rawResults,
     unregisteredRepositoryUrls: [
@@ -356,11 +408,30 @@ async function executeQuery(query, token, knownRoots) {
   };
 }
 
-export async function runDiscoveryProbe(configuration, registries, token) {
+export async function runDiscoveryProbe(configuration, registries, token, options = {}) {
   const knownRoots = knownRepositoryRoots(registries.resources, registries.candidates);
+  const codeSearchEnabled = options.codeSearchEnabled ?? true;
+  const waitForRetry = options.waitForRetry ?? wait;
   const queries = [];
   for (const query of configuration.queries) {
-    queries.push(await executeQuery(query, token, knownRoots));
+    if (query.endpoint === "code" && !codeSearchEnabled) {
+      queries.push(skippedCodeQuery(query));
+      continue;
+    }
+    let result = await executeQuery(query, token, knownRoots);
+    const retryDelay = boundedRetryDelay(result);
+    if (retryDelay !== null) {
+      const retry = {
+        triggerKind: result.error.kind,
+        httpStatus: result.error.status ?? null,
+        waitMilliseconds: retryDelay,
+        initialRateLimit: result.rateLimit,
+      };
+      await waitForRetry(retryDelay);
+      result = await executeQuery(query, token, knownRoots, 2);
+      result.retry = retry;
+    }
+    queries.push(result);
   }
   const unregisteredRepositoryUrls = [
     ...new Set(queries.flatMap((query) => query.unregisteredRepositoryUrls)),
@@ -369,20 +440,40 @@ export async function runDiscoveryProbe(configuration, registries, token) {
   const allCodeQueriesReturnedZero =
     codeQueries.length > 0 &&
     codeQueries.every((query) => query.status === "completed" && query.totalCount === 0);
-  const healthFailures = allCodeQueriesReturnedZero
-    ? [
-        {
-          kind: "code-search-all-zero",
-          message:
-            "Every configured code-search family returned zero results; treat this as an authentication-scope or query-semantics regression until the artifact is reviewed.",
-        },
-      ]
-    : [];
+  const repositoryQueries = queries.filter((query) => query.endpoint === "repositories");
+  const allRepositoryQueriesReturnedZero =
+    repositoryQueries.length > 0 &&
+    repositoryQueries.every(
+      (query) => query.status === "completed" && query.totalCount === 0,
+    );
+  const healthFailures = [];
+  if (allCodeQueriesReturnedZero) {
+    healthFailures.push({
+      kind: "code-search-all-zero",
+      message:
+        "Every configured code-search family returned zero results; treat this as an authentication-scope or query-semantics regression until the artifact is reviewed.",
+    });
+  }
+  if (allRepositoryQueriesReturnedZero) {
+    healthFailures.push({
+      kind: "repository-search-all-zero",
+      message:
+        "Every configured repository-search family returned zero results; treat this as an authentication-scope or query-semantics regression until the artifact is reviewed.",
+    });
+  }
   const failedQueries = queries.filter((query) => query.status === "failed").length;
+  const partialQueries = queries.filter((query) => query.status === "partial").length;
+  const skippedQueries = queries.filter((query) => query.status === "skipped").length;
+  const status =
+    failedQueries > 0 || partialQueries > 0 || healthFailures.length > 0
+      ? "failed"
+      : skippedQueries > 0
+        ? "completed-with-gaps"
+        : "completed";
   return {
     schemaVersion: 1,
-    probeVersion: 2,
-    status: failedQueries > 0 || healthFailures.length > 0 ? "failed" : "completed",
+    probeVersion: 3,
+    status,
     healthFailures,
     executedAt: new Date().toISOString(),
     source: "GitHub public search API",
@@ -392,6 +483,7 @@ export async function runDiscoveryProbe(configuration, registries, token) {
       workflowRunAttempt: process.env.GITHUB_RUN_ATTEMPT ?? null,
       repositorySha: process.env.GITHUB_SHA ?? null,
       repositoryRef: process.env.GITHUB_REF ?? null,
+      codeSearchMode: codeSearchEnabled ? "enabled" : "skipped-with-repository-token",
       nodeVersion: process.version,
       githubApiVersion: "2022-11-28",
       queryConfigurationSha256: createHash("sha256")
@@ -402,11 +494,13 @@ export async function runDiscoveryProbe(configuration, registries, token) {
       process.env.DISCOVERY_AUTH_CONTEXT ??
       "Caller-supplied bearer token; result visibility depends on that token's repository access.",
     limitations:
-      "This is a bounded first-page discovery probe. Search index coverage, token visibility, ranking, API limits, and query vocabulary prevent ecosystem-completeness claims. If any result is non-public or has ambiguous visibility, every identity and derived count for that query is redacted and the query fails closed. Public results are untrusted leads and are never promoted automatically.",
+      "This is a bounded first-page discovery probe. Search index coverage, token visibility, ranking, API limits, query vocabulary, and any explicitly skipped code-search families prevent ecosystem-completeness claims. If any result is non-public or has ambiguous visibility, every identity and derived count for that query is redacted and the query fails closed. Public results are untrusted leads and are never promoted automatically.",
     summary: {
       configuredQueries: configuration.queries.length,
       completedQueries: queries.filter((query) => query.status === "completed").length,
       failedQueries,
+      partialQueries,
+      skippedQueries,
       failedHealthChecks: healthFailures.length,
       preservedRawResults: queries.reduce((total, query) => total + query.rawResults.length, 0),
       visibilityContaminatedQueries: queries.filter(
@@ -448,17 +542,29 @@ async function main() {
     process.exitCode = 2;
     return;
   }
+  const codeSearchMode = process.env.DISCOVERY_CODE_SEARCH_MODE ?? "enabled";
+  if (!["enabled", "skip-with-repository-token"].includes(codeSearchMode)) {
+    console.error(
+      "DISCOVERY_CODE_SEARCH_MODE must be enabled or skip-with-repository-token.",
+    );
+    process.exitCode = 2;
+    return;
+  }
   const [resources, candidates] = await Promise.all([
     readJson("data/resources.json"),
     readJson("data/discovery-candidates.json"),
   ]);
-  const report = await runDiscoveryProbe(configuration, { resources, candidates }, token);
+  const report = await runDiscoveryProbe(configuration, { resources, candidates }, token, {
+    codeSearchEnabled: codeSearchMode === "enabled",
+  });
   const outputPath = path.resolve(process.cwd(), process.argv[3]);
   await mkdir(path.dirname(outputPath), { recursive: true });
   await writeFile(outputPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
   console.log(
     `Discovery probe preserved ${report.summary.preservedRawResults} raw result(s) ` +
       `from ${report.summary.configuredQueries} query families; ` +
+      `${report.summary.partialQueries} partial and ${report.summary.failedQueries} failed; ` +
+      `${report.summary.skippedQueries} query family/families were explicitly skipped; ` +
       `${report.summary.unregisteredRepositories} repository URL(s) are not in either registry.`,
   );
   if (report.status === "failed") process.exitCode = 1;
