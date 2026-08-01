@@ -13,8 +13,10 @@ Snapshot baseline: Pi **v0.83.0** at
 [`845d6ff…`](https://github.com/earendil-works/pi/tree/845d6ff1f6643aba440341cce877ce1c43ebbc39),
 research `main` at
 [`9b50b04…`](https://github.com/earendil-works/pi/tree/9b50b046d328d589a81400d2e184175d0bf19734),
-and registry state on **2026-07-31 (Asia/Singapore)**. Moving sources must be
-rechecked before using this matrix for a current decision.
+and the reviewed-resource registry at **2026-07-31 15:56:32
+(Asia/Singapore)**. The candidate registry and generated coverage state are at
+**2026-08-01 15:28:59 (Asia/Singapore)**. Moving sources must be rechecked
+before using this matrix for a current decision.
 
 ## How counts and evidence states work
 
@@ -34,7 +36,7 @@ This page uses these evidence states:
 | Main-only / experimental | The source exists only after the stable tag or is explicitly experimental. | A research lead, never a stable guarantee. |
 | Source-reviewed | A community repository was inspected at a full commit under the repository methodology. | The observed source exposes a capability and named risks; no runtime recommendation. |
 | Deferred / blocked | A collection needs item-level review, is legacy-scoped, or lacks evidence needed to continue. | Historical context or a future research lead only. |
-| Discovery-only | A catalog, directory, search result, or unreviewed repository points to a possible candidate. | “Exists and may merit review,” nothing more. |
+| Candidate-stage | A discovery-only lead has a canonical identity and provisional relation; a relation-confirmed lead also has pinned primary relationship evidence, but neither has passed the full source gate. | The lead exists and may have a confirmed Pi relationship; no current-scope, compatibility, risk, runtime, or endorsement conclusion. |
 | Hands-on-verified | A named human preserved the exact artifact, environment, steps, expected/actual results, cleanup, and residual risk. | A reproducible trial result within its stated scope. |
 | Featured | Hands-on evidence plus maintainer judgment passes the publication gate. | A scoped recommendation, not a safety certification. |
 
@@ -42,6 +44,12 @@ Counts in the community table refer only to records in
 [`data/resources.json`](../../data/resources.json). The much larger
 [official package catalog](https://pi.dev/packages) and external directories
 are discovery populations; they are not silently added to the reviewed count.
+
+The [machine-generated coverage summary](coverage-summary.md) is the
+authoritative count view across reviewed records, deferred records, discovery
+candidates, categories, architectures, and Pi relationships. `check:coverage`
+also verifies that the source-reviewed counts and category order in the
+narrative table below still match the machine taxonomy.
 
 ## Execution and ownership boundaries
 
@@ -89,7 +97,9 @@ The counts below are mutually exclusive placements for the 12 source-reviewed
 watchlist records. Multi-capability projects have one primary placement so the
 total remains auditable; their secondary capabilities still belong in the
 individual review. Deferred collections are shown separately and are not
-counted as reviewed items.
+counted as reviewed items. Use the
+[generated summary](coverage-summary.md) for candidate and architecture strata;
+candidate presence never increases a source-reviewed count.
 
 | Capability | Definition | Built-in / extension / external boundary | Current registry evidence | Explicit gap | Retrieval and advancement action |
 | --- | --- | --- | --- | --- | --- |

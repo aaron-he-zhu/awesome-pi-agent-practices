@@ -261,9 +261,11 @@ Customization Layer、Trust Boundary、Session Semantics 与 Integration Mode。
 | [官方来源地图](docs/research/source-map.zh-CN.md)  | 用固定版本一手来源替换记忆/Search Snippet。                                                   |
 | [证据台账](docs/research/evidence-ledger.zh-CN.md) | 把 P01–P30 每条建议追溯到事实和明确标记的推论。                                               |
 | [研究方法](docs/research/methodology.zh-CN.md)     | 检查 Source Tier、Inclusion Gate、Scoring、AI Disclosure 与 Update Procedure。                |
+| [发现协议](docs/research/discovery-protocol.zh-CN.md) | 保存可重放搜索、Identity、Relationship、Disposition 与分层审查顺序。                     |
 | [精确查询日志](docs/research/query-log.zh-CN.md)   | 重跑带日期的 GitHub、Catalog、Registry、RFC、Source 与 Community-review Query。                |
 | [生态全景](docs/research/landscape.zh-CN.md)       | 查看带日期的 Project、Catalog、Issue Cluster、Directory 与 Opportunity Snapshot。             |
 | [生态覆盖矩阵](docs/research/coverage-matrix.zh-CN.md) | 查看全部官方/社区能力领域、证据状态、明确缺口与下一道 Gate。                              |
+| [机器生成的覆盖摘要](docs/research/coverage-summary.zh-CN.md) | 查看从已审查资源和发现候选推导的类别与架构计数。                                    |
 | [生态目录指南](docs/research/ecosystem-directories.zh-CN.md) | 在 Official、Curated、Automated、Synthesized 与 Historical Discovery Surface 之间选择。 |
 | [Extension 审查](docs/extension-review.zh-CN.md)   | 审计 Identity、Install Script、Dependency、Authority、Lifecycle、Data Flow、Test 与 Removal。 |
 | [术语表](docs/glossary.zh-CN.md)                   | 区分 Project Trust、Session Operation、Tool Limit、RPC、SDK 与 Containment。                  |
@@ -283,8 +285,10 @@ UI 与 Broad Operating Layer。每个条目都记录为何值得试用，以及�
 Authority、Privacy、Supply-chain、Lifecycle 或 Compatibility Boundary。
 
 [覆盖矩阵](docs/research/coverage-matrix.zh-CN.md#community-capability-coverage)另外追踪二十五类社区能力，其中
-十三类目前没有完成源码审查的代表。空白类别表示“本仓库尚无证据”，不表示“生态中
-没有实现”。Discovery Link 在通过 Source 与 Hands-on Gate 前始终只是线索。
+机器生成的摘要从 Check-in 数据推导当前 Source-review、Hands-on、Deferred、
+Candidate 与 Architecture Count，避免 Prose 静默漂移。空白类别表示“本仓库尚无
+证据”，不表示“生态中没有实现”。Candidate 在通过
+Source 与 Hands-on Gate 前始终是不受信任的线索。
 
 目前有意**不设置任何第三方正式精选条目**。晋级需要具名人类 Reviewer、Immutable
 Artifact、Relationship Disclosure、Isolated Trial、精确 Environment/Command、
