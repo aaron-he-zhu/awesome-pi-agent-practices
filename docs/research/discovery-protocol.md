@@ -360,21 +360,31 @@ separate operations:
    taxonomy, bilingual matrix identities, and generated coverage state.
 2. `scripts/discovery-probe.mjs` executes the versioned queries in
    `data/discovery-queries.json` against GitHub's public Search API. Each query is
-   restricted to its first page and at most 50 results. The workflow preserves
-   normalized identifiers, repository URLs, evidence URLs, result positions,
-   total counts, truncation signals, and rate-limit metadata in a JSON artifact
-   for 14 days; it does not copy source snippets. Each response must explicitly
-   identify a public repository (`private: false` or `visibility: public`). The
+   restricted to its first page and at most 50 results. Repository-search
+   families always run. Code-search families run only when the public-only
+   `DISCOVERY_SEARCH_TOKEN` is configured; with the repository-scoped Actions
+   token they are preserved as explicit `skipped` records with zero request
+   attempts, and the report status is `completed-with-gaps`. The workflow
+   preserves normalized identifiers, repository URLs, evidence URLs, result
+   positions, total counts, truncation signals, and rate-limit metadata in a
+   JSON artifact for 14 days; it does not copy source snippets. Each response
+   must explicitly identify a public repository (`private: false` or
+   `visibility: public`). The
    probe fails closed if it sees any non-public or ambiguous-visibility result:
    it drops every identity, total, truncation value, and exact redaction count
    for that query, preserving only a contamination flag. A failed query records
    only sanitized status/error metadata, does not erase
    earlier successful results, and makes the probe step fail after the partial
-   artifact is written and uploaded. Code-search queries may not use repository
+   artifact is written and uploaded. A 403 exhausted-rate response or HTTP 429
+   receives at most one retry when the advertised reset is no more than 60
+   seconds away; the artifact records one or two request attempts. Code-search
+   queries may not use repository
    visibility qualifiers because the legacy Search API can return a misleading
    zero-result response for them. The report also fails a scope/semantics health
-   check when every configured code-search family completes with zero results,
-   even if every HTTP request succeeded.
+   check when every enabled code-search family or every repository-search family
+   completes with zero results, even if every HTTP request succeeded. An
+   API-incomplete response is recorded as `partial`, preserves its public
+   results, and still fails the top-level probe.
 
 The live probe is a lead generator, not a registry writer. It does not query
 package registries, follow redirects, assess current compatibility, install or
@@ -396,12 +406,12 @@ never collapsed into a single run.
 | `executedAt` + `queries[].id` | Stable slug such as `github-2026-08-01-<query-id>`; add a documented suffix rather than overwriting a collision. |
 | Query `endpoint` | `sourceKind: code-search` or `repository-search`; use platform `GitHub`. |
 | `request.url` and `query` | Strip the query string from `request.url` into ledger `endpoint`; preserve the exact search expression separately in `query`. |
-| Probe/API versions and `requestAttempts` | Build the ledger `client` string from the probe, Node, and GitHub API versions; copy the per-query attempt count. |
+| Probe/API versions, `requestAttempts`, and `retry` | Build the ledger `client` string from the probe, Node, and GitHub API versions; copy the per-query attempt count. Zero means explicitly skipped and must be rerun before ledger import; one or two means an attempted query. Preserve the retry trigger, wait, and initial rate-limit state in run limitations. |
 | `request.sort`, `request.order`, `request.page`, and `request.perPage` | Map to ledger sort and first-page pagination. A returned first page is one completed page; a failed/redacted page is zero. |
 | `paginationTruncated`, `apiIncomplete`, and failures | Preserve `truncated: true` and a precise reason whenever more indexed results exist, the API is incomplete, visibility is redacted, or the request failed; then `completeForClaimedBatch` is false. |
-| Query `status` and `error` | A clean, non-truncated response may be `completed`; API-incomplete becomes `partial`; a query failure becomes `failed`. Map `error.status` to ledger `error.httpStatus`, otherwise use `null`, and retain the sanitized message. |
+| Query `status`, `skipReason`, and `error` | A clean, non-truncated response may be `completed`; API-incomplete becomes `partial`; a query failure becomes `failed`. An explicitly `skipped` query is a coverage marker, not an importable run. Map `error.status` to ledger `error.httpStatus`, otherwise use `null`, and retain the sanitized message. |
 | `rawResults` | Preserve returned order and public `evidenceUrl` as `sourceUrl`; a reviewer must resolve canonical candidate URLs and assign every disposition/reason before commit. |
-| Report `healthFailures` | An all-zero code-search health failure blocks a completed import. Resolve token/query scope and rerun, or preserve the affected code runs as failed with that limitation. |
+| Report `healthFailures` | An all-zero repository- or enabled-code-search health failure blocks a completed import. Resolve token/query scope and rerun, or preserve the affected runs as failed with that limitation. |
 
 The local `discovery-artifacts/` directory is ignored by Git. Treat it as
 ephemeral pre-triage data: retain a needed report through the 14-day workflow
@@ -409,17 +419,19 @@ artifact or an explicitly reviewed ledger import, and remove local copies under
 the repository's normal data-retention policy.
 
 A successful scheduled run therefore means “the committed records and query
-configuration are internally valid, this bounded set of GitHub searches
-completed, and the all-zero code-search regression guard did not fire.” It does
-not mean the ecosystem is complete or current. Ranking,
+configuration are internally valid, repository search completed, and code
+search either completed under the dedicated token or was explicitly reported
+as a gap.” Repository all-zero and API-incomplete guards must remain clear;
+when code search is enabled, its all-zero guard must also remain clear. Success
+does not mean the ecosystem is complete or current. Ranking,
 index coverage, vocabulary, pagination, API limits, renamed packages, private
 repositories, non-GitHub hosts, and registry-only integrations remain explicit
-blind spots. The default Actions token is repository-scoped and may restrict
-cross-repository code-search visibility. Maintainers must inspect the artifact
-for external repository hits after workflow changes; an optional least-privilege
-`DISCOVERY_SEARCH_TOKEN` secret may widen public search access without granting
-write or private-repository permissions. Token scope is recorded as context,
-never as a credential.
+blind spots. The default Actions token is repository-scoped, so the workflow
+intentionally skips code search rather than failing every schedule or silently
+claiming zero hits. A least-privilege `DISCOVERY_SEARCH_TOKEN` enables the
+versioned code-search families; it must grant no write or private-repository
+access. Maintainers must inspect the first enabled artifact for external public
+hits. Token scope is recorded as context, never as a credential.
 
 ## Promotion checklist
 

@@ -308,17 +308,23 @@ Profile、Session 内容、未脱敏日志或未公开漏洞详情。如果平�
    查询配置、URL 安全与文件间一致性；`npm run check:coverage` 另外把每项关系/类别/
    架构分配与机器分类法核对，并检查双语矩阵身份和生成覆盖状态。
 2. `scripts/discovery-probe.mjs` 使用 `data/discovery-queries.json` 中版本化的查询，
-   调用 GitHub Public Search API。每条查询仅取第一页，最多 50 条结果。Workflow
+   调用 GitHub Public Search API。每条查询仅取第一页，最多 50 条结果。Repository
+   Search Family 始终运行；只有配置 Public-only `DISCOVERY_SEARCH_TOKEN` 时才运行
+   Code Search Family。仅有 Repository-scoped Actions Token 时，Code Query 会保存为
+   Request Attempt 为零的明确 `skipped` Record，报告状态为 `completed-with-gaps`。Workflow
    把规范化 ID、Repository URL、Evidence URL、结果位置、总数、截断信号与
    Rate-limit Metadata 保存为保留 14 天的 JSON Artifact；不复制源码片段。每条响应
    必须明确标识 Public Repository（`private: false` 或 `visibility: public`）。一旦发现
    Non-public 或 Visibility 不明结果，探针就 Fail Closed：删除该查询的全部 Identity、
    Total、Truncation Value 与精确 Redaction Count，只保留 Contamination Flag。查询失败
    时只记录清理后的 Status/Error Metadata，不抹掉此前成功结果；写入并上传 Partial
-   Artifact 后，Probe Step 仍返回失败。Code Search Query 不得使用 Repository Visibility
-   Qualifier，因为旧版 Search API 可能对其返回有误导性的 Zero-result Response。即使
-   HTTP Request 全部成功，只要所有已配置 Code Search Family 都返回零结果，报告也会
-  触发 Scope/Semantics Health Check 并失败。
+   Artifact 后，Probe Step 仍返回失败。遇到 Rate 已耗尽的 HTTP 403 或 HTTP 429 时，
+   只有声明的 Reset 不超过 60 秒才最多重试一次；Artifact 记录一或两次 Request
+   Attempt。Code Search Query 不得使用 Repository Visibility Qualifier，因为旧版
+   Search API 可能对其返回有误导性的 Zero-result Response。即使 HTTP Request 全部
+   成功，只要所有已启用 Code Search Family 或所有 Repository Search Family 都返回
+   零结果，报告也会触发 Scope/Semantics Health Check 并失败。API-incomplete Response
+   会记为 `partial` 并保留其中的公开结果，但顶层 Probe 仍然失败。
 
 实时探针只生成线索，不写注册表。它不会查询 Package Registry、跟随 Redirect、
 判断当前兼容性、安装或执行候选代码、修改仓库文件、创建 Issue、创建 Branch 或
@@ -337,27 +343,29 @@ Run；绝不能把多 Query Report 折叠成一条 Run。
 | `executedAt` + `queries[].id` | 生成 `github-2026-08-01-<query-id>` 形式的稳定 Slug；发生冲突时增加有记录的后缀，不得覆盖。 |
 | Query `endpoint` | 使用 `sourceKind: code-search` 或 `repository-search`，Platform 为 `GitHub`。 |
 | `request.url` 与 `query` | 从 `request.url` 去掉 Query String 后写入 Ledger `endpoint`；精确 Search Expression 单独写入 `query`。 |
-| Probe/API Version 与 `requestAttempts` | 用 Probe、Node 和 GitHub API Version 组成 Ledger `client`；复制逐 Query Attempt Count。 |
+| Probe/API Version、`requestAttempts` 与 `retry` | 用 Probe、Node 和 GitHub API Version 组成 Ledger `client`；复制逐 Query Attempt Count。零表示明确跳过，必须重跑后才能导入 Ledger；一或二表示实际发起过 Query。把 Retry Trigger、Wait 与初始 Rate-limit State 保存在 Run Limitation 中。 |
 | `request.sort`、`request.order`、`request.page` 与 `request.perPage` | 映射到 Ledger Sort 与 First-page Pagination。返回的第一页算一页完成；失败或已脱敏页算零页。 |
 | `paginationTruncated`、`apiIncomplete` 与失败 | 只要还有更多索引结果、API 不完整、Visibility 被脱敏或 Request 失败，就保留 `truncated: true` 与精确原因，此时 `completeForClaimedBatch` 为 false。 |
-| Query `status` 与 `error` | 干净且未截断的 Response 可记为 `completed`；API-incomplete 记为 `partial`；Query Failure 记为 `failed`。把 `error.status` 映射到 Ledger `error.httpStatus`，否则用 `null`，并保留清理后的 Message。 |
+| Query `status`、`skipReason` 与 `error` | 干净且未截断的 Response 可记为 `completed`；API-incomplete 记为 `partial`；Query Failure 记为 `failed`。明确 `skipped` 的 Query 只是 Coverage Marker，不是可导入 Run。把 `error.status` 映射到 Ledger `error.httpStatus`，否则用 `null`，并保留清理后的 Message。 |
 | `rawResults` | 保留返回顺序和作为 `sourceUrl` 的公开 `evidenceUrl`；提交前由 Reviewer 解析 Canonical Candidate URL，并给每条记录分配 Disposition/Reason。 |
-| Report `healthFailures` | Code Search 全零 Health Failure 会阻止 Completed Import。先解决 Token/Query Scope 并重跑；否则把受影响的 Code Run 作为失败及其局限保留。 |
+| Report `healthFailures` | Repository Search 或已启用 Code Search 的全零 Health Failure 会阻止 Completed Import。先解决 Token/Query Scope 并重跑；否则把受影响的 Run 作为失败及其局限保留。 |
 
 本地 `discovery-artifacts/` 目录已被 Git 忽略，应当视为临时 Pre-triage Data：需要的
 报告通过保留 14 天的 Workflow Artifact 或明确审查后的 Ledger Import 保存；本地副本
 按仓库正常 Data-retention Policy 清理。
 
-因此，定时运行成功只表示“已提交记录与查询配置在内部有效，这组有界 GitHub
-搜索已完成，且 Code Search 全零回归保护未触发”，不表示“生态完整或最新”。
+因此，定时运行成功只表示“已提交记录与查询配置在内部有效，Repository Search 已
+完成，Code Search 则使用专用 Token 完成或被明确报告为缺口”。启用 Code Search 时，
+其全零回归保护也必须不触发；Repository 全零与 API-incomplete 保护同样必须不触发。
+成功不表示“生态完整或最新”。
 Ranking、Index Coverage、Vocabulary、
 Pagination、API Limit、改名 Package、Private Repository、非 GitHub Host 与仅存在于
 Registry 的集成仍是明确盲点。
-默认 Actions Token 受当前仓库范围限制，可能缩小跨仓库 Code Search 可见性。Workflow
-变更后，维护者必须检查 Artifact 是否包含外部仓库命中；可选的最小权限
-`DISCOVERY_SEARCH_TOKEN` Secret 可以扩大公开搜索可见性，但不得授予写权限或 Private
-Repository 权限。Artifact
-只记录 Token Scope Context，绝不记录 Credential。
+默认 Actions Token 受当前仓库范围限制，因此 Workflow 会明确跳过 Code Search，
+而不是让每次 Schedule 失败或静默声称零命中。最小权限 `DISCOVERY_SEARCH_TOKEN`
+Secret 可启用版本化 Code Search Family，但不得授予写权限或 Private Repository 权限。
+维护者必须检查首次启用后的 Artifact 是否包含外部公开仓库命中。Artifact 只记录
+Token Scope Context，绝不记录 Credential。
 
 ## 晋级检查清单
 

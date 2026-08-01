@@ -272,6 +272,45 @@ test("probe reports API incompleteness separately from first-page truncation", a
   assert.equal(report.queries[0].rateLimit.resetAt, null);
 });
 
+test("an API-incomplete response is partial and fails the report without dropping public results", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        total_count: 1,
+        incomplete_results: true,
+        items: [
+          {
+            id: 1,
+            full_name: "public/incomplete-result",
+            html_url: "https://github.com/public/incomplete-result",
+            private: false,
+            visibility: "public",
+          },
+        ],
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+
+  const report = await runDiscoveryProbe(
+    { queries: [configuration.queries.find((query) => query.endpoint === "repositories")] },
+    { resources: { resources: [] }, candidates: { candidates: [] } },
+    "test-token",
+  );
+
+  assert.equal(report.status, "failed");
+  assert.equal(report.summary.completedQueries, 0);
+  assert.equal(report.summary.partialQueries, 1);
+  assert.equal(report.queries[0].status, "partial");
+  assert.equal(report.queries[0].error.kind, "api-incomplete");
+  assert.equal(report.queries[0].error.status, 200);
+  assert.equal(report.queries[0].paginationTruncated, true);
+  assert.equal(report.queries[0].rawResults.length, 1);
+});
+
 test("probe fails closed when every code-search family returns zero results", async (context) => {
   const originalFetch = globalThis.fetch;
   context.after(() => {
@@ -301,6 +340,141 @@ test("probe fails closed when every code-search family returns zero results", as
         "Every configured code-search family returned zero results; treat this as an authentication-scope or query-semantics regression until the artifact is reviewed.",
     },
   ]);
+});
+
+test("probe fails closed when every repository-search family returns zero results", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({ total_count: 0, incomplete_results: false, items: [] }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+
+  const repositoryQueries = configuration.queries
+    .filter((query) => query.endpoint === "repositories")
+    .slice(0, 2);
+  const report = await runDiscoveryProbe(
+    { queries: repositoryQueries },
+    { resources: { resources: [] }, candidates: { candidates: [] } },
+    "test-token",
+  );
+
+  assert.equal(report.status, "failed");
+  assert.equal(report.summary.failedQueries, 0);
+  assert.equal(report.summary.partialQueries, 0);
+  assert.equal(report.summary.failedHealthChecks, 1);
+  assert.equal(report.healthFailures[0].kind, "repository-search-all-zero");
+});
+
+test("repository-scoped mode explicitly skips code search and reports a coverage gap", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  const requestedUrls = [];
+  globalThis.fetch = async (url) => {
+    requestedUrls.push(String(url));
+    return new Response(
+      JSON.stringify({
+        total_count: 1,
+        incomplete_results: false,
+        items: [
+          {
+            id: 1,
+            full_name: "public/repository-result",
+            html_url: "https://github.com/public/repository-result",
+            private: false,
+            visibility: "public",
+          },
+        ],
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+  };
+
+  const report = await runDiscoveryProbe(
+    {
+      queries: [
+        configuration.queries.find((query) => query.endpoint === "code"),
+        configuration.queries.find((query) => query.endpoint === "repositories"),
+      ],
+    },
+    { resources: { resources: [] }, candidates: { candidates: [] } },
+    "test-token",
+    { codeSearchEnabled: false },
+  );
+
+  assert.equal(report.status, "completed-with-gaps");
+  assert.equal(report.executionContext.codeSearchMode, "skipped-with-repository-token");
+  assert.equal(report.summary.completedQueries, 1);
+  assert.equal(report.summary.failedQueries, 0);
+  assert.equal(report.summary.skippedQueries, 1);
+  assert.equal(requestedUrls.length, 1);
+  assert.match(requestedUrls[0], /\/search\/repositories\?/u);
+  const skipped = report.queries.find((query) => query.endpoint === "code");
+  assert.equal(skipped.status, "skipped");
+  assert.equal(skipped.requestAttempts, 0);
+  assert.equal(skipped.error, null);
+  assert.equal(skipped.skipReason.kind, "dedicated-code-search-token-unavailable");
+  assert.deepEqual(skipped.rawResults, []);
+});
+
+test("probe retries one reset-bounded HTTP 429 and records both attempts", async (context) => {
+  const originalFetch = globalThis.fetch;
+  context.after(() => {
+    globalThis.fetch = originalFetch;
+  });
+  let requests = 0;
+  globalThis.fetch = async () => {
+    requests += 1;
+    if (requests === 1) {
+      return new Response(JSON.stringify({ message: "secondary rate limit" }), {
+        status: 429,
+        headers: {
+          "content-type": "application/json",
+          "x-ratelimit-remaining": "10",
+          "x-ratelimit-reset": String(Math.floor(Date.now() / 1000)),
+        },
+      });
+    }
+    return new Response(
+      JSON.stringify({
+        total_count: 1,
+        incomplete_results: false,
+        items: [
+          {
+            id: 2,
+            full_name: "public/retry-result",
+            html_url: "https://github.com/public/retry-result",
+            private: false,
+            visibility: "public",
+          },
+        ],
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+  };
+  const retryDelays = [];
+
+  const report = await runDiscoveryProbe(
+    { queries: [configuration.queries.find((query) => query.endpoint === "repositories")] },
+    { resources: { resources: [] }, candidates: { candidates: [] } },
+    "test-token",
+    { waitForRetry: async (milliseconds) => retryDelays.push(milliseconds) },
+  );
+
+  assert.equal(report.status, "completed");
+  assert.equal(requests, 2);
+  assert.equal(retryDelays.length, 1);
+  assert.ok(retryDelays[0] >= 1_000 && retryDelays[0] <= 60_000);
+  assert.equal(report.queries[0].requestAttempts, 2);
+  assert.equal(report.queries[0].retry.triggerKind, "github-api");
+  assert.equal(report.queries[0].retry.httpStatus, 429);
+  assert.equal(report.queries[0].retry.waitMilliseconds, retryDelays[0]);
+  assert.equal(report.queries[0].retry.initialRateLimit.remaining, 10);
 });
 
 test("probe preserves completed queries and sanitized failures in one partial report", async (context) => {
