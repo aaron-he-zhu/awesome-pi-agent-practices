@@ -61,11 +61,20 @@
 - 解释 2026 Scope Migration 前旧文章所需的历史名称（`badlogic/pi-mono`、
   `@mariozechner/*`）。
 
+持续生态发现还会在 Dependency Manifest、Lockfile、Import、RPC/JSON/ACP 调用点、
+仓库 Redirect、Fork/Adaptation 声明与 `THIRD_PARTY_NOTICES` 中搜索当前和历史 Pi
+Package Identity。这用于发现名称不含 `pi` 的下游产品、间接协议消费者、替代发行版，
+以及已经内部化 Pi 派生代码的项目。
+
 “覆盖”不表示每个仓库或 Issue 都被完整阅读；它记录从宽泛发现到源码审查的漏斗。
 
 精确 Endpoint、Query String、捕获总数、Immutable Ref 与已知 Sampling Limit
 保存在[查询日志](query-log.zh-CN.md)和
 [机器可读快照](../../data/research-snapshot-2026-07-31.json)中。
+未经审查的线索按照[可重放发现协议](discovery-protocol.zh-CN.md)单独保存在
+[发现候选注册表](../../data/discovery-candidates.json)；
+[机器生成的覆盖摘要](coverage-summary.zh-CN.md)报告类别与架构缺口，但不会把候选
+升级成已审查证据。
 
 ## 结论验证协议
 
@@ -91,10 +100,15 @@ Secret、私有 Issue 内容、个人联系方式和未公开源码不得进入�
 
 ```mermaid
 flowchart LR
-  Found["discovered"] --> Reviewed["source-reviewed"]
+  Found["discovered"] --> Related["relation-confirmed"]
+  Found --> Deferred["deferred"]
+  Found --> Rejected["rejected / 超出范围"]
+  Related --> Reviewed["source-reviewed"]
+  Related --> Deferred
+  Related --> Rejected
   Reviewed --> Trial["hands-on-verified"]
   Trial --> Featured["featured"]
-  Reviewed --> Rejected["rejected / 超出范围"]
+  Reviewed --> Rejected
   Trial --> Rejected
   Featured --> Stale["stale"]
   Stale --> Trial
@@ -105,7 +119,8 @@ flowchart LR
 
 | 状态 | 最低证据 | 出现位置 |
 | --- | --- | --- |
-| `discovered` | 搜索结果或转介。 | 仅维护者笔记。 |
+| `discovered` | 带 Canonical Identity、来源、快照与暂定关系的搜索结果或转介。 | 发现候选注册表。 |
+| `relation-confirmed` | 一手证据确认候选与 Pi 的关系，但尚未完成完整 Source Gate。 | 发现候选注册表与源码审查队列。 |
 | `source-reviewed` | 已检查用途、代码、License、维护、Dependency 与明显风险。 | 社区观察名单。 |
 | `hands-on-verified` | 记录具名人类、Pi 版本、平台、日期、步骤、预期/实际结果与清理。 | 正式策展候选。 |
 | `featured` | 亲测结果 + 维护者判断其特别有用、持续维护、文档充分且 License 合适。 | 根 README。 |
@@ -219,18 +234,22 @@ Resource Type。Stars 与 Forks 在捕获后即可变化。
 每次季度审查或 Pi Minor-version Baseline 变化时：
 
 1. 捕获最新 Stable Tag、Release Date、Node Requirement 与 Root Package List。
-2. 对上一 Tag 和新 Tag 做 Diff，检查 Documentation、CLI Option、Settings
+2. 运行[发现协议](discovery-protocol.zh-CN.md)，保存完整 Raw Result Identifier、
+   Redirect/Alias，并为每个结果记录 Disposition。
+3. 对上一 Tag 和新 Tag 做 Diff，检查 Documentation、CLI Option、Settings
    Schema、Security、Session、Package、Extension、RPC、SDK 与模型行为。
-3. 复核所有“仅 main”结论，升级、修订或移除。
-4. 重新运行 Issue-cluster Query，保留历史快照而不是覆盖旧数字。
-5. 复查每个 Featured/Watchlist Repository 的 License、Archive State、
+4. 复核所有“仅 main”结论，升级、修订或移除。
+5. 重新运行 Issue-cluster Query，保留历史快照而不是覆盖旧数字。
+6. 复查每个 Featured/Watchlist Repository 的 License、Archive State、
    Default Branch、最近活动、Pi Dependency Scope、Test、CI 与 Security
    Boundary。
-6. 当 Pi Baseline 或 Critical Dependency 不再具有代表性时，过期 Hands-on
+7. 对每条活跃发现候选完成 Reconcile：带理由保留、以 Immutable Evidence 拒绝，
+   或只在下一道 Gate 通过后晋级。
+8. 当 Pi Baseline 或 Critical Dependency 不再具有代表性时，过期 Hands-on
    Record。
-7. 在同一修改中更新英文和中文文件。
-8. 运行本地检查，Review Link-check Exception，并人工查看根文件渲染。
-9. 记录 Reviewer Identity、日期与重要决定。
+9. 重新生成机器覆盖结果，并在同一修改中更新英文和中文文件。
+10. 运行本地检查，Review Link-check Exception，并人工查看根文件渲染。
+11. 记录 Reviewer Identity、日期与重要决定。
 
 ## 局限
 
@@ -242,5 +261,6 @@ Resource Type。Stars 与 Forks 在捕获后即可变化。
 - Source Review 无法发现所有 Runtime Side Effect 或被入侵依赖。
 - Provider Behavior 可在没有 Pi Release 的情况下从服务端变化。
 - 官方 `latest` 页面会移动；Pinned Source 会过时。
+- 候选注册表能让遗漏与 Disposition 可审计，但仍不能证明生态发现具有完美召回率。
 - 初始社区观察名单尚未通过维护者直接使用获得背书。
 - 中文技术词汇刻意保留部分英文 Pi 术语，以免发明与上游 Identifier 不同的含义。

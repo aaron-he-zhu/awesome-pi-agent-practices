@@ -1,0 +1,180 @@
+{
+  "$schema": "./discovery-runs.schema.json",
+  "schemaVersion": 1,
+  "snapshotAt": "2026-08-01T07:28:59Z",
+  "runs": [
+    {
+      "id": "manual-ecosystem-gap-audit-2026-08-01",
+      "replayability": "reconstructed-non-replayable",
+      "status": "reconstructed",
+      "error": null,
+      "requestAttempts": 1,
+      "rateLimit": null,
+      "executedAt": "2026-08-01T07:28:59Z",
+      "sourceKind": "manual-gap-audit",
+      "platform": "GitHub public repositories and pinned primary-source pages",
+      "endpoint": "https://github.com",
+      "query": "Non-replayable reconstruction: cross-check already selected leads from the pinned ecosystem directory and manual primary-source review; the original search strings, rankings, and pre-filter denominator were not preserved.",
+      "client": "manual reconstruction with gh 2.96.0 and pinned primary-source inspection",
+      "sort": {
+        "field": "bounded audit sequence",
+        "direction": "manual-audit-order"
+      },
+      "pagination": {
+        "method": "reconstructed thirteen-lead mapping batch; not a provider result page",
+        "pagesAttempted": 1,
+        "pagesCompleted": 1,
+        "resultLimit": 13,
+        "truncated": true,
+        "truncationReason": "The original searches, rankings, rejected results, and pre-filter denominator were not preserved; this batch contains only the thirteen reconstructed leads."
+      },
+      "rawResults": [
+        {
+          "position": 1,
+          "rawId": "github:openclaw/openclaw",
+          "sourceUrl": "https://github.com/openclaw/openclaw",
+          "resolvedCandidateUrl": "https://github.com/openclaw/openclaw",
+          "observedIdentity": "OpenClaw; historical aliases Warelay, Clawdbot, and Moltbot",
+          "candidateId": "openclaw",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a historical SDK embedder, Pi package consumer, frontend/controller, and Pi-derived internalized runtime."
+        },
+        {
+          "position": 2,
+          "rawId": "github:can1357/oh-my-pi",
+          "sourceUrl": "https://github.com/can1357/oh-my-pi",
+          "resolvedCandidateUrl": "https://github.com/can1357/oh-my-pi",
+          "observedIdentity": "oh-my-pi",
+          "candidateId": "oh-my-pi",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a Pi-derived alternate distribution with several control surfaces."
+        },
+        {
+          "position": 3,
+          "rawId": "github:code-yeongyu/senpi",
+          "sourceUrl": "https://github.com/code-yeongyu/senpi",
+          "resolvedCandidateUrl": "https://github.com/code-yeongyu/senpi",
+          "observedIdentity": "Senpi",
+          "candidateId": "senpi",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a fork and rebrand of pi-mono used as Dori's coding-agent runtime."
+        },
+        {
+          "position": 4,
+          "rawId": "github:rcarmo/piclaw",
+          "sourceUrl": "https://github.com/rcarmo/piclaw",
+          "resolvedCandidateUrl": "https://github.com/rcarmo/piclaw",
+          "observedIdentity": "piclaw",
+          "candidateId": "piclaw",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a self-hosted frontend that directly consumed Pi SDK packages at the pinned state."
+        },
+        {
+          "position": 5,
+          "rawId": "github:Zetaphor/pi-vscode-extension",
+          "sourceUrl": "https://github.com/Zetaphor/pi-vscode-extension",
+          "resolvedCandidateUrl": "https://github.com/Zetaphor/pi-vscode-extension",
+          "observedIdentity": "pi-vscode-extension",
+          "candidateId": "zetaphor-pi-vscode-extension",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a VS Code frontend embedding Pi SDK functionality."
+        },
+        {
+          "position": 6,
+          "rawId": "github:pithings/pi-vscode",
+          "sourceUrl": "https://github.com/pithings/pi-vscode",
+          "resolvedCandidateUrl": "https://github.com/pithings/pi-vscode",
+          "observedIdentity": "pi-vscode; prior identity pi0/pi-vscode",
+          "candidateId": "pithings-pi-vscode",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped after resolving the prior repository identity and RPC/terminal bridge."
+        },
+        {
+          "position": 7,
+          "rawId": "github:svkozak/pi-acp",
+          "sourceUrl": "https://github.com/svkozak/pi-acp",
+          "resolvedCandidateUrl": "https://github.com/svkozak/pi-acp",
+          "observedIdentity": "pi-acp",
+          "candidateId": "pi-acp",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a Pi RPC to ACP adapter."
+        },
+        {
+          "position": 8,
+          "rawId": "github:openclaw/acpx",
+          "sourceUrl": "https://github.com/openclaw/acpx",
+          "resolvedCandidateUrl": "https://github.com/openclaw/acpx",
+          "observedIdentity": "acpx",
+          "candidateId": "acpx",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as an indirect Pi consumer through pi-acp."
+        },
+        {
+          "position": 9,
+          "rawId": "github:shaftoe/pi-coding-agent-action",
+          "sourceUrl": "https://github.com/shaftoe/pi-coding-agent-action",
+          "resolvedCandidateUrl": "https://github.com/shaftoe/pi-coding-agent-action",
+          "observedIdentity": "pi-coding-agent-action",
+          "candidateId": "pi-coding-agent-action",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as Git and review automation embedding Pi SDK packages."
+        },
+        {
+          "position": 10,
+          "rawId": "github:pugliatechs/polpo",
+          "sourceUrl": "https://github.com/pugliatechs/polpo",
+          "resolvedCandidateUrl": "https://github.com/pugliatechs/polpo",
+          "observedIdentity": "Polpo",
+          "candidateId": "polpo",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a phone-oriented remote controller using Pi RPC."
+        },
+        {
+          "position": 11,
+          "rawId": "github:carderne/pi-nvim",
+          "sourceUrl": "https://github.com/carderne/pi-nvim",
+          "resolvedCandidateUrl": "https://github.com/carderne/pi-nvim",
+          "observedIdentity": "pi-nvim",
+          "candidateId": "pi-nvim",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a Pi-loaded in-process extension that exposes a Unix JSON socket to a Neovim frontend."
+        },
+        {
+          "position": 12,
+          "rawId": "github:p1rallels/pi-mobile",
+          "sourceUrl": "https://github.com/p1rallels/pi-mobile",
+          "resolvedCandidateUrl": "https://github.com/p1rallels/pi-mobile",
+          "observedIdentity": "pi-mobile",
+          "candidateId": "pi-mobile",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a web or mobile frontend built with the Pi SDK."
+        },
+        {
+          "position": 13,
+          "rawId": "github:spences10/my-pi",
+          "sourceUrl": "https://github.com/spences10/my-pi",
+          "resolvedCandidateUrl": "https://github.com/spences10/my-pi",
+          "observedIdentity": "my-pi",
+          "candidateId": "my-pi",
+          "disposition": "candidate-mapped",
+          "reasonCode": "normalized-to-candidate",
+          "note": "Mapped as a Pi SDK wrapper or alternate distribution with several operating-layer capabilities."
+        }
+      ],
+      "completeForClaimedBatch": false,
+      "knownLimitations": "This is a reconstructed mapping batch for thirteen already selected leads, not a replayable query run or historical search denominator. It omits the original query strings, rankings, pages, duplicates, rejected results, and failed lookups, and cannot support ecosystem-completeness or sampling claims."
+    }
+  ]
+}

@@ -65,12 +65,24 @@ The first pass covered:
 - historical names (`badlogic/pi-mono`, `@mariozechner/*`) needed to interpret
   older articles after the 2026 scope migration.
 
+Ongoing ecosystem discovery additionally searches current and historical Pi
+package identities in dependency manifests, lockfiles, imports, RPC/JSON/ACP
+call sites, repository redirects, fork/adaptation notices, and
+`THIRD_PARTY_NOTICES`. This is necessary to find downstream products whose
+name does not contain `pi`, indirect protocol consumers, alternate
+distributions, and projects that internalized Pi-derived code.
+
 Search coverage is not a claim that every repository or issue was read. It is a
 documented funnel from broad discovery to source review.
 
 Exact endpoints, query strings, captured totals, immutable refs, and known
 sampling limits are preserved in the [query log](query-log.md) and
 [machine-readable snapshot](../../data/research-snapshot-2026-07-31.json).
+Unreviewed leads are preserved separately in the
+[discovery candidate registry](../../data/discovery-candidates.json) under the
+[replayable discovery protocol](discovery-protocol.md); the
+[generated coverage summary](coverage-summary.md) reports category and
+architecture gaps without upgrading candidates to reviewed evidence.
 
 ## Claim verification protocol
 
@@ -99,10 +111,15 @@ must not enter the research corpus.
 
 ```mermaid
 flowchart LR
-  Found["discovered"] --> Reviewed["source-reviewed"]
+  Found["discovered"] --> Related["relation-confirmed"]
+  Found --> Deferred["deferred"]
+  Found --> Rejected["rejected / out of scope"]
+  Related --> Reviewed["source-reviewed"]
+  Related --> Deferred
+  Related --> Rejected
   Reviewed --> Trial["hands-on-verified"]
   Trial --> Featured["featured"]
-  Reviewed --> Rejected["rejected / out of scope"]
+  Reviewed --> Rejected
   Trial --> Rejected
   Featured --> Stale["stale"]
   Stale --> Trial
@@ -113,7 +130,8 @@ The states mean:
 
 | State | Minimum evidence | Where it appears |
 | --- | --- | --- |
-| `discovered` | Search result or referral. | Maintainer notes only. |
+| `discovered` | Search result or referral with canonical identity, source, snapshot, and provisional relation. | Discovery candidate registry. |
+| `relation-confirmed` | Primary evidence confirms how the candidate relates to Pi, without completing the full source gate. | Discovery candidate registry and source-review queue. |
 | `source-reviewed` | Purpose, code, license, maintenance, dependency, and obvious risk reviewed. | Community watchlist. |
 | `hands-on-verified` | Named human, Pi version, platform, date, steps, expected/actual result, and cleanup recorded from direct execution. | Candidate for formal curation. |
 | `featured` | Hands-on result plus maintainer judgment that it is unusually useful, maintained, documented, and appropriately licensed. | Root README. |
@@ -240,21 +258,26 @@ For each quarterly review or Pi minor-version baseline change:
 
 1. Capture the latest stable tag, release date, Node requirement, and root
    package list.
-2. Diff the previous tag against the new tag for documentation, CLI options,
+2. Run the [discovery protocol](discovery-protocol.md), preserving exact raw
+   result identifiers, redirects/aliases, and a disposition for every result.
+3. Diff the previous tag against the new tag for documentation, CLI options,
    settings schema, security, session, package, extension, RPC, SDK, and model
    behavior.
-3. Recheck all `main-only` claims; promote, revise, or remove them.
-4. Re-run issue-cluster queries and record counts without overwriting the prior
+4. Recheck all `main-only` claims; promote, revise, or remove them.
+5. Re-run issue-cluster queries and record counts without overwriting the prior
    snapshot.
-5. Recheck every featured/watchlist repository's license, archive state,
+6. Recheck every featured/watchlist repository's license, archive state,
    default branch, latest activity, Pi dependency scope, tests, CI, and security
    boundary.
-6. Expire hands-on records when their Pi baseline or critical dependency is no
+7. Reconcile every active discovery candidate: retain it with a reason, reject
+   it with immutable evidence, or promote it only after the next gate passes.
+8. Expire hands-on records when their Pi baseline or critical dependency is no
    longer representative.
-7. Update English and Chinese peers in one change.
-8. Run local checks, review link-check exceptions, and manually inspect the
+9. Regenerate machine coverage, then update English and Chinese peers in one
+   change.
+10. Run local checks, review link-check exceptions, and manually inspect the
    rendered root files.
-9. Record reviewer identity, date, and material decisions.
+11. Record reviewer identity, date, and material decisions.
 
 ## Limitations
 
@@ -267,6 +290,8 @@ For each quarterly review or Pi minor-version baseline change:
   dependency.
 - Provider behavior can change server-side without a Pi release.
 - Official `latest` pages can move; pinned source can become obsolete.
+- A candidate registry makes omissions and dispositions auditable; it still
+  cannot prove that ecosystem discovery has perfect recall.
 - The initial community watchlist has not been endorsed through direct
   maintainer use.
 - Chinese technical vocabulary intentionally retains some English Pi terms to

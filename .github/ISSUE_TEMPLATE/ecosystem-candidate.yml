@@ -1,0 +1,85 @@
+name: Ecosystem candidate / 生态候选
+description: Save a possible Pi ecosystem relationship for later review; this is not an endorsement.
+title: "Candidate: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this lightweight form to save a public lead before full source review. Catalog or candidate presence is not endorsement, and submission does not imply source-reviewed, hands-on-verified, or featured status.
+
+        请用这个轻量表单保存尚未完成源码审查的公开线索。目录或候选收录不代表背书；提交后也不代表已达到 source-reviewed、hands-on-verified 或 featured。
+
+        Do not paste credentials, private repositories/issues/source, personal contact data, session content, unredacted logs, signed URLs, or vulnerability details. / 请勿粘贴凭据、私有仓库/Issue/源码、个人联系方式、Session 内容、未脱敏日志、Signed URL 或漏洞详情。
+
+  - type: input
+    id: canonical_url
+    attributes:
+      label: Public URL / 公开 URL
+      description: Repository, package, documentation, issue, pull request, or another public canonical page.
+      placeholder: https://github.com/owner/project
+    validations:
+      required: true
+
+  - type: textarea
+    id: relationship_evidence
+    attributes:
+      label: Possible Pi relationship / 可能的 Pi 关系
+      description: Briefly explain the connection and link the smallest public evidence you already have. Uncertainty is acceptable.
+      placeholder: Imports a Pi SDK package at… / 通过 … 调用 Pi RPC / 可能由 Pi 派生，证据在…
+    validations:
+      required: true
+
+  - type: dropdown
+    id: relation_types
+    attributes:
+      label: Relationship shape / 关系形态
+      description: Select every plausible shape; maintainers will verify it.
+      multiple: true
+      options:
+        - pi-package-or-resource — Pi Package 或资源
+        - sdk-embedder — SDK 嵌入者
+        - rpc-json-consumer — RPC 或 JSON 消费者
+        - acp-consumer — ACP 消费者
+        - frontend-or-controller — 前端或控制器
+        - fork-or-alternate-distribution — Fork 或替代发行版
+        - derived-or-internalized-from-pi — 由 Pi 派生或内部化
+        - service-or-infrastructure — 服务或基础设施
+        - official-adjacent — 官方相邻
+        - historical-or-archived — 历史或归档关系
+        - historical-sdk-embedder — 历史 SDK 嵌入者
+        - pi-package-consumer — Pi Package 消费者
+        - indirect-consumer — 间接消费者
+    validations:
+      required: true
+
+  - type: input
+    id: aliases
+    attributes:
+      label: Aliases and package names / 别名与 Package 名
+      description: Optional previous names, moved URLs, package identities, or monorepo path.
+      placeholder: old-name; @scope/package; packages/pi-adapter
+
+  - type: textarea
+    id: discovery_context
+    attributes:
+      label: Discovery context / 发现上下文
+      description: Optional query, catalog/referral source, date, immutable commit/tag/version, category, or architecture clue.
+
+  - type: textarea
+    id: disclosure
+    attributes:
+      label: Relationship disclosure / 关系披露
+      description: State none, or disclose ownership, contribution, employment, sponsorship, consulting, or other material relationship.
+      placeholder: None / Maintainer / Contributor / Employer / Sponsor / Consultant
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Submission checks / 提交确认
+      options:
+        - label: I supplied only public, sanitized information and understand that this records an unreviewed lead, not an endorsement. / 我只提供公开且已清理的信息，并理解这只是未审查线索，不代表背书。
+          required: true
