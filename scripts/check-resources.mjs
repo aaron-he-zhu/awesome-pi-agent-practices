@@ -48,7 +48,7 @@ const resources = Array.isArray(registry.resources)
   : [];
 const ids = resources.map((resource) => resource.id);
 
-if (registry.schemaVersion !== 1) failures.push("data/resources.json: schemaVersion must be 1");
+if (registry.schemaVersion !== 2) failures.push("data/resources.json: schemaVersion must be 2");
 if (!Number.isFinite(Date.parse(registry.snapshotAt))) {
   failures.push("data/resources.json: snapshotAt must be an ISO date-time");
 }

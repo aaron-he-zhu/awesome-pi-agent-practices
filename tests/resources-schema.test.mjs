@@ -122,6 +122,30 @@ test("related and community source reviews require immutable reviewed refs", () 
   }
 });
 
+test("community resources require category, architecture, and relationship assignments", () => {
+  for (const field of [
+    "primaryCategory",
+    "secondaryCategories",
+    "architectureTypes",
+    "relationTypes",
+  ]) {
+    const candidate = copyRegistry();
+    const community = candidate.resources.find((resource) => resource.kind === "community");
+    delete community[field];
+    expectInvalid(candidate, `community resources must retain ${field}`);
+  }
+
+  const noArchitecture = copyRegistry();
+  noArchitecture.resources.find(
+    (resource) => resource.kind === "community",
+  ).architectureTypes = [];
+  expectInvalid(noArchitecture, "community resources need at least one architecture type");
+
+  const noRelation = copyRegistry();
+  noRelation.resources.find((resource) => resource.kind === "community").relationTypes = [];
+  expectInvalid(noRelation, "community resources need at least one Pi relationship type");
+});
+
 test("active and legacy dispositions constrain current scope", () => {
   const inactiveWatchlist = copyRegistry();
   const watchlist = inactiveWatchlist.resources.find((resource) =>
