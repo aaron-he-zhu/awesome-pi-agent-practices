@@ -1,0 +1,206 @@
+{
+  "$schema": "./practice-taxonomy.schema.json",
+  "schemaVersion": 1,
+  "categories": [
+    {
+      "id": "vm-tool-isolation",
+      "name": { "en": "VM/tool isolation", "zh-CN": "VM/工具隔离" }
+    },
+    {
+      "id": "permission-guardrails",
+      "name": { "en": "Permission and guardrails", "zh-CN": "权限与护栏" }
+    },
+    {
+      "id": "subagents-workflow-orchestration",
+      "name": { "en": "Subagents and workflow orchestration", "zh-CN": "子代理与工作流编排" }
+    },
+    {
+      "id": "mcp-integration",
+      "name": { "en": "MCP integration", "zh-CN": "MCP 集成" }
+    },
+    {
+      "id": "web-search-fetch",
+      "name": { "en": "Web search and fetch", "zh-CN": "网页搜索与抓取" }
+    },
+    {
+      "id": "browser-authenticated-profile-automation",
+      "name": { "en": "Browser and authenticated-profile automation", "zh-CN": "浏览器与已认证配置自动化" }
+    },
+    {
+      "id": "human-review-planning",
+      "name": { "en": "Human review and planning", "zh-CN": "人工审查与规划" }
+    },
+    {
+      "id": "code-intelligence",
+      "name": { "en": "Code intelligence", "zh-CN": "代码智能" }
+    },
+    {
+      "id": "persistent-memory",
+      "name": { "en": "Persistent memory", "zh-CN": "持久记忆" }
+    },
+    {
+      "id": "tracing-observability",
+      "name": { "en": "Tracing and observability", "zh-CN": "追踪与可观测性" }
+    },
+    {
+      "id": "alternate-ui-editor-integration",
+      "name": { "en": "Alternate UI and editor integration", "zh-CN": "替代 UI 与编辑器集成" }
+    },
+    {
+      "id": "broad-operating-layer",
+      "name": { "en": "Broad operating layer", "zh-CN": "宽域运行层" }
+    },
+    {
+      "id": "context-optimization",
+      "name": { "en": "Context optimization", "zh-CN": "上下文优化" }
+    },
+    {
+      "id": "task-goal-loop-engineering",
+      "name": { "en": "Task, goal, and loop engineering", "zh-CN": "任务、目标与循环工程" }
+    },
+    {
+      "id": "ui-statusline-notification-accessibility",
+      "name": { "en": "UI, statusline, notification, and accessibility", "zh-CN": "UI、状态栏、通知与无障碍" }
+    },
+    {
+      "id": "theme-tooling",
+      "name": { "en": "Themes and theme tooling", "zh-CN": "主题与主题工具" }
+    },
+    {
+      "id": "prompt-template-pack",
+      "name": { "en": "Prompt-template packs", "zh-CN": "提示模板包" }
+    },
+    {
+      "id": "individual-skill",
+      "name": { "en": "Individual skills", "zh-CN": "单项技能" }
+    },
+    {
+      "id": "custom-provider-model-gateway",
+      "name": { "en": "Custom providers and model gateways", "zh-CN": "自定义提供商与模型网关" }
+    },
+    {
+      "id": "local-model-runtime",
+      "name": { "en": "Local-model runtimes", "zh-CN": "本地模型运行时" }
+    },
+    {
+      "id": "remote-control-messaging-collaboration",
+      "name": { "en": "Remote control, messaging, and collaboration", "zh-CN": "远程控制、消息与协作" }
+    },
+    {
+      "id": "package-suite-alternate-distribution",
+      "name": { "en": "Package suites and alternate distributions", "zh-CN": "包套件与替代发行版" }
+    },
+    {
+      "id": "git-review-automation",
+      "name": { "en": "Git and review automation", "zh-CN": "Git 与审查自动化" }
+    },
+    {
+      "id": "evals-benchmarking",
+      "name": { "en": "Evals and benchmarking", "zh-CN": "评测与基准测试" }
+    },
+    {
+      "id": "session-export-sharing-publishing",
+      "name": { "en": "Session export, sharing, and publishing", "zh-CN": "会话导出、分享与发布" }
+    }
+  ],
+  "architectures": [
+    {
+      "id": "resource-only",
+      "name": { "en": "Resource-only", "zh-CN": "纯资源" }
+    },
+    {
+      "id": "in-process-extension",
+      "name": { "en": "In-process extension", "zh-CN": "进程内扩展" }
+    },
+    {
+      "id": "sdk-embedder",
+      "name": { "en": "SDK embedder", "zh-CN": "SDK 嵌入者" }
+    },
+    {
+      "id": "rpc-json-consumer",
+      "name": { "en": "RPC/JSON consumer", "zh-CN": "RPC/JSON 消费者" }
+    },
+    {
+      "id": "acp-consumer",
+      "name": { "en": "ACP consumer", "zh-CN": "ACP 消费者" }
+    },
+    {
+      "id": "frontend-controller",
+      "name": { "en": "Frontend/controller", "zh-CN": "前端/控制器" }
+    },
+    {
+      "id": "external-service",
+      "name": { "en": "External service", "zh-CN": "外部服务" }
+    },
+    {
+      "id": "os-virtualization-boundary",
+      "name": { "en": "OS/virtualization boundary", "zh-CN": "OS/虚拟化边界" }
+    },
+    {
+      "id": "fork-alternate-distribution",
+      "name": { "en": "Fork/alternate distribution", "zh-CN": "Fork/替代发行版" }
+    },
+    {
+      "id": "derived-internalized-runtime",
+      "name": { "en": "Derived/internalized runtime", "zh-CN": "派生/内部化运行时" }
+    },
+    {
+      "id": "package-suite",
+      "name": { "en": "Package suite", "zh-CN": "包套件" }
+    }
+  ],
+  "relations": [
+    {
+      "id": "pi-package-or-resource",
+      "name": { "en": "Pi package or resource", "zh-CN": "Pi 包或资源" }
+    },
+    {
+      "id": "sdk-embedder",
+      "name": { "en": "SDK embedder", "zh-CN": "SDK 嵌入者" }
+    },
+    {
+      "id": "historical-sdk-embedder",
+      "name": { "en": "Historical SDK embedder", "zh-CN": "历史 SDK 嵌入者" }
+    },
+    {
+      "id": "pi-package-consumer",
+      "name": { "en": "Pi package consumer", "zh-CN": "Pi 包消费者" }
+    },
+    {
+      "id": "rpc-json-consumer",
+      "name": { "en": "RPC/JSON consumer", "zh-CN": "RPC/JSON 消费者" }
+    },
+    {
+      "id": "acp-consumer",
+      "name": { "en": "ACP consumer", "zh-CN": "ACP 消费者" }
+    },
+    {
+      "id": "frontend-or-controller",
+      "name": { "en": "Frontend or controller", "zh-CN": "前端或控制器" }
+    },
+    {
+      "id": "fork-or-alternate-distribution",
+      "name": { "en": "Fork or alternate distribution", "zh-CN": "Fork 或替代发行版" }
+    },
+    {
+      "id": "derived-or-internalized-from-pi",
+      "name": { "en": "Derived or internalized from Pi", "zh-CN": "由 Pi 派生或内部化" }
+    },
+    {
+      "id": "service-or-infrastructure",
+      "name": { "en": "Service or infrastructure", "zh-CN": "服务或基础设施" }
+    },
+    {
+      "id": "official-adjacent",
+      "name": { "en": "Official-adjacent", "zh-CN": "官方相邻" }
+    },
+    {
+      "id": "historical-or-archived",
+      "name": { "en": "Historical or archived", "zh-CN": "历史或归档" }
+    },
+    {
+      "id": "indirect-consumer",
+      "name": { "en": "Indirect consumer", "zh-CN": "间接消费者" }
+    }
+  ]
+}

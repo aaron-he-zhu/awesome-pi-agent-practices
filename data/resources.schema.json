@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:awesome-pi-agent-practices:resources-schema:1",
+  "$id": "urn:awesome-pi-agent-practices:resources-schema:2",
   "title": "Awesome Pi Agent Practices resource registry",
   "type": "object",
   "required": ["schemaVersion", "snapshotAt", "baseline", "resources"],
@@ -10,7 +10,7 @@
       "type": "string"
     },
     "schemaVersion": {
-      "const": 1
+      "const": 2
     },
     "snapshotAt": {
       "type": "string",
@@ -117,7 +117,17 @@
               "required": ["kind"]
             },
             "then": {
+              "required": [
+                "primaryCategory",
+                "secondaryCategories",
+                "architectureTypes",
+                "relationTypes"
+              ],
               "properties": {
+                "primaryCategory": {},
+                "secondaryCategories": {},
+                "architectureTypes": {},
+                "relationTypes": {},
                 "status": {
                   "enum": [
                     "watchlist",
@@ -347,6 +357,58 @@
           "reviewedRef": {
             "type": "string",
             "pattern": "^[0-9a-f]{40}$"
+          },
+          "primaryCategory": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "secondaryCategories": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          },
+          "architectureTypes": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          },
+          "relationTypes": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          },
+          "aliases": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "packageIdentities": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            }
+          },
+          "sourceCandidateId": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
           },
           "url": {
             "type": "string",
