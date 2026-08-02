@@ -2,578 +2,639 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-面向 Pi Coding Agent 的可复现操作、定制、安全与集成实践。
+面向真实任务、可以直接照着用的 Pi 编码智能体实战手册。
 
-> \*\*AI 辅助研究预览。\*\*源码审查不表示已经亲测、安全认证或背书。第三方候选必须由
-> 具名人类维护者试用，并根据直接体验重写推荐，才能进入正式精选列表。
+用这个仓库完成第一次小修改，把仓库规则教给 Pi，管理长任务和并行任务，定制
+智能体，把 Pi 嵌入其他程序，以及在出错时有条理地恢复。开始使用前不需要先读完
+三十条实践，也不需要先理解整套生态研究。
+
+| 我现在想要……                           | 直接从这里开始                           |
+| --------------------------------- | --------------------------------- |
+| 完成第一个真正有用的任务                      | [安装并认证后，十分钟取得可用结果](#start-now)    |
+| 复制一种现成的任务结构                       | [按结果选择现成配方](#recipe-chooser)      |
+| 给 Pi 稳定、清楚的仓库规则                   | [直接复制起步套件](#starter-kit)          |
+| 处理长任务、并行任务或自动化                    | [使用高收益模式](#advanced-patterns)     |
+| 构建技能（Skill）、扩展（Extension）、界面或宿主程序 | [定制或集成 Pi](#pi-surfaces)          |
+| 寻找包（Package）和社区实现                 | [按需求探索生态](#ecosystem-exploration) |
+| 排查故障                              | [每次只改变一个变量](#failure-recovery)    |
+
+> 这里的命令是依据仓库固定的 Pi **v0.83.0** 官方文档和源码整理的配方，
+> 不表示维护者已经逐条运行。请替换所有占位符、先审查命令，并以实际退出状态和
+> 实际结果判断成功。第一次安装请使用第 1 步链接的当前官方快速入门指南，
+> 记录 <code>pi --version</code>，然后按实际版本调整固定版本示例。
 
 <!-- sync:root-contents -->
 
 ## 目录
 
-- [从这里开始](#从这里开始)
-- [把 Pi 作为一个系统运行](#把-pi-作为一个系统运行)
-- [Pi 生态概览](#pi-生态概览)
-- [实践领域](#实践领域)
-- [官方基础材料](#官方基础材料)
-- [证据与研究](#证据与研究)
-- [社区审查队列](#社区审查队列)
-  - [状态快照](#状态快照)
-  - [已完成源码审查的社区项目——全部 12 项](#已完成源码审查的社区项目全部-12-项)
-  - [延后处理的社区记录——全部 3 项](#延后处理的社区记录全部-3-项)
-  - [初步发现候选——全部 13 项](#初步发现候选全部-13-项)
-  - [能力覆盖与缺口——全部 25 类](#能力覆盖与缺口全部-25-类)
-  - [架构层次——全部 11 种](#架构层次全部-11-种)
-  - [与 Pi 的关系类型——全部 13 种](#与-pi-的关系类型全部-13-种)
-  - [Catalog、目录与历史语境](#catalog目录与历史语境)
-  - [发现边界与可能仍然遗漏的范围](#发现边界与可能仍然遗漏的范围)
-  - [晋级 Gate](#晋级-gate)
+- [安装并认证后，十分钟取得可用结果](#安装并认证后十分钟取得可用结果)
+- [只学习下一层](#只学习下一层)
+- [保留六步日常速查](#保留六步日常速查)
+- [按结果选择现成配方](#按结果选择现成配方)
+- [直接复制起步套件](#直接复制起步套件)
+- [使用高收益模式](#使用高收益模式)
+- [定制或集成 Pi](#定制或集成-pi)
+- [按需求探索生态](#按需求探索生态)
+- [每次只改变一个变量](#每次只改变一个变量)
+- [参考资料库](#参考资料库)
 
 <!-- sync:root-start -->
 
-## 从这里开始
+<a id="start-now"></a>
 
-复制任何命令前，先选择版本轨道：
+## 安装并认证后，十分钟取得可用结果
 
-| 轨道    | 适用情况                | 规则                                                                                           |
-| ----- | ------------------- | -------------------------------------------------------------------------------------------- |
-| 可复现基线 | 复现本仓库结论或比较行为。       | 使用 Pi **v0.83.0**，并采用[官方来源地图](docs/research/source-map.zh-CN.md#规范入口)中的固定来源。                 |
-| 当前版本  | 使用刚安装的最新 Pi 开始日常工作。 | 查阅[当前 Quickstart](https://pi.dev/docs/latest/quickstart)，记录精确版本；在核验前，把与 v0.83.0 的差异视为版本敏感行为。 |
+前提是你已经按[当前官方快速入门指南](https://pi.dev/docs/latest/quickstart)安装 Pi、
+完成认证，并配置了可用的默认模型。这条路径适合在你信任的仓库中，由人监督完成
+一个范围小、容易回滚的修改。面对未知代码、敏感数据、宽权限凭据或无人值守任务，
+应改用一次性环境或外部操作系统隔离边界。
 
-### 五分钟只读基线
+### 1. 用 60 秒确认 Pi 可以工作
 
-下面的基线用于核验可执行文件、Provider 认证、模型选择和最小资源运行；它**不是**
-安装指南，也不是 Sandbox。
+在一个新的空目录中运行：
 
-1. 在不含敏感数据的仓库中记录初始状态：
+```bash
+command -v pi
+pi --version
+node --version
+pi --no-session --no-tools -p "Reply with exactly PI_READY."
+```
 
-   ```bash
-   command -v pi
-   pi --version
-   node --version
-   git status --short
-   ```
+实际输出中应包含 Pi 和 Node 的版本，最后一个命令应成功退出并只返回 <code>PI_READY</code>。它会使用你当前配置的默认模型服务商（Provider）、模型和
+用户配置；如果失败，直接使用
+[场景 1：首次干净基线](./docs/scenario-cookbook.zh-CN.md#场景-1--首次干净基线)。
+如果需要严格可复现的干净配置和固定模型，也进入场景 1，不要把这些高级控制塞进
+首次成功路径。
 
-2. 使用与试运行相同的可选资源控制枚举模型：
+### 2. 取得一份可以直接使用的只读仓库地图
 
-   ```bash
-   pi --offline --no-approve --no-context-files --no-extensions --no-skills \
-     --no-prompt-templates --no-themes --list-models
-   ```
+进入一个你信任的仓库，先记录状态，再让 Pi 用只读工具说明仓库结构：
 
-   从真实结果中选择模型，再替换下方的 `PROVIDER` 和 `MODEL`。使用测试账号，或
-   仅能完成一次模型请求的最小权限凭据。该命令仍使用当前全局 Pi Profile；若还要
-   排除 Profile 本身，请使用故障排查手册的[干净基线](docs/troubleshooting.zh-CN.md#干净基线)。
+```bash
+git status --short
+git branch --show-current
+git rev-parse HEAD
 
-3. 执行一次临时、只读的勘察；同时关闭项目上下文和可选资源：
+pi --approve --no-session --tools read,grep,find,ls -p \
+  "不要修改文件。说明这个仓库的用途。引用主入口、一个代表性测试，以及文档中明确写出的聚焦检查和完整检查命令。把事实和推测分开。"
+```
 
-   ```bash
-   pi --offline --no-approve --no-context-files --no-extensions --no-skills \
-     --no-prompt-templates --no-themes --no-session \
-     --tools read,grep,find,ls \
-     --provider PROVIDER --model MODEL -p \
-     "只做勘察：指出仓库根目录和建议运行的检查，不要修改文件。"
-   ```
+只有进程成功退出、答案引用了仓库中的实际文件和明确检查，而且之前记录的 Git
+状态没有变化，这一步才算通过。<code>--approve</code> 只决定是否加载受保护的项目
+资源；工具白名单只限制 Pi 注册的工具。两者都不会隔离文件、进程、凭据或网络。
+陌生仓库应改用
+[场景 3：未知仓库只读审计](./docs/scenario-cookbook.zh-CN.md#场景-3--未知仓库只读审计)。
 
-   这里的只读只发生在“已注册工具”层，不是操作系统层。`read`、`grep`、`find` 与
-   `ls` 仍能访问 Pi 进程可读的任何路径，返回内容也可能发送给所选 Provider；若
-   这种可达范围不可接受，必须使用外部边界。`--offline` 只关闭 Pi 启动时的更新、
-   Catalog 与 Telemetry 网络操作，不会阻止所选 Provider 请求，也不是网络防火墙。
+### 3. 开始一个有人监督的小修改
 
-4. 只有在命令成功退出、回答识别了预期仓库、`git status --short` 没有变化，且
-   运行不依赖项目资源时，才算基线通过。认证、网络或模型错误进入
-   [Provider 故障排查](docs/troubleshooting.zh-CN.md#provider-model-auth)；
-   仅在项目目录中出现的故障进入[隔离阶梯](docs/troubleshooting.zh-CN.md#隔离阶梯)。
+审查代码地图，以及仓库中的 <code>AGENTS.md</code>、设置和 Pi 资源。如果任务
+仍然足够小，而且仓库可信，再启动一个独立的交互运行，只开放必要的写入能力：
 
-5. 开放写权限前，填写[任务简报](templates/task-brief.zh-CN.md)，根据
-   [运行手册](docs/operating-playbook.zh-CN.md)划分风险，并建立可恢复的 Git
-   基线。`git status` 不变只能证明仓库状态；工具白名单只限制已注册工具，不能
-   隔离宿主进程。
+```bash
+pi --approve --tools read,grep,find,ls,edit,write,bash
+```
 
-### 按任务选择路径
+粘贴下面的任务约定，并把各项改成这次任务的真实内容：
 
-| 任务                | 从这里开始                                                         | 完成前的必需产物                                 |
-| ----------------- | ------------------------------------------------------------- | ---------------------------------------- |
-| 第一次在真实仓库中工作       | [运行手册](docs/operating-playbook.zh-CN.md#如何使用本手册)              | 任务简报、Git 基线、验证结果和交付摘要。                   |
-| 只读审查或分诊           | [勘察闸门](docs/operating-playbook.zh-CN.md#阶段-4--只读勘察与计划)        | 与文件对应的发现，以及“未授权写入”的明确说明。                 |
-| 长任务或并行修改          | [运行手册：检查点与并行工作](docs/operating-playbook.zh-CN.md#检查点与并行工作)    | 路径/Worktree 归属、检查点、合并顺序和最终集成检查。          |
-| 未知仓库或第三方 Package  | [Extension 审查](docs/extension-review.zh-CN.md#gate-0--确认精确制品) | 来源图、权限/数据流审查、隔离试用和清理。                    |
-| CI 或无人值守运行        | [P25–P27](docs/practice-guide.zh-CN.md#p25--按所有权边界选择接口)       | 显式 Trust/Tool/Session 策略、有限超时/重试和机器可读结果。 |
-| JSON、RPC 或 SDK 集成 | [架构：集成模式](docs/architecture.zh-CN.md#集成模式)                    | 启动、流式传输、取消、失败和关闭的生命周期测试。                 |
-| 故障调查              | [症状路由](docs/troubleshooting.zh-CN.md#症状路由)                    | 最小复现、单变量对照和已脱敏证据。                        |
-| 升级                | [P29](docs/practice-guide.zh-CN.md#p29--通过固定分阶段可逆的路径升级)       | 升级前后矩阵和经过演练的回滚。                          |
-| 评估工作流或模型变更        | [评估记录](templates/evaluation-record.zh-CN.md)                  | 固定用例、门槛、指标、成本和 Reviewer 决定。              |
+```text
+目标：产出一个可以实际验证的结果。
 
-如果需要十二种常见任务的具体命令、预期结果、失败分支、核验和清理步骤，
-请直接使用[场景手册](docs/scenario-cookbook.zh-CN.md)。
+范围内：允许修改的路径或组件。
+范围外：不相关重构或未授权外部系统。
+必须保留：用户已有修改、API/数据行为和明确约束。
 
-### 每个真实任务都要控制的八件事
+先阅读相关指令与文件，说明最小方案，再做获准修改。
 
-三十条实践中最短的安全路径是：
+验收：
+1. 运行精确的行为检查。
+2. 运行精确的回归或静态检查。
+3. 审查完整变更差异和意外文件。
 
-| 步骤 | 实践                                                                                                       | 可观察结果                                                |
-| -: | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-|  1 | [固定执行环境](docs/practice-guide.zh-CN.md#p01--固定并记录执行环境)。                                                   | 可以重建 Pi/Runtime/Model/Resource Version。              |
-|  2 | [建立可恢复 Git Baseline](docs/practice-guide.zh-CN.md#p02--从可恢复的版本控制状态开始)。                                   | 可以区分已有修改与 Agent 修改。                                  |
-|  3 | [选择真正的 Containment Boundary](docs/practice-guide.zh-CN.md#p03--用-os-边界隔离不可信或无人值守工作)。                     | 不可信工作无法访问无关文件、Credential 或 Network。                  |
-|  4 | [区分 Project Trust、Context 与 Sandbox](docs/practice-guide.zh-CN.md#p04--把-project-trust-当作加载门不是-sandbox)。 | Resource Loading 与 OS Authority 被独立控制。               |
-|  5 | [从可测试任务简报开始](docs/practice-guide.zh-CN.md#p08--以可测试的任务简报开始)。                                             | Goal、Scope、Constraint、Check 与 Handoff 明确。            |
-|  6 | [写入前先勘察](docs/practice-guide.zh-CN.md#p09--先只读勘察再扩大能力)。                                                  | 第一轮绘制 Code Map，不修改文件。                                |
-|  7 | [选择最小能力定制原语](docs/practice-guide.zh-CN.md#p11--选择满足需求的最小能力原语)。                                           | Prompt、Skill、Extension、Package、JSON、RPC 或 SDK 有明确理由。 |
-|  8 | [使用诊断隔离阶梯](docs/practice-guide.zh-CN.md#p28--用隔离阶梯诊断)。                                                   | 一个受控变化能开关脱敏 Minimal Reproducer。                      |
+如果需要扩大范围、增加权限、安装依赖、使用凭据、改变外部状态或执行破坏性
+操作，先停止并询问。
 
-阅读完整的[三十条实践指南](docs/practice-guide.zh-CN.md)；检查失败时使用
-[故障排查手册](docs/troubleshooting.zh-CN.md)。
+完成时报告：结果、修改文件、检查与结果、跳过项、剩余风险和回滚方法。
+```
 
-<!-- sync:root-operating -->
+### 4. 用证据关闭任务
 
-## 把 Pi 作为一个系统运行
+不要把一段听起来合理的最终回复当作完成证明。亲自检查仓库：
 
-可靠运行需要分别控制五个平面。一个平面通过，不代表另一个平面安全或正确。
+```bash
+git status --short
+git diff --check
+git diff
+```
 
-| 控制平面   | 核心问题                                  | 最少证据                      |
-| ------ | ------------------------------------- | ------------------------- |
-| 意图与范围  | 授权了哪个可观察结果，明确排除了什么？                   | 含验收与停止条件的任务简报。            |
-| 上下文与知识 | 哪些仓库指令、文件、Session 历史和模型可见输出真正相关？      | 已加载资源清单和有边界的上下文。          |
-| 能力与权限  | 哪些工具/代码能执行，它们能访问哪些文件、进程、网络、凭据或外部系统？   | 风险等级、隔离决定和显式能力集合。         |
-| 执行与状态  | 检查点、分支/Worktree、Session、重试、取消和清理由谁负责？ | 运行清单、恢复点和生命周期记录。          |
-| 证据与质量  | 如何判断正确性、回归、安全、效率和可复现性？                | 已命名检查、结果、最终 Diff、残余风险和回滚。 |
+然后先运行仓库规定的聚焦测试，再运行本任务需要的更广回归检查。合格的交付必须
+说清楚：改了什么、哪些命令通过或失败、哪些内容没有验证、发生了哪些外部影响，
+以及怎样回滚。
 
-[运行手册](docs/operating-playbook.zh-CN.md)把这些平面落实为八个阶段：任务接收、
-基线、边界选择、只读勘察、计划、受控执行、分层验证，以及交付/清理。
-[完整示例](docs/worked-example.zh-CN.md)展示已经填写的产物和失败分支，而不只是
-空白模板。
+需要更完整的版本时，直接使用
+[场景 2：可信仓库中的小修复](./docs/scenario-cookbook.zh-CN.md#场景-2--可信仓库中的小修复)，
+其中包含前置条件、预期结果、失败分支、核验和清理步骤。
 
-以下风险等级用于路由任务，并不表示 Pi 会自动实施策略：
+<!-- sync:root-learning -->
 
-| 等级            | 典型任务                                   | 必需控制                                        |
-| ------------- | -------------------------------------- | ------------------------------------------- |
-| R0 — 观察       | 公开或合成数据、只读分析、不修改外部状态。                  | 显式只读工具、关闭不必要的 Session/资源、核验状态未变化。           |
-| R1 — 可逆本地修改   | 在受信仓库中修改代码或文档。                         | 已知 Git 基线、受限写入、项目检查、Diff 审查和回滚。             |
-| R2 — 高权限或外部影响 | 安装 Package、使用凭据、网络写入、Issue/PR/消息、共享环境。 | 受限测试身份、隔离试用、影响发生前人工复核、审计和清理。                |
-| R3 — 破坏性或生产敏感 | 删除、生产修改、安全响应、受监管/私密数据、无人值守高权限工作。       | 专用隔离与策略、所有者明确批准、Dry Run/Canary、独立验证和演练过的恢复。 |
+## 只学习下一层
 
-任务一旦升级到更高等级，应在检查点停止，取得新的边界与权限后再继续。
-Project Trust、Prompt 措辞、Worktree 和工具名称白名单都不能替代 OS 或服务端控制。
+| 阶段          | 直接实践，并保留这些证明                                  |
+| ----------- | --------------------------------------------- |
+| 1. 完成第一项小任务 | 跑完十分钟路径和场景 2；保留可审查的变更差异、检查结果和交付摘要。            |
+| 2. 让日常工作可重复 | 复制仓库指令和任务简报；保留稳定命令和清楚的任务范围。                   |
+| 3. 管理长任务和并行 | 使用检查点、上下文压缩、克隆会话和 Git 工作树；保留检查点、归属表和合并顺序。     |
+| 4. 定制 Pi    | 构建解决问题的最小原语；保留一个范围窄、可移除的提示词、技能、扩展或包。          |
+| 5. 自动化或嵌入   | 按生命周期负责人选择 Print、JSON、RPC 或 SDK；测试启动到清理的完整周期。 |
+| 6. 运行与维护    | 隔离一个变量、比较固定用例并分阶段升级；保留复现、前后结果、回滚和恢复证据。        |
+
+需要解释某个选择时，再查阅
+[三十条编号实践](./docs/practice-guide.zh-CN.md#任务开始前)，无需按顺序通读。
+
+<!-- sync:root-loop -->
+
+## 保留六步日常速查
+
+完成快速开始后，每个真实任务都复用这六步：
+
+|      步骤 | 你要做什么                                   | 进入下一步前应看到什么       |
+| ------: | --------------------------------------- | ----------------- |
+|   1. 定义 | 写清一个结果、允许路径、必须保留项、停止条件和精确检查。            | 一份别人可以审查的短任务约定。   |
+|  2. 建基线 | 记录 Pi/运行时/模型、Git 状态、分支和提交，并区分已有修改。       | 一个可恢复的起点。         |
+|  3. 先勘察 | 开放写入或执行前，先阅读指令和相关代码。                    | 文件地图和最小修改方案。      |
+| 4. 小步修改 | 一个会话（Session）只做一个连贯目标；只有证据需要时才扩大上下文或权限。 | 范围明确、来源可追踪的变更差异。  |
+| 5. 分层验证 | 按风险运行行为、回归、静态、安全/数据边界和清理检查。             | 实际命令、退出状态和脱敏结果。   |
+|   6. 交付 | 审查完整变更差异，记录跳过项与风险，清理临时影响，并保留回滚。         | 不依赖完整聊天记录也能决策的摘要。 |
+
+三条规则能避免大多数高成本错误：
+
+| 必须记住                                                             | 直接后果                        |
+| ---------------------------------------------------------------- | --------------------------- |
+| 项目信任（Project Trust）只控制受保护项目资源的加载，不是操作系统隔离。                       | 未知、高权限或无人值守工作仍需要外部边界。       |
+| <code>AGENTS.md</code>、提示词模板、技能、扩展、包、会话、Git 工作树和外部服务是不同的状态与权限边界。 | 每一层都要单独选择和审查。               |
+| 会话导航不会恢复文件或外部系统。                                                 | Git、文件、进程、凭据、网络和服务状态必须分别检查。 |
+
+完整版在[八阶段运行手册](docs/operating-playbook.zh-CN.md#如何使用本手册)中；
+只有需要理解某个决定时，再从
+[实践指南的任务开始前章节](docs/practice-guide.zh-CN.md#任务开始前)进入。
+
+<!-- sync:root-recipes -->
+
+<a id="recipe-chooser"></a>
+
+## 按结果选择现成配方
+
+不要为了今天的一项工作先读完整本手册。打开最符合当前结果的那一行；每个场景
+都包含前置条件、可复制步骤、预期结果、失败分支、核验、清理和对应实践。
+
+| 我今天需要……                  | 直接复制这个场景                                                                          | 默认风险  |
+| ------------------------ | --------------------------------------------------------------------------------- | ----- |
+| 确认可执行文件、模型服务商、模型和认证路径    | [1. 首次干净基线](docs/scenario-cookbook.zh-CN.md#场景-1--首次干净基线)                         | R0    |
+| 完成一个范围小、有人监督的修复          | [2. 可信仓库小修复](docs/scenario-cookbook.zh-CN.md#场景-2--可信仓库中的小修复)                     | R1    |
+| 审查陌生源码，但不接受其中的指令         | [3. 未知仓库审计](docs/scenario-cookbook.zh-CN.md#场景-3--未知仓库只读审计)                       | R2    |
+| 跨上下文窗口或监督时段继续            | [4. 长任务与上下文压缩](docs/scenario-cookbook.zh-CN.md#场景-4--长任务检查点与-compaction)          | R1–R2 |
+| 安全拆分互不重叠的修改              | [5. Git 工作树并行](docs/scenario-cookbook.zh-CN.md#场景-5--使用-git-worktree-并行工作)        | R1–R2 |
+| 比较模型或在模型服务商之间交接          | [6. 多服务商交接](docs/scenario-cookbook.zh-CN.md#场景-6--多-provider-比较或-handoff)         | R1–R2 |
+| 试用可执行第三方包                | [7. 隔离试用包](docs/scenario-cookbook.zh-CN.md#场景-7--第三方-package-隔离试用)                | R2    |
+| 运行无界面检查或消费事件             | [8. CI Print 与 JSON](docs/scenario-cookbook.zh-CN.md#场景-8--ci-中使用-print-与-json)   | R2–R3 |
+| 从进程或 TypeScript 应用控制 Pi  | [9. RPC 与 SDK 生命周期](docs/scenario-cookbook.zh-CN.md#场景-9--rpc-子进程或-sdk-host-生命周期) | R2–R3 |
+| 增加工具、事件、命令、界面、模型服务商或策略钩子 | [10. 扩展开发](docs/scenario-cookbook.zh-CN.md#场景-10--extension-开发与生命周期测试)            | R2    |
+| 升级 Pi、模型目录、包或扩展          | [11. 分阶段升级与回滚](docs/scenario-cookbook.zh-CN.md#场景-11--分阶段升级与回滚)                   | R2–R3 |
+| 处理可能的凭据或私有数据泄露           | [12. 密钥泄露响应](docs/scenario-cookbook.zh-CN.md#场景-12--疑似-secret-泄露事件)               | R3    |
+
+R0–R3 只是分流标签，不是 Pi 强制执行的策略。R0 是只读和合成数据；R1 是容易
+回滚的本地修改；R2 涉及可执行第三方代码、凭据、网络写入或共享状态；R3 涉及
+破坏性操作、生产、受监管数据或安全事件。R2/R3 开始前应使用
+[风险分级闸门](docs/operating-playbook.zh-CN.md#风险分级)。
+
+<!-- sync:root-starter -->
+
+<a id="starter-kit"></a>
+
+## 直接复制起步套件
+
+只复制能让下一次运行更清楚的最小制品：
+
+| 直接复制                                         | 什么时候用                             | 你会得到什么                                   |
+| -------------------------------------------- | --------------------------------- | ---------------------------------------- |
+| [仓库指令](templates/AGENTS.zh-CN.md)            | 仓库有长期稳定的命令、结构、约定或保留规则。            | 可审查的 <code>AGENTS.md</code>；不要放密钥和一次性任务。 |
+| [任务简报](templates/task-brief.zh-CN.md)        | 任何真实修改都需要范围和验收。                   | 目标、范围、证据、检查、停止条件、交付和回滚。                  |
+| [运行清单](templates/run-manifest.zh-CN.md)      | 长任务、并行任务、CI、RPC、SDK 或无人值守运行必须可重建。 | 版本、模型、资源、权限、隔离、结果和清理来源。                  |
+| [评估记录](templates/evaluation-record.zh-CN.md) | 比较提示词、模型、模型服务商、工具、扩展或工作流。         | 固定用例、预期/实际结果、门槛、指标、成本和决定。                |
+| [亲测审查](templates/hands-on-review.zh-CN.md)   | 试用第三方包或社区项目。                      | 身份、权限、数据流、生命周期、行为、反例和移除证据。               |
+
+### 最小仓库指令
+
+把下面的结构复制到项目根目录 <code>AGENTS.md</code>，再替换成这个仓库真正
+使用的命令和约束：
+
+```markdown
+# 仓库指南
+
+## 结构
+- 主要代码：
+- 测试：
+- 生成或供应商代码路径：
+
+## 命令
+- 安装：
+- 快速聚焦检查：
+- 完整检查：
+- 构建或类型检查：
+- 格式化：
+
+## 修改规则
+- 必须保留：
+- 不得修改：
+- 新增依赖需要：
+
+## 完成定义
+- 已复现并验证预期行为。
+- 聚焦检查和必要回归检查通过。
+- 已审查完整变更差异和意外文件。
+- 已报告跳过项、剩余风险和回滚方法。
+```
+
+仓库指令是持久上下文，不是沙箱，也不是单次任务计划。更深目录中的具体指令
+可能覆盖根文件，因此指令层级应保持短小、清楚、可审查。
+
+### 日常 TUI 速查
+
+| 输入                      | 用来做什么                         | 注意边界                 |
+| ----------------------- | ----------------------------- | -------------------- |
+| <code>@path</code>      | 精确加入文件或目录，而不是倾倒整个仓库。          | 确认内容适合发送给所选模型服务商。    |
+| <code>!command</code>   | 运行命令并让模型看到输出。                 | 限制并脱敏输出。             |
+| <code>!!command</code>  | 只在本地运行，不加入模型上下文。              | 输出仍可能存在于终端、会话、日志或导出。 |
+| 工作中按 <code>Enter</code> | 当前回复中的工具工作全部结束后、下一次模型调用前纠正方向。 | 尽早修正范围和假设。           |
+| <code>Alt+Enter</code>  | 当前工作单元结束后再处理后续请求。             | 不要把无关目标混入当前任务。       |
+| <code>/session</code>   | 查看当前会话身份。                     | 会话不是仓库状态。            |
+| <code>/tree</code>      | 在同一个会话文件内探索或返回其他分支。           | 不隔离文件写入。             |
+| <code>/fork</code>      | 从较早的用户提示新建会话。                 | 仓库状态仍需单独核验。          |
+| <code>/clone</code>     | 复制完整活动分支，独立继续。                | 写入需要隔离时还应使用 Git 工作树。 |
+| <code>/compact</code>   | 在语义里程碑压缩上下文。                  | 压缩前把持久决定写到外部文件。      |
+
+<!-- sync:root-patterns -->
+
+<a id="advanced-patterns"></a>
+
+## 使用高收益模式
+
+### 不依赖聊天记录恢复长任务
+
+上下文压缩或交接前，把可恢复检查点写在会话外：
+
+```text
+/session
+
+目标和已接受范围：
+BASE_COMMIT 和当前变更差异：
+决定与不变量：
+通过和失败的检查：
+外部影响与幂等标识：
+开放问题：
+下一步精确动作：
+回滚点：
+
+/compact 保留上面的范围、决定、不变量、失败检查、外部影响标识、下一步和回滚点。
+```
+
+恢复后，把模型复述与检查点逐项比较，并独立检查 Git 和外部状态。 <code>/clone</code> 用于独立会话续跑，<code>/tree</code> 用于同一会话内的替代
+路径；两者都不会恢复文件。
+
+### 只并行互不重叠的写入范围
+
+替换所有占位符，并先确认工作树路径和分支名都不存在：
+
+```bash
+git status --short
+git rev-parse HEAD
+git worktree add WORKTREE_A -b BRANCH_A BASE_COMMIT
+git worktree add WORKTREE_B -b BRANCH_B BASE_COMMIT
+git worktree list
+```
+
+每个 Git 工作树只配一个 Pi 会话、一个目标、一个负责人、一组写入路径和一组检查。
+锁文件、结构定义、生成文件、数据库、端口或外部状态共享时必须串行化。Git 工作树
+隔离的是 Git 工作单元，不是操作系统权限。
+
+### 在 CI 中生成一次只读审查报告
+
+只需要一个最终只读报告时使用 Print；需要机器事件流时改用 <code>--mode json</code>，按 JSON Lines 消费标准输出，并单独持续读取标准错误
+输出：
+
+```bash
+pi --no-approve --no-context-files --no-extensions --no-skills \
+  --no-prompt-templates --no-themes --no-session \
+  --tools read,grep,find,ls --provider PROVIDER --model MODEL \
+  -p "审查指定范围，但不要调用仓库命令。返回发现和基于文件的证据。"
+```
+
+这一条命令只有读取类工具，**不能执行仓库测试、Lint 或构建命令**。确实需要执行时，
+应由可信或隔离的 CI 宿主单独定义并约束 <code>bash</code> 权限。CI 宿主还负责超时、
+重试、取消、退出判断、保留和清理；需要长期双向控制的控制器应使用 RPC 或 SDK。
+
+<!-- sync:root-customize -->
+
+<a id="pi-surfaces"></a>
+
+## 定制或集成 Pi
+
+### 选择能解决问题的最小原语
+
+| 你需要什么       | 先用什么                   | 只有在以下情况才升级                       |
+| ----------- | ---------------------- | -------------------------------- |
+| 稳定仓库事实和命令   | <code>AGENTS.md</code> | 行为只属于单次任务，或需要显式调用。               |
+| 可重复调用的文字    | 提示词模板                  | 需要参考资料、辅助脚本或按需工作流。               |
+| 按需工作流       | 技能                     | 需要运行时事件、自定义工具、命令、界面、模型服务商、策略或路由。 |
+| 运行时行为       | 扩展                     | 需要把多种资源一起分发。                     |
+| 共享资源包       | Pi 包                   | 已审查每个可执行资源和组合后的生命周期。             |
+| 只改变终端外观     | 主题                     | 包含展示之外的可执行代码或依赖。                 |
+| 操作系统隔离或并行写入 | 外部容器、虚拟机、沙箱或 Git 工作树   | 不要用提示词或工具列表代替真正边界。               |
+
+从官方[提示词模板（Prompt Template）](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/prompt-templates.md)、
+[技能（Skill）](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/skills.md)、
+[扩展（Extension）](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/extensions.md)、
+[主题（Theme）](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/themes.md)和
+[包（Package）](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/packages.md)
+指南开始。需要可执行代码时，使用上方扩展开发场景，先在一次性测试目录中放入最小
+示例，再做适配。
+
+### 根据生命周期由谁负责来选择接口
+
+| 程序需要……              | 使用                    | 负责人必须处理……                         |
+| ------------------- | --------------------- | --------------------------------- |
+| 人在环编码               | 交互 TUI                | 信任、资源、工具、会话、审查和中断。                |
+| 一个提示词和一个最终结果        | Print <code>-p</code> | 退出状态、超时、结果验证和会话策略。                |
+| 单向机器事件流             | JSON 模式               | JSONL 解析、标准错误输出、顺序、部分/失败事件、背压和保留。 |
+| 非 Node 宿主或替代界面双向控制  | CLI RPC               | 子进程启动、LF 分帧、关联、事件、取消、重启和关闭。       |
+| TypeScript 内完全拥有运行时 | SDK                   | 模型、资源、工具、会话、订阅、持久化、凭据、取消和释放。      |
+
+上方 RPC/SDK 场景包含 v0.83.0 生命周期示例。不要把 RPC 当成 JSON 模式，
+也不要假设未固定版本的升级保持接口稳定。
+
+### 确认你真正需要哪个包
+
+| 包                                                                                                                                                                  | 适合什么情况                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| [<code>@earendil-works/pi-coding-agent</code>](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/README.md) | 需要完整 CLI、会话、资源、工具、TUI、Print、JSON、RPC 或 SDK。 |
+| [<code>@earendil-works/pi-ai</code>](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/ai/README.md)                     | 只需要多服务商模型、流式输出、消息、工具调用和用量统计原语。              |
+| [<code>@earendil-works/pi-agent-core</code>](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/agent/README.md)          | 自己构建智能体运行时及状态、事件和工具循环。                      |
+| [<code>@earendil-works/pi-tui</code>](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/tui/README.md)                   | 构建终端组件或自定义终端界面。                             |
 
 <!-- sync:root-ecosystem -->
 
-## Pi 生态概览
+<a id="ecosystem-exploration"></a>
 
-Pi 生态不只是 `pi` 终端命令。在本仓库采用的稳定 **v0.83.0** 基线中，四个主要
-Package 分别覆盖 Multi-provider AI API、Agent Runtime、Coding-agent CLI 与
-TUI。Prompt Template、Skill、Extension、Theme 和 Pi Package 构成从可复用文本
-到进程内代码的分层定制路径；JSON、RPC 与 SDK 则提供不同强度的程序化集成入口。
+## 按需求探索生态
 
-### 四个主要 Package
+官方能力可以现在就用。社区区目前有 **0 个经过实际运行验证的项目，0 个正式推荐项目**，
+所以这里只提供探索地图，不提供“复制安装即可采用”的第三方清单。任何社区项目在
+你自己的隔离环境中复现前，都只能作为设计模式和试用线索。
 
-| Package                                                                                                                                                 | 具体职责                                                                                  | 适用场景                                                             |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| [`@earendil-works/pi-ai`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/ai/README.md)                     | 统一 Provider Streaming、Message、Tool Call、Usage 与 Cross-provider Transformation。        | 只需要 Model/Provider Primitive，不需要 Coding-agent UX。                |
-| [`@earendil-works/pi-agent-core`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/agent/README.md)          | 提供 Agent Loop、State、Event、Tool Execution 与 Transport Primitive。                       | 构建 Agent Runtime，而不是直接使用完整 CLI。                                  |
-| [`@earendil-works/pi-coding-agent`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/README.md) | 提供 `pi` CLI、Coding Tool、Session、Resource Loading，以及 TUI、Print、JSON、RPC 与 SDK Surface。 | 使用交互式 Agent、Headless Automation 或 Application Embedding Surface。 |
-| [`@earendil-works/pi-tui`](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/tui/README.md)                   | 提供 Terminal Component、Differential Rendering、Input、Layout 与 Width Handling。           | 构建 Terminal Interface 或自定义 Pi UI。                                |
-
-[Pi 的设计原则](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#design-principles)
-是让 Mandatory Core 保持精简。在 v0.83.0 中，MCP、Subagent、Permission
-Popup、Plan Mode、Todo 与 Background Bash 都不是内建 Workflow；它们可以通过
-Extension/Package 实现，也可以与 Container、tmux 等外部工具组合。
-
-### 定制与分发
-
-| 原语                                                                                                                                                   | 具体行为                                                                                   | 必须记住的边界                                                             |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| [Context File](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#context-files) | 分层加载 `AGENTS.md` 或 `CLAUDE.md` Instruction。                                            | 拒绝 Project Trust 不会关闭发现；需用 `-nc`。Context 不是 OS Permission Boundary。 |
-| [Prompt Template](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/prompt-templates.md) | 通过 `/review` 等显式 Slash Command 展开可复用 Markdown。                                         | 它是文本展开，不是自动 Runtime Hook 或 Tool Policy。                             |
-| [Skill](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/skills.md)                     | 按需加载 Workflow，并可包含 Script、Reference 与 Asset。                                           | Skill 可以指示 Tool/Executable Use，仍需要 Source Review。                   |
-| [Extension](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/extensions.md)             | 在进程内运行 TypeScript/JavaScript，可增加 Event、Tool、Command、UI、Provider、Policy 与 Tool Routing。 | 它具有 Pi Process User 的 Authority；Tool Allowlist 不是 Sandbox。          |
-| [Theme](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/themes.md)                     | 通过 JSON 配置 Terminal Presentation。                                                      | 包含 Theme 的 Package 还可能包含可执行 Extension 或 Dependency。                 |
-| [Pi Package](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/packages.md)              | 打包 Extension、Skill、Prompt 与 Theme；来源可以是 npm、Git 或 Local Path，CLI 管理已配置条目。              | 分发与 Catalog 收录不能证明 Identity、Compatibility、Quality 或 Safety。         |
-
-### 集成路径
-
-| Interface                                                                                                                                           | Data/Control 形态                                          | Ownership Boundary                                                         |
-| --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [Interactive 与 Print](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/usage.md#modes) | 面向人的 TUI 或一次性 Final Output。                              | Print Mode 不会自动无 Session；需要时使用 `--no-session`。                             |
-| [JSON Mode](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/json.md)                  | 面向 Log、Pipeline 与自定义消费者的单向 JSON Lines Event Stream。      | 它不是双向 Controller，Consumer 必须处理 Streaming Event。                            |
-| [CLI RPC](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/rpc.md)                     | 通过 stdio 上 LF 分隔的 JSONL 传递双向 Request、Response 与异步 Event。 | 固定 Pi Version，并单独 Drain stderr；RPC 不是 JSON Mode。                           |
-| [TypeScript SDK](https://github.com/earendil-works/pi/blob/845d6ff1f6643aba440341cce877ce1c43ebbc39/packages/coding-agent/docs/sdk.md)              | 在进程内构建并拥有 Session、Resource、Tool、Model 与 Event。           | Host 负责 Policy、Credential、Persistence、Cancellation、Subscription 与 Cleanup。 |
-
-<!-- sync:root-ecosystem-evidence -->
-
-### 如何阅读生态地图
-
-下方表格是有日期、已 Check-in 的研究地图，不是流行度排行或推荐列表。“属于生态”
-表示不可变的一手证据能证明项目与 Pi 存在相关的技术或历史关系；不表示项目仍然
-活跃、当前兼容、安全、持续维护或获得背书。
-
-| 证据状态                             | 当前数量 | 实际已经确认的内容                                                | 采用时的含义                                               |
-| -------------------------------- | ---: | -------------------------------------------------------- | ---------------------------------------------------- |
-| 官方基础材料                           |    6 | 上游仓库、当前文档、Release、Example、Package Catalog 或 RFC Index。   | 仍须固定版本，并区分 Proposal、`main` 与 Stable Release。         |
-| `source-reviewed` 社区项目           |   12 | 对固定 Ref 进行了有限审查，覆盖用途、源码、License、依赖、权限/数据流、Test、CI 与显著风险。 | 只是值得试用的线索；本仓库维护者没有安装或运行它们。                           |
-| 延后处理的社区记录                        |    3 | 已检查到足以确认其混合、旧 Scope、缺 License、隐私阻塞，或必须逐项拆分。              | 不要把整个仓库视为一个原子能力或当前采用路径。                              |
-| `preliminary-evidence-collected` |   13 | 固定证据确认了 Identity 及初步 Pi 关系；完整 Source-review Gate 尚未开始。   | 状态仍是 `awaiting-source-review`、`not-evaluated` 与不受信任。 |
-| `hands-on-verified` / `featured` |    0 | 尚无第三方项目由具名人类完成可复现实测，并另经编辑晋级决定。                           | 当前有意不设置任何第三方正式推荐。                                    |
-
-资源注册表采集于 **2026-07-31T15:56:32+08:00**；发现候选注册表采集于
-**2026-08-01T15:28:59+08:00**。完整逐项地图见后文“社区审查队列”。较早材料仍可能
-使用 `badlogic/pi-mono`、`earendil-works/pi-mono` 或
-`@mariozechner/*`；执行前必须解析当前 Repository、Publisher/Scope、Peer
-Dependency 与 Install Target。
-
-<!-- sync:root-areas -->
-
-## 实践领域
-
-| 领域                      | 实践                                                             | 主要决策                                                        |
-| ----------------------- | -------------------------------------------------------------- | ----------------------------------------------------------- |
-| Baseline 与 Recovery     | [P01–P02](docs/practice-guide.zh-CN.md#baseline-and-recovery)。 | 另一位使用者能否复现并安全回滚？                                            |
-| Trust 与 Containment     | [P03–P06](docs/practice-guide.zh-CN.md#trust-and-containment)。 | 加载什么、什么能执行、它能访问什么？                                          |
-| Task 与 Context Design   | [P07–P11](docs/practice-guide.zh-CN.md#任务与上下文设计)。              | 满足需求的最小 Context/Capability 是什么？                             |
-| Session Operation       | [P12–P16](docs/practice-guide.zh-CN.md#任务执行中)。                 | Durable State 在哪里，什么有损或可分享？                                 |
-| Model 与 Reliability     | [P17–P20](docs/practice-guide.zh-CN.md#模型provider-与可靠性)。       | 哪个 Provider/Model Behavior、Retry Owner 与 Output Bound 适用？   |
-| Extension 与 Package     | [P21–P24](docs/practice-guide.zh-CN.md#extension-与-package)。   | Runtime Code 是否足以证明其 Lifecycle、Authority 与 Supply Chain 合理？ |
-| Automation 与 Embedding  | [P25–P27](docs/practice-guide.zh-CN.md#自动化与嵌入)。                | 哪个 Process 承担 Policy、Session、Cancellation 与 Cleanup？        |
-| Diagnosis 与 Maintenance | [P28–P30](docs/practice-guide.zh-CN.md#诊断升级与贡献)。               | Failure、Upgrade 与 Contribution 能否由人类核验？                     |
-
-[架构决策地图](docs/architecture.zh-CN.md)区分稳定 Release Behavior、实验源码、
-Customization Layer、Trust Boundary、Session Semantics 与 Integration Mode。
-
-<!-- sync:root-official -->
-
-## 官方基础材料
-
-以下是 Primary Source 与 Reference Implementation，不是第三方背书。
+### 官方基础材料
 
 <!-- resource:official-pi -->
 
-- [Pi](https://github.com/earendil-works/pi) - 提供 Tag Source、Test、Release、Security Boundary 与 Contribution Policy 的 Canonical Monorepo。
+- [Pi](https://github.com/earendil-works/pi) - 提供源码、发布版本、测试、包代码、安全边界和贡献政策的权威仓库。
 
 <!-- resource:official-docs -->
 
-- [Documentation](https://pi.dev/docs/latest) - 当前 Usage、Provider、Session、Resource、Security、Terminal Setup、JSON、RPC 与 SDK 指南。
+- [Documentation](https://pi.dev/docs/latest) - 当前用法、模型服务商、会话、资源、安全、终端、JSON、RPC 与 SDK 指南。
 
 <!-- resource:official-releases -->
 
-- [Releases](https://github.com/earendil-works/pi/releases) - 用于选择和保存可复现 Baseline 的 Versioned Note 与 Artifact。
+- [Releases](https://github.com/earendil-works/pi/releases) - 用于选择并保存可复现基线的版本说明和制品。
 
 <!-- resource:official-extension-examples -->
 
-- [Extension Examples](https://github.com/earendil-works/pi/tree/v0.83.0/packages/coding-agent/examples/extensions) - Lifecycle Hook、Custom Tool、Provider、UI、Policy 与 Tool-routing Pattern 的可审查实现。
+- [Extension Examples](https://github.com/earendil-works/pi/tree/v0.83.0/packages/coding-agent/examples/extensions) - 可审查的生命周期钩子、工具、界面、模型服务商、策略与工具路由实现。
 
 <!-- resource:official-package-catalog -->
 
-- [Package Catalog](https://pi.dev/packages) - 广泛 Package Discovery Surface；条目仍需 Source、License、Authority、Compatibility 与 Hands-on Review。
+- [Package Catalog](https://pi.dev/packages) - 广泛的包发现入口；条目仍需源码、许可证、权限、兼容性与亲测审查。
 
 <!-- resource:official-rfcs -->
 
-- [Pi RFCs](https://rfc.earendil.com/keyword/pi/) - 带显式 State 的 Design Proposal，必须与 Tag Implementation 和 Release Status 交叉验证。
+- [Pi RFCs](https://rfc.earendil.com/keyword/pi/) - 设计提案；状态必须与固定标签实现和发布版本交叉核验。
 
-<!-- sync:root-research -->
+### 从源码审查案例中探索设计模式
 
-## 证据与研究
+下面的固定项目在 2026-07-31 接受了目的、源码、许可证、依赖、权限与数据流、测试、
+CI 和明显风险审查。仓库维护者**没有**安装或运行它们。可以借鉴模式，不能复制
+信任结论。
 
-| 阅读材料                                                   | 用途                                                                                  |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| [文档地图](docs/README.zh-CN.md)                           | 选择阅读路径，理解 Evidence Label。                                                           |
-| [官方来源地图](docs/research/source-map.zh-CN.md)            | 用固定版本一手来源替换记忆/Search Snippet。                                                       |
-| [证据台账](docs/research/evidence-ledger.zh-CN.md)         | 把 P01–P30 每条建议追溯到事实和明确标记的推论。                                                        |
-| [研究方法](docs/research/methodology.zh-CN.md)             | 检查 Source Tier、Inclusion Gate、Scoring、AI Disclosure 与 Update Procedure。             |
-| [发现协议](docs/research/discovery-protocol.zh-CN.md)      | 保存可重放搜索、Identity、Relationship、Disposition 与分层审查顺序。                                  |
-| [精确查询日志](docs/research/query-log.zh-CN.md)             | 重跑带日期的 GitHub、Catalog、Registry、RFC、Source 与 Community-review Query。                 |
-| [生态全景](docs/research/landscape.zh-CN.md)               | 查看带日期的 Project、Catalog、Issue Cluster、Directory 与 Opportunity Snapshot。              |
-| [生态覆盖矩阵](docs/research/coverage-matrix.zh-CN.md)       | 查看全部官方/社区能力领域、证据状态、明确缺口与下一道 Gate。                                                   |
-| [机器生成的覆盖摘要](docs/research/coverage-summary.zh-CN.md)   | 查看从已审查资源和发现候选推导的类别与架构计数。                                                            |
-| [生态目录指南](docs/research/ecosystem-directories.zh-CN.md) | 在 Official、Curated、Automated、Synthesized 与 Historical Discovery Surface 之间选择。       |
-| [Extension 审查](docs/extension-review.zh-CN.md)         | 审计 Identity、Install Script、Dependency、Authority、Lifecycle、Data Flow、Test 与 Removal。 |
-| [术语表](docs/glossary.zh-CN.md)                          | 区分 Project Trust、Session Operation、Tool Limit、RPC、SDK 与 Containment。                |
+- **虚拟机工具隔离 — [Gondolin @ <code>29fa74d</code>](https://github.com/earendil-works/gondolin/tree/29fa74d802112f29c720990aced26165e0d57d84)。**
+  可学习通过微型虚拟机路由 Pi 工具；先核验挂载、网络、同用户进程和拒绝服务攻击
+  等非目标。
+- **子智能体编排 — [pi-subagents @ <code>89de10e</code>](https://github.com/nicobailon/pi-subagents/tree/89de10e4bc8895e7948704c38620a5b35ddcd17e)。**
+  可学习子智能体、链式、后台和工作树编排；先核验子进程权限、继承环境、并发、
+  成本、保留状态和写入归属。
+- **持久并行工作流 — [pi-crew @ <code>c694ebf</code>](https://github.com/baphuongna/pi-crew/tree/c694ebfd5d0f49d9479870d6919be4bbf9738291)。**
+  可学习持久并行工作流编排；先核验子进程权限、继承环境、并发、成本、保留状态和
+  写入归属。
+- **MCP 连接 — [pi-mcp-adapter @ <code>6a3e840</code>](https://github.com/nicobailon/pi-mcp-adapter/tree/6a3e840219a49f9ae5350542b7a707aa1e83fedf)。**
+  可学习延迟代理、直接服务器、OAuth、包和一致性检查；先核验每个服务器命令、
+  密钥解析器、凭据和共享多路复用器。
+- **搜索、抓取、PDF、仓库和视频 — [pi-web-access @ <code>c702b3b</code>](https://github.com/nicobailon/pi-web-access/tree/c702b3be11bfbc832489eb7cfe31d9bbbbb2cc27)。**
+  可学习带服务商回退的组合式网络工具；先核验查询与内容外发、Cookie、重定向与
+  SSRF、大小、保留、超时和离线失败。
+- **已登录浏览器自动化 — [pi-agent-browser-native @ <code>211a012</code>](https://github.com/fitchmultz/pi-agent-browser-native/tree/211a012c9b199d758768e8ba729f35e11e661f65)。**
+  可学习在独立浏览器 CLI 上提供结构化 Pi 工具；先使用专用测试配置，并检查
+  Cookie、剪贴板、下载、截图和 CLI 配对。
+- **人工审查计划与变更差异 — [Plannotator @ <code>80065c8</code>](https://github.com/backnotprop/plannotator/tree/80065c84624e80bf60dc1ad862c17c3ea3f2bd80)。**
+  可学习计划、文档、HTML 和变更差异审查界面；敏感试用先关闭分享，并检查链接、
+  历史、元数据、端点和保留策略。
+- **跨会话记忆 — [pi-hermes-memory @ <code>5aafe2c</code>](https://github.com/chandra447/pi-hermes-memory/tree/5aafe2ca04cb55b62204b159389c8381894038ce)。**
+  可学习会话搜索、持久记忆和模型辅助整合；先核验隐私生命周期、存储型提示词注入、
+  扫描器限制、SQLite ABI 和记忆重写。
+- **Emacs RPC 前端 — [pi-coding-agent for Emacs @ <code>df5ce0a</code>](https://github.com/dnouri/pi-coding-agent/tree/df5ce0a176ce634ccb4883042c415a74a5637c37)。**
+  可学习经过测试的替代界面和无界面信任处理；未知仓库应改变默认批准策略，并审查
+  共享认证存储。
+- **LSP、Lint、格式化、AST 与 Tree-sitter — [pi-lens @ <code>a4baa3a</code>](https://github.com/apmantza/pi-lens/tree/a4baa3a94ecaf71f8af9f48ab27c8d7f6da8fdb2)。**
+  可学习把结构化代码智能工具组合到 Pi 后面；先核验下载、可选安装、文件修改和
+  特定版本兼容性。
+- **会话与工具追踪 — [braintrust-pi-extension @ <code>c8f1aea</code>](https://github.com/braintrustdata/braintrust-pi-extension/tree/c8f1aea1236f47c2681c0104be143b832bc9058c)。**
+  可学习追踪会话、轮次、模型调用、工具和上下文压缩；先核验原始输入、上下文、
+  输出与工具外发，以及脱敏、采样、保留、删除和故障隔离。
+- **宽域 SDD/TDD 运行层 — [gentle-pi @ <code>3b6b3d2</code>](https://github.com/Gentleman-Programming/gentle-pi/tree/3b6b3d2183dbbc4d45b16a1a0f127728c0a2435c)。**
+  可学习组合规格、TDD、审查、子智能体和策略；先核验原生安装后脚本、不稳定接口、
+  广泛配套权限和同用户威胁模型排除项。
 
-稳定结论以 **v0.83.0**
-`845d6ff1f6643aba440341cce877ce1c43ebbc39` 核验。发布后观察固定到
-`main@9b50b046d328d589a81400d2e184175d0bf19734`，并标记为 `main-only`。
+完整入口、测试与 CI 说明和试用问题见
+[源码审查观察名单](docs/research/watchlist.zh-CN.md)。
 
-<!-- sync:root-queue -->
+### 可以继续探索，但不要直接照搬
 
-## 社区审查队列
+下面 13 项都只保存了初步证据，仍在等待源码审查，且没有经过评估：
 
-本节把当前 Check-in 的完整决策地图直接放进 README。机器事实仍以资源注册表、
-候选注册表、分类法和生成覆盖数据为准；更深的观察名单保存逐项目审查轨迹。这些
-研究表中的条目不是正式 Awesome Item；除非未来晋级为 `featured`，否则不会获得
-`resource:` Marker。
+| 需求                        | 线索                                                                                                                                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 远程、消息或移动控制                | [OpenClaw](https://github.com/openclaw/openclaw)、[Polpo](https://github.com/pugliatechs/polpo)、[piclaw](https://github.com/rcarmo/piclaw)、[pi-mobile](https://github.com/p1rallels/pi-mobile)                                                                 |
+| 替代发行版或宽域套件                | [oh-my-pi](https://github.com/can1357/oh-my-pi)、[Senpi](https://github.com/code-yeongyu/senpi)、[my-pi](https://github.com/spences10/my-pi)                                                                                                                    |
+| VS Code、Neovim、ACP 或替代 UI | [pi-vscode-extension](https://github.com/Zetaphor/pi-vscode-extension)、[pi-vscode](https://github.com/pithings/pi-vscode)、[pi-acp](https://github.com/svkozak/pi-acp)、[acpx](https://github.com/openclaw/acpx)、[pi-nvim](https://github.com/carderne/pi-nvim) |
+| GitHub 自动化                | [pi-coding-agent-action](https://github.com/shaftoe/pi-coding-agent-action)                                                                                                                                                                                   |
 
-<!-- sync:root-queue-snapshot -->
+OpenClaw 被纳入，是因为固定证据记录了对 Pi 包的历史直接嵌入、后来将运行时
+内部化，以及保留的 Pi 来源。这**不能**证明当前兼容 Pi v0.83，也不能替代当前
+源码、许可证、权限、数据流、测试和维护审查。其五段证据链和
+全部 28 条候选固定证据见
+[候选注册表](data/discovery-candidates.json)。
 
-### 状态快照
+另有三项被有意延后，而不是当作当前采用路径：
+[pi-extensions](https://github.com/tmustier/pi-extensions) 需要逐项审查；
+[pi-skills](https://github.com/badlogic/pi-skills) 使用旧命名空间，且包含多种
+高权限工作流；[pi-share-hf](https://github.com/badlogic/pi-share-hf) 因
+许可证、旧命名空间与公开分享/隐私问题而阻断。
 
-| 维度                                     | Check-in 状态                                                                         | 含义                                                                      |
-| -------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [资源注册表](data/resources.json)           | 28 条：6 条官方资源、7 条目录/相关资源、15 条社区记录。                                                   | 15 条社区记录分为 12 条 `source-reviewed` 和 3 条延后记录。                            |
-| [发现候选](data/discovery-candidates.json) | 13 个；全部为 `preliminary-evidence-collected`、`awaiting-source-review`、`not-evaluated`。 | Identity 与 Pi 关系证据已固定；普通源码审查仍未完成。                                       |
-| [机器分类法](data/practice-taxonomy.json)   | 25 类能力、11 种架构、13 种与 Pi 的关系。                                                         | Category 说明项目做什么，Architecture 说明如何运行，Relationship 说明如何连接 Pi。            |
-| [覆盖数据](data/coverage-summary.json)     | 275 个“类别 × 架构”单元：82 个非空、42 个有源码审查证据、0 个有亲测证据。                                       | 一个项目可以占多个单元，因此 82 个非空单元不等于 82 个项目。                                      |
-| 源码审查缺口                                 | 25 类中有 9 类没有任何 Primary/Secondary 源码审查代表；14 类没有源码审查 Primary 代表。                      | 14 个 Primary 缺口中有 5 个仅由 Secondary 覆盖；空白只表示本仓库没有 Check-in 证据，不证明生态中没有实现。 |
-| 亲测与推荐状态                                | 25/25 类没有 Hands-on-verified 代表；第三方 Featured 条目为 0。                                  | 增加 Candidate Link 不能替代具名、可复现的人类实测。                                      |
+### 在一次性目录中试装并移除已审查的包
 
-下文 `P` 与 `S` 分别表示 Primary 和 Secondary Category Placement。除非明确
-标为总数，否则计数可能重叠。
+下面是安装命令的**占位结构，不是对任何具体第三方包的采用建议**。先审查精确制品、
+安装脚本、依赖、入口点、数据流、测试和移除方法。在一次性本地测试目录中，只选择
+与你审查制品一致的**一种**固定来源，并替换全部占位符：
 
-<!-- sync:root-queue-reviewed -->
+```bash
+pi install npm:@scope/name@1.2.3 -l --approve
+pi install git:github.com/OWNER/REPOSITORY@FULL_COMMIT -l --approve
+```
 
-### 已完成源码审查的社区项目——全部 12 项
+完成有限试用后，只运行与你所安装来源相匹配的那一条移除命令，再检查残留文件、
+进程、凭据、设置、会话和外部数据：
 
-以下项目在 **2026-07-31** 针对链接中的 Immutable Ref 通过了有限的 Source 与
-Metadata Review。本仓库维护者没有安装或运行它们；在具名人类亲测前，它们仍是不
-受信任的试用线索。入口、Test 与试用问题见[完整源码审查观察名单](docs/research/watchlist.zh-CN.md)。
+```bash
+pi remove npm:@scope/name -l --approve
+pi remove git:github.com/OWNER/REPOSITORY -l --approve
+```
 
-| 项目与已审查证据                                                                                                                                                                                                          | 能力、架构及与 Pi 的关系                                                                                                  | 源码审查已确认的内容                                                                                  | 任何亲测前必须处理的关键边界                                                                                                                                   |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [Gondolin @ `29fa74d`](https://github.com/earendil-works/gondolin/tree/29fa74d802112f29c720990aced26165e0d57d84) · Apache-2.0 · macOS/Linux · Extensive Test、CI 通过                                                | P：VM/工具隔离；S：权限/护栏。OS/虚拟化边界 + 进程内 Example；官方相邻的 Pi Resource。                                                     | Micro-VM 隔离研究，包含具体 Pi Tool-routing Example 与较完整的安全/限制文档。                                    | Example 不是可安装 Pi Package；项目以 Read-write 挂载到 `/workspace`；QEMU、同用户进程和 DoS 是文档明确的 Non-goal。                                                        |
-| [pi-subagents @ `89de10e`](https://github.com/nicobailon/pi-subagents/tree/89de10e4bc8895e7948704c38620a5b35ddcd17e) · MIT · Current Scope · Unit/Integration/E2E、CI 通过                                           | P：子代理/工作流；S：任务/目标循环、Git/审查。进程内扩展；Pi Package/Resource。                                                           | Subagent、Parallel、Chain、Background、Lifecycle 与 Worktree 编排模式。                               | Subprocess、Worktree 和 Tool Restriction 不是 OS 隔离；必须限定子代理 Tool/Model、环境继承、并发、成本、后台取消、持久状态和并行写。                                                     |
-| [pi-crew @ `c694ebf`](https://github.com/baphuongna/pi-crew/tree/c694ebfd5d0f49d9479870d6919be4bbf9738291) · MIT · Current Scope · Unit/Integration/Package Test、CI Mixed                                         | P：子代理/工作流；S：任务/目标循环、Git/审查。进程内扩展 + 外部服务；Pi Package/Resource + Service/Infrastructure。                           | Durable Multi-agent Workflow、并行编排和可选 Worktree 隔离。                                           | 动态 `.dwf.ts` 运行未沙箱化 JS/TS；“Confirmation” Flag 不一定是人工批准；Unix Broker 与残留状态都需显式审查和清理。                                                               |
-| [pi-mcp-adapter @ `6a3e840`](https://github.com/nicobailon/pi-mcp-adapter/tree/6a3e840219a49f9ae5350542b7a707aa1e83fedf) · MIT · Current Scope · Unit/OAuth/Conformance/Package Test、CI 通过                        | P：MCP 集成。进程内扩展 + 外部服务；Pi Package/Resource + Service/Infrastructure。                                             | Lazy-proxy 与 Direct MCP Path，覆盖 OAuth、Packaging、Protocol 与 Conformance。                     | MCP Server Command 与 Secret Resolver 以本地用户权限执行；共享 Multiplexer 会共享状态与凭据。每个 Server 都必须分别固定、审查和隔离。                                                  |
-| [pi-web-access @ `c702b3b`](https://github.com/nicobailon/pi-web-access/tree/c702b3be11bfbc832489eb7cfe31d9bbbbb2cc27) · MIT · Current Scope · 有 Test、未观察到仓库 CI                                                   | P：网页搜索/抓取。进程内扩展 + 外部服务；Pi Package/Resource + Service/Infrastructure。                                            | 在一个 Package 中整合 Search、Fetch、Repository、PDF、YouTube 与 Local-video Workflow。                 | Query、URL、页面、视频和 Browser Cookie 可能进入多个 Provider/Fallback；必须逐 Provider 审查 Data Flow、Redirect/SSRF、Size Limit、Retention、Timeout 与 Offline Failure。 |
-| [pi-agent-browser-native @ `211a012`](https://github.com/fitchmultz/pi-agent-browser-native/tree/211a012c9b199d758768e8ba729f35e11e661f65) · MIT · Pi `>=0.80.6` · Extensive Test、未观察到仓库 CI                       | P：已认证浏览器自动化；S：替代 UI/编辑器。进程内扩展 + 外部服务；Pi Package/Resource + Service/Infrastructure。                              | 在独立 `agent-browser` CLI 之上提供结构化 Pi Tool Surface，覆盖 Browser、Electron、Profile 与 Download。     | 可接触 Login State、Cookie、Clipboard、Download 和 Screenshot；项目配置 Trust-sensitive。只能使用专用 Test Profile，并核验 CLI/Version Pairing 与 Cleanup。               |
-| [Plannotator @ `80065c8`](https://github.com/backnotprop/plannotator/tree/80065c84624e80bf60dc1ad862c17c3ea3f2bd80) · Root Apache-2.0；Pi Extension MIT OR Apache-2.0 · Pi `>=0.74.0` · CI 通过                      | P：人工审查/规划；S：Git/审查、Session Sharing。进程内扩展 + Frontend/Controller + 外部服务；对应三种 Pi 关系。                               | 为 Plan、Markdown/HTML 与 Code Diff 提供 Human-review Surface，并有 Pi Runtime Smoke Coverage。      | 可选分享会上传加密密文；加密不能消除 URL Fragment、History、Metadata、Endpoint 或 Retention 风险；敏感试用必须禁用分享。                                                             |
-| [pi-hermes-memory @ `5aafe2c`](https://github.com/chandra447/pi-hermes-memory/tree/5aafe2ca04cb55b62204b159389c8381894038ce) · MIT · Current Scope · Unit/Check/Lint、CI 通过                                        | P：持久记忆；S：上下文优化。进程内扩展 + 外部服务；Pi Package/Resource + Service/Infrastructure。                                       | Cross-session Memory、SQLite 全文 Session Search 与 Procedural-memory Workflow。                 | 持久索引会延长隐私与 Stored Prompt Injection 的生命周期；Scanner 不完整、Native SQLite 有 ABI 风险，Model-based Consolidation 会读取并改写记忆。                                  |
-| [pi-coding-agent for Emacs @ `df5ce0a`](https://github.com/dnouri/pi-coding-agent/tree/df5ce0a176ce634ccb4883042c415a74a5637c37) · GPL-3.0-only · Pi `>=0.79.1` · Unit/Integration/GUI/Lint、CI 通过                 | P：替代 UI/编辑器。RPC/JSON Consumer + Frontend/Controller；对应 RPC 与 Frontend 关系。                                       | 经过测试的 Pi RPC Emacs UI，也是 Headless Project-trust 的具体案例。                                      | 文档默认传递 `--approve`；未知仓库必须采用显式 Non-approving Policy，并分别决定 Context File 与共享 Auth Storage。                                                          |
-| [pi-lens @ `a4baa3a`](https://github.com/apmantza/pi-lens/tree/a4baa3a94ecaf71f8af9f48ab27c8d7f6da8fdb2) · MIT · Current Scope · Install/Grammar/Tool Compatibility CI                                            | P：代码智能。进程内扩展 + 外部服务；Pi Package/Resource + Service/Infrastructure。                                               | Structured LSP、Lint、Formatting、AST/Tree-sitter 与可选扫描工具。                                     | Build/Lifecycle 可下载 Grammar/Tool，分析也可能修改文件；一项固定到 Pi 0.80.10 的 Compatibility Smoke 不能证明完整支持 v0.83.0。                                              |
-| [braintrust-pi-extension @ `c8f1aea`](https://github.com/braintrustdata/braintrust-pi-extension/tree/c8f1aea1236f47c2681c0104be143b832bc9058c) · MIT · Recent-minor Matrix · Integration/Package/Compatibility CI | P：追踪/可观测性。进程内扩展 + 外部服务；Pi Package/Resource + Service/Infrastructure。                                            | 对 Session、Turn、Model Call、Tool 与 Compaction 进行 Tracing。                                     | 启用后可上传原始输入、规范化 Context、Output、Tool Argument 与 Tool Result；必须先完成分类、脱敏、采样、Retention/Deletion 与 Failure Isolation。                                  |
-| [gentle-pi @ `3b6b3d2`](https://github.com/Gentleman-Programming/gentle-pi/tree/3b6b3d2183dbbc4d45b16a1a0f127728c0a2435c) · MIT · Current Scope · Unit/Package/Publish、CI 通过                                      | P：宽域运行层；S：Guardrail、Subagent、任务/目标循环。Package Suite + 进程内扩展 + 外部服务；Pi Package/Resource + Service/Infrastructure。 | Specification-driven Development、TDD、Review、Subagent 与 Local Authority/Policy Design 的宽域案例。 | `postinstall` 获取或构建 Native Runtime，当前 RDD Path 标记为 Unstable，Companion Surface 很大，Threat Model 排除恶意同用户进程替换。                                       |
+使用上方隔离试用包的场景和亲测审查模板。目录收录、源码审查、测试、CI 或声明
+许可证都不能代替你自己的试用。
 
-<!-- sync:root-queue-deferred -->
+<!-- sync:root-troubleshoot -->
 
-### 延后处理的社区记录——全部 3 项
+<a id="failure-recovery"></a>
 
-延后记录已经过足够检查，可以指出明确阻塞条件，但不计入 Source-review Evidence。
+## 每次只改变一个变量
 
-| 项目与已审查证据                                                                                                                                                    | 能力与形态                                                                                                                 | 保留原因                                                       | 阻塞条件与重新开启 Gate                                                                            |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [pi-extensions @ `60d70f2`](https://github.com/tmustier/pi-extensions/tree/60d70f24825446205c45e89f98813688e52823f3) · MIT · `collection-needs-item-review` | P：Package Suite/Alternate Distribution；S：UI/Statusline/Accessibility、Theme、Prompt Pack。Package Suite + 进程内 Extension。 | 混合集合中可能存在单独有价值的 Extension。                                 | 它不是一个 Atomic Capability；Test/CI 因子目录而异，部分文档保留旧链接。只能按单项 Review 重新开启。                       |
-| [pi-skills @ `90bb51c`](https://github.com/badlogic/pi-skills/tree/90bb51cae36515a648515b633a81c0c6efc8c74d) · MIT · `legacy-scope`                         | P：单项 Skill；S：Browser 与 Web Access。Resource-only + 外部服务。                                                               | Browser、Google Service、Transcription 与 API Workflow 的历史案例。 | 旧 `@mariozechner/*` 指引、异质高权限能力且未观察到 Test/CI；每个 Skill 都需要迁移与独立权限审查。                        |
-| [pi-share-hf @ `21c1d96`](https://github.com/badlogic/pi-share-hf/tree/21c1d9629187b553a2d59f26c5ef28eb33bb4e70) · `NOASSERTION` · `blocked`                | P：Session Export/Sharing/Publishing。进程内扩展 + 外部服务。                                                                     | 具有多阶段 Redaction 的历史 Session-sharing Flow。                  | 未检测到 License、旧 Scope、未观察到 Test/CI，且有意上传到 Public Hugging Face；Scanner 与模型审查不能证明所有私密内容均被移除。 |
+先保存原始错误，并停止破坏性操作、携带凭据的操作或重复外部写入。记录 Pi/Node
+版本、当前目录、Git 状态、模型服务商与模型、模式、信任决定、工具、已加载资源、
+会话和失败阶段。然后用最小对照，每次只改变一个变量：
 
-<!-- sync:root-queue-candidates -->
+| 步骤 | 只改变这一件事                                          | 如果结果变化，应检查……         |
+| -: | ------------------------------------------------ | -------------------- |
+|  1 | 换到全新空目录。                                         | 仓库文件、上下文、资源或路径假设。    |
+|  2 | 用 Print 代替 TUI。                                  | 终端渲染、按键处理或扩展提供的交互界面。 |
+|  3 | 固定模型服务商、模型和思考级别。                                 | 目录别名、能力、传输或模型行为。     |
+|  4 | 增加 <code>--no-session</code>。                    | 历史、分支、上下文压缩或旧工具调用参数。 |
+|  5 | 增加 <code>--no-context-files --no-approve</code>。 | 上下文指令或受保护项目资源。       |
+|  6 | 禁用扩展、技能、提示词模板和主题。                                | 某个可选资源或它们之间的交互。      |
+|  7 | 一次只加回一个固定引用的制品。                                  | 该包、资源或其生命周期。         |
+|  8 | 只开放内置读取工具。                                       | Bash/写入行为或自定义、覆盖工具。  |
+|  9 | 缩小到一个最小输入、仓库或文件。                                 | 最小可复现触发条件。           |
+| 10 | 比较干净用户配置或上一固定 Pi 版本。                             | 用户配置状态或回归问题。         |
 
-### 初步发现候选——全部 13 项
+可以从[症状路由](docs/troubleshooting.zh-CN.md#症状路由)开始；怀疑正常用户配置
+本身时，运行[干净基线](docs/troubleshooting.zh-CN.md#干净基线)。不要一次同时
+改变目录、模型、模型服务商、提示词、会话、包和工具；故障消失不等于
+已经找出原因。
 
-每一行的状态都是 `preliminary-evidence-collected`、
-`awaiting-source-review` 与 `not-evaluated`。所有仓库在快照时声明了 MIT
-Metadata，但 License Scope 本身尚未通过 Source-review Gate。下方 28 个 Evidence
-Link 全部不可变；它们只能证明表中陈述的关系。
+遇到凭据泄露、目标外破坏性行为、生产修改、隔离绕过，或不确定能否安全处理的
+数据时，停止本地诊断，进入对应的私密事件流程。
 
-| 候选与固定证据                                                                                                                                                                                                                                                                                                                                    | 能力与架构                                                                                                  | 有证据支持的 Pi 关系                                                                                                    | Source Review 前仍未解决                                                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| [OpenClaw](https://github.com/openclaw/openclaw) · Alias：Warelay、Clawdbot、Moltbot · npm `openclaw` · [下方五段证据链](#为何-openclaw-属于本生态地图)                                                                                                                                                                                                       | P：远程控制/消息/协作；S：宽域运行层、Package Suite。Frontend/Controller + Derived/Internalized Runtime + Package Suite。 | Pi Package Consumer + Historical SDK Embedder + Frontend/Controller + Derived/Internalized-from-Pi。             | 当前 Scope、兼容性、权限、数据流、Test、维护与完整 License Boundary；没有“当前兼容 Pi v0.83”的结论。                                     |
-| [oh-my-pi](https://github.com/can1357/oh-my-pi) · npm `@oh-my-pi/pi-coding-agent` · [身份](https://github.com/can1357/oh-my-pi/blob/fcf6d65140a1d53a55de3edb0d413bd2b8433bb0/README.md) · [Manifest](https://github.com/can1357/oh-my-pi/blob/fcf6d65140a1d53a55de3edb0d413bd2b8433bb0/packages/coding-agent/package.json)                   | P：Package Suite/Alternate Distribution；S：替代 UI。Frontend + Fork + Derived Runtime + Suite。              | Pi Fork，发布自己的 Terminal、SDK、RPC、Native ACP 与 `@oh-my-pi/*` Family；这些是 Fork 自有 Surface，不证明通过上游 SDK/RPC/ACP 消费 Pi。 | 继承与独立行为、分歧、兼容性、权限、Test 与维护。                                                                               |
-| [Senpi](https://github.com/code-yeongyu/senpi) · npm `@code-yeongyu/senpi` · [身份](https://github.com/code-yeongyu/senpi/blob/f4705697bb63e880140d9d885fe5bd5540b52d77/README.md) · [Manifest](https://github.com/code-yeongyu/senpi/blob/f4705697bb63e880140d9d885fe5bd5540b52d77/packages/coding-agent/package.json)                      | P：Package Suite/Alternate Distribution；S：替代 UI。Frontend + Fork + Derived Runtime。                      | pi-mono Fork/Rebrand，并作为 Dori 的 Coding-agent Runtime。                                                           | 精确 Fork Point、独立改动、当前上游关系、兼容性、风险、Test 与维护。                                                                |
-| [piclaw](https://github.com/rcarmo/piclaw) · [Workspace 说明](https://github.com/rcarmo/piclaw/blob/4de5e92aa96bdf809de772e68da767c2eb4957dd/README.md) · [Pi 0.83 Manifest](https://github.com/rcarmo/piclaw/blob/4de5e92aa96bdf809de772e68da767c2eb4957dd/package.json)                                                                    | P：替代 UI/编辑器；S：远程控制/协作。SDK Embedder + Frontend/Controller。                                              | 自托管 Web Workspace；固定 Manifest 直接依赖 Pi 0.83.0 的四个 Package。                                                       | Authentication、Process/Session Lifecycle、Data Boundary、实际兼容性、Test 与 Cleanup。                              |
-| [pi-vscode-extension](https://github.com/Zetaphor/pi-vscode-extension) · [身份](https://github.com/Zetaphor/pi-vscode-extension/blob/526df5ead8e0104ea5d176bb5e6fa25e6d75844a/README.md) · [Session 构建](https://github.com/Zetaphor/pi-vscode-extension/blob/526df5ead8e0104ea5d176bb5e6fa25e6d75844a/src/pi/session.ts)                     | P：替代 UI/编辑器。SDK Embedder + Frontend/Controller。                                                        | VS Code Frontend，在 Editor Extension 内导入 Pi API 并构建 Agent Session。                                               | Project Trust、Editor Authority、Session Lifecycle、Cancellation、Compatibility 与 Cleanup。                    |
-| [pi-vscode](https://github.com/pithings/pi-vscode) · 历史 Alias `pi0/pi-vscode` · [身份](https://github.com/pithings/pi-vscode/blob/8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c/README.md) · [RPC Spawn](https://github.com/pithings/pi-vscode/blob/8761b3ccf99bf5b7bc7e3631c508e1dd164b0e2c/src/pi.ts)                                           | P：替代 UI/编辑器。RPC/JSON Consumer + Frontend/Controller。                                                   | VS Code Bridge，以 RPC Mode 启动 Pi，并把 Frontend 连接到该进程。                                                             | Redirect Lineage、Project Trust、Process Lifecycle、Cancellation、Compatibility 与 Cleanup。                    |
-| [pi-acp](https://github.com/svkozak/pi-acp) · npm `pi-acp` · [协议说明](https://github.com/svkozak/pi-acp/blob/d1cffc047ab37a096ee70ca39cfc1de463db8d12/README.md) · [RPC Process](https://github.com/svkozak/pi-acp/blob/d1cffc047ab37a096ee70ca39cfc1de463db8d12/src/pi-rpc/process.ts)                                                      | P：替代 UI/编辑器。RPC/JSON Consumer + ACP Consumer。                                                          | 启动 Pi RPC，并通过 stdio 映射到 ACP，供 Zed 等 Client 使用。                                                                  | Protocol Completeness、Authorization、Cancellation、Error Mapping、Child Supervision、Compatibility 与 Cleanup。 |
-| [acpx](https://github.com/openclaw/acpx) · npm `acpx` · [Agent Mapping](https://github.com/openclaw/acpx/blob/504040facb1992453cf16a2a096a1094fc4e48d4/src/agent-registry.ts) · [Manifest](https://github.com/openclaw/acpx/blob/504040facb1992453cf16a2a096a1094fc4e48d4/package.json)                                                    | P：替代 UI/编辑器。ACP Consumer + Frontend/Controller。                                                        | 间接的 `acpx → pi-acp → Pi` 关系；不是直接 Pi SDK Embedder。                                                               | 间接依赖与 Protocol Boundary、Authorization、Lifecycle、Compatibility、Test 与维护。                                   |
-| [pi-coding-agent-action](https://github.com/shaftoe/pi-coding-agent-action) · [Action 入口](https://github.com/shaftoe/pi-coding-agent-action/blob/1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1/action.yml) · [Pi 0.82.1 Manifest](https://github.com/shaftoe/pi-coding-agent-action/blob/1bd7b89a7e1943cb1cf01f2f8b61e2108e0224c1/package.json) | P：Git/审查自动化。SDK Embedder。                                                                              | GitHub/Forgejo Action，直接嵌入 Pi Coding-agent、AI、Agent-core 0.82.1。                                                | Token Scope、Checkout Mutation、Remote Write、Approval、Rollback、Failure Isolation 与当前兼容性。                    |
-| [Polpo](https://github.com/pugliatechs/polpo) · [远程控制说明](https://github.com/pugliatechs/polpo/blob/ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477/README.md) · [RPC Launcher](https://github.com/pugliatechs/polpo/blob/ad8e1bd0cdc8b491a64aede27a1a97c0ac41d477/src/agent/pi-agent.js)                                                          | P：远程控制/消息/协作；S：替代 UI。RPC/JSON Consumer + Frontend/Controller。                                          | 面向手机的 Remote Controller，通过 RPC 启动并连接 Pi。                                                                        | Identity、Authorization、Replay Resistance、Disconnect、Retention、Process Cleanup 与 Compatibility。            |
-| [pi-nvim](https://github.com/carderne/pi-nvim) · npm `pi-nvim` · [Extension 入口](https://github.com/carderne/pi-nvim/blob/fbc6f12652234f03d2fe729adbcc3ff61ca7d39a/extension.ts)                                                                                                                                                            | P：替代 UI/编辑器。进程内扩展 + Frontend/Controller。                                                               | 由 Pi 加载的 Extension，打开 Unix JSON Socket 供 Neovim Frontend 使用；不构建 `AgentSession`，不是 SDK Runtime Embedder。         | Buffer/Editor Authority、Project Trust、Socket/Process Lifecycle、Cancellation、Compatibility 与 Cleanup。      |
-| [pi-mobile](https://github.com/p1rallels/pi-mobile) · [产品说明](https://github.com/p1rallels/pi-mobile/blob/4cc9b712254d84c90a00373c972c8a417fd26fb9/README.md) · [Session Runtime](https://github.com/p1rallels/pi-mobile/blob/4cc9b712254d84c90a00373c972c8a417fd26fb9/src/session-runtime.ts)                                              | P：替代 UI/编辑器；S：远程控制/协作。SDK Embedder + Frontend/Controller。                                              | Web/Mobile Frontend；固定 Runtime 直接构建并管理 Pi Agent Session。                                                        | Authentication、Transport Authorization、Retention、Disconnect、Compatibility、Test 与 Cleanup。                 |
-| [my-pi](https://github.com/spences10/my-pi) · npm `my-pi` · [Suite 说明](https://github.com/spences10/my-pi/blob/c0bca00ef69c20c2192d7457827b45e3d3d401bb/README.md) · [Session API](https://github.com/spences10/my-pi/blob/c0bca00ef69c20c2192d7457827b45e3d3d401bb/src/api.ts)                                                            | P：Package Suite/Alternate Distribution；S：MCP、代码智能、Evals、宽域运行层。SDK Embedder + Fork + Suite。             | Pi SDK Wrapper/Alternate Distribution，覆盖 MCP、LSP、Team 与 Evaluation-telemetry Surface。                           | 每个 Bundled Artifact 的权限、数据流、行为、兼容性、Test 与维护；目前不能作 Suite-level 结论。                                         |
+<!-- sync:root-reference -->
 
-<!-- sync:root-queue-openclaw -->
+## 参考资料库
 
-#### 为何 OpenClaw 属于本生态地图
+### 按结果阅读
 
-OpenClaw 已明确纳入初步候选层。证据支持其历史 SDK 嵌入、保留的 Pi Provenance
-及后续 Runtime Internalization；证据**不表示**当前 OpenClaw 仍嵌入上游 Runtime，
-也不支持“当前兼容 Pi v0.83.0”的结论。
+| 需要                               | 打开                                       |
+| -------------------------------- | ---------------------------------------- |
+| 十二套完整运行配方                        | [场景手册](docs/scenario-cookbook.zh-CN.md)  |
+| 任务受理、风险、归属、检查点、验证和交付             | [运行手册](docs/operating-playbook.zh-CN.md) |
+| 三十条原因、行动和验证实践                    | [实践指南](docs/practice-guide.zh-CN.md)     |
+| 带失败分支的已填写教学记录                    | [完整示例](docs/worked-example.zh-CN.md)     |
+| 架构、资源、信任、会话与接口选择                 | [架构指南](docs/architecture.zh-CN.md)       |
+| 模型服务商、包、会话、终端、JSON/RPC/SDK 或升级故障 | [故障排查](docs/troubleshooting.zh-CN.md)    |
+| 第三方来源、权限、数据流和生命周期审查              | [扩展审查](docs/extension-review.zh-CN.md)   |
+| 仓库中全部文档和模板                       | [文档地图](docs/README.zh-CN.md)             |
 
-1. 固定的[命名历史](https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/docs/start/lore.md)记录 Warelay → Clawdbot → Moltbot → OpenClaw。
-2. 历史 [Pi 集成文档](https://github.com/openclaw/openclaw/blob/99b27cde64d6616a9e41f52f4a699577cf60f1d6/docs/pi.md)描述通过 `AgentSession` 直接集成 Coding-agent、AI、Agent-core 与 TUI。
-3. 固定的[来源声明](https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/THIRD_PARTY_NOTICES.md)记录部分代码改编自 Pi/pi-mono，并保留 Pi TUI 依赖。
-4. [内部化迁移](https://github.com/openclaw/openclaw/commit/bb46b79d3c1479f194a90afcf3dd69a1858a7898)引入 OpenClaw 自有 Agent Core、移除原 Pi Runtime Layout，同时保留第三方来源。
-5. 固定的[根 Manifest](https://github.com/openclaw/openclaw/blob/a2b97cc950f49f5194c64a58fe24c9eb38d640ce/package.json)使用 npm Identity `openclaw`，并保留 `@earendil-works/pi-tui` 0.82.1。
+<details>
+<summary><strong>证据与生态研究快照</strong></summary>
 
-仅靠名称或当前依赖搜索很容易漏掉这类项目：当前名称不含 Pi、经历过三个旧名称，
-且关系已从 Direct Embed 演化为 Derived/Internalized Lineage。原始 13 条线索搜索
-是重建且不可重放的，因此这些只是合理的遗漏机制，不是对某个历史唯一原因的断言。
+运行建议仍然可以追溯，但研究过程不再占据主学习路径：
 
-<!-- sync:root-queue-coverage -->
+| 已录入证据  | 快照                                                                   |
+| ------ | -------------------------------------------------------------------- |
+| 资源注册表  | 28 条：6 个官方、7 个目录/相关入口、12 个已完成源码审查的社区项目、3 个延后社区记录。                    |
+| 发现队列   | 13 个初步候选，包含 28 条不可变证据链接。                                             |
+| 覆盖地图   | 25 个能力类别、11 个架构类型、13 种 Pi 关系；目前没有第三方项目经过实际运行验证。                     |
+| 稳定实现基线 | Pi v0.83.0，提交 <code>845d6ff1f6643aba440341cce877ce1c43ebbc39</code>。 |
+| 日期     | 源码审查快照 2026-07-31；发现候选快照 2026-08-01，Asia/Singapore。                  |
 
-### 能力覆盖与缺口——全部 25 类
+需要固定一手来源时看[官方来源图](docs/research/source-map.zh-CN.md)，需要追溯
+P01–P30 时看[证据台账](docs/research/evidence-ledger.zh-CN.md)，需要能力缺口时看
+[覆盖矩阵](docs/research/coverage-matrix.zh-CN.md)，需要逐项生态时看
+[生态图谱](docs/research/landscape.zh-CN.md)。只有审计或更新研究时，才需要进入
+[方法论](docs/research/methodology.zh-CN.md)和
+[发现协议](docs/research/discovery-protocol.zh-CN.md)。
 
-全部类别仍然缺少 Hands-on Evidence。`P`/`S` 保留 Primary 与 Secondary 区别；
-Deferred Record 不会增加 Source-review Coverage，初步候选也不算 Reviewed
-Evidence。
+源码审查不等于亲测、安全认证、兼容性证明或背书。在具名人类维护者提交可复现
+试用，并经过独立编辑晋级前，第三方正式推荐仍然有意保持为零。
 
-| 能力类别          | 已完成源码审查的代表                                | 延后记录             | 初步候选                                                                                               | 下一步证据缺口                                           |
-| ------------- | ----------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| VM/工具隔离       | Gondolin（P）                               | —                | —                                                                                                  | 人工实测。                                             |
-| 权限与护栏         | Gondolin（S）、gentle-pi（S）                  | —                | —                                                                                                  | Primary 代表与人工实测。                                  |
-| 子代理与工作流编排     | pi-subagents（P）、pi-crew（P）、gentle-pi（S）   | —                | —                                                                                                  | 对不同编排形态分别亲测。                                      |
-| MCP 集成        | pi-mcp-adapter（P）                         | —                | my-pi（S）                                                                                           | 人工实测；Suite Candidate 仍需源码审查。                      |
-| 网页搜索与抓取       | pi-web-access（P）                          | pi-skills（S）     | —                                                                                                  | Data-flow 人工实测。                                   |
-| 浏览器与已认证配置自动化  | pi-agent-browser-native（P）                | pi-skills（S）     | —                                                                                                  | 专用 Profile 人工实测。                                  |
-| 人工审查与规划       | Plannotator（P）                            | —                | —                                                                                                  | Local/Share-disabled 人工实测。                        |
-| 代码智能          | pi-lens（P）                                | —                | my-pi（S）                                                                                           | 人工实测；Suite Candidate 仍需源码审查。                      |
-| 持久记忆          | pi-hermes-memory（P）                       | —                | —                                                                                                  | 隐私、Retention 与 Prompt-injection 人工实测。             |
-| 追踪与可观测性       | braintrust-pi-extension（P）                | —                | —                                                                                                  | 脱敏、Retention 与 Failure-isolation 人工实测。            |
-| 替代 UI 与编辑器集成  | Emacs Frontend（P）、browser-native（S）       | —                | piclaw（P）、两个 VS Code 项目（P）、pi-acp（P）、acpx（P）、pi-nvim（P）、pi-mobile（P）、oh-my-pi（S）、Senpi（S）、Polpo（S） | 按 Integration Form 完成候选源码审查，再亲测。                  |
-| 宽域运行层         | gentle-pi（P）                              | —                | OpenClaw（S）、my-pi（S）                                                                               | 选定范围亲测；两个候选均需源码审查。                                |
-| 上下文优化         | pi-hermes-memory（S）                       | —                | —                                                                                                  | Primary 代表与人工实测。                                  |
-| 任务、目标与循环工程    | pi-subagents（S）、pi-crew（S）、gentle-pi（S）   | —                | —                                                                                                  | Primary 代表与人工实测。                                  |
-| UI、状态栏、通知与无障碍 | —                                         | pi-extensions（S） | —                                                                                                  | 拆分集合、源码审查，再亲测。                                    |
-| 主题与主题工具       | —                                         | pi-extensions（S） | —                                                                                                  | 拆分集合、源码审查，再亲测。                                    |
-| 提示模板包         | —                                         | pi-extensions（S） | —                                                                                                  | 拆分集合、源码审查，再亲测。                                    |
-| 单项技能          | —                                         | pi-skills（P）     | —                                                                                                  | 迁移并逐项审查 Skill，再亲测。                                |
-| 自定义提供商与模型网关   | —                                         | —                | —                                                                                                  | 发现可信公开线索、源码审查与人工实测。                               |
-| 本地模型运行时       | —                                         | —                | —                                                                                                  | 发现可信公开线索、源码审查与人工实测。                               |
-| 远程控制、消息与协作    | —                                         | —                | OpenClaw（P）、Polpo（P）、piclaw（S）、pi-mobile（S）                                                        | 按 Trust/Transport Model 源码审查，再亲测。                 |
-| 包套件与替代发行版     | —                                         | pi-extensions（P） | oh-my-pi（P）、Senpi（P）、my-pi（P）、OpenClaw（S）                                                          | 审查继承与独立行为，再亲测。                                    |
-| Git 与审查自动化    | pi-subagents（S）、pi-crew（S）、Plannotator（S） | —                | pi-coding-agent-action（P）                                                                          | 在候选之外补 Primary Source Review，再进行 Remote-write 亲测。 |
-| 评测与基准测试       | —                                         | —                | my-pi（S）                                                                                           | 源码审查独立 Eval Slice/代表，再完成实测验证。                     |
-| 会话导出、分享与发布    | Plannotator（S）                            | pi-share-hf（P）   | —                                                                                                  | 活跃 Primary 代表与隐私人工实测。                             |
+</details>
 
-按 Primary + Secondary Placement 计算，16 类有 Source-review Evidence，9 类
-没有；这 9 类中 3 类已有 Candidate，6 类没有 Active Candidate，但其中 4 类保留
-Deferred Material。候选 Primary Placement 高度集中：7 个替代 UI/编辑器、3 个
-Package Suite/Distribution、2 个 Remote/Collaboration、1 个 Git/Review；这不是
-25 类能力的均匀样本。
+<a id="相关列表"></a>
 
-<!-- sync:root-queue-architectures -->
+### 相关发现列表
 
-### 架构层次——全部 11 种
-
-Architecture 描述项目如何执行或组合。一个项目可以占多行，因此计数不能相加为
-Project Total。
-
-| 架构                           | Source-reviewed 记录 | 初步候选 | 运行边界                                                                                                           |
-| ---------------------------- | -----------------: | ---: | -------------------------------------------------------------------------------------------------------------- |
-| Resource-only                |                  0 |    0 | 声明式 Prompt、Theme、Template 或 Skill 仍会影响模型/工具使用；当前案例属于 Deferred，而非 Reviewed。                                     |
-| In-process Extension         |                 11 |    1 | 代码以 Pi Process User 的 File、Process、Credential 与 Network Authority 运行。                                          |
-| SDK Embedder                 |                  0 |    5 | Host 拥有 Policy、Session、Tool、Credential、Cancellation、Subscription、Persistence 与 Cleanup。                        |
-| RPC/JSON Consumer            |                  1 |    3 | Controller 拥有 Subprocess Startup、Protocol Framing、stderr Drain、Event Handling、Cancellation、Restart 与 Shutdown。 |
-| ACP Consumer                 |                  0 |    2 | Adapter/Client 增加 Protocol Mapping、Authorization、Capability、Error、Cancellation 与 Lifecycle Boundary。           |
-| Frontend/Controller          |                  2 |   10 | Editor、Web、Mobile、Messaging 或 Remote UI Policy 决定谁能查看并控制 Pi-backed Session。                                    |
-| External Service             |                  9 |    0 | Credential、Outbound Data、Tenancy、Retention、Availability、Backpressure 与 Deletion 超出本地进程。                        |
-| OS/Virtualization Boundary   |                  1 |    0 | Containment 取决于 Mount、Network、Secret、Host Process、Reset 与明确的 Threat-model Exclusion。                           |
-| Fork/Alternate Distribution  |                  0 |    3 | 必须区分 Identity、继承与改变的行为、Package Scope、Update Path 及与上游的分歧。                                                      |
-| Derived/Internalized Runtime |                  0 |    3 | 即使上游 Runtime Dependency 消失，历史 Provenance 仍可能保留；继承的结论必须重新验证。                                                    |
-| Package Suite                |                  1 |    3 | 每个 Bundled Executable/Resource 及组合权限都需审查；一个安全组件不能验证整个 Suite。                                                   |
-
-<!-- sync:root-queue-relations -->
-
-### 与 Pi 的关系类型——全部 13 种
-
-Relationship 解释项目为何属于 Pi 生态地图，不代表质量或兼容性。关系可以重叠，
-后续 Internalization 或改名也不会抹除历史 Provenance。
-
-| 与 Pi 的关系                       | Source-reviewed 记录 | 初步候选 | 含义                                                                        |
-| ------------------------------ | -----------------: | ---: | ------------------------------------------------------------------------- |
-| Pi Package 或 Resource          |                 11 |    2 | 由 Pi Extension/Resource System 加载、为其分发或直接围绕它构建。                           |
-| SDK Embedder                   |                  0 |    5 | 在另一应用内构建 Pi Session 或导入 Pi Runtime API。                                   |
-| Historical SDK Embedder        |                  0 |    1 | Immutable 历史证据显示曾直接嵌入 SDK，但不一定仍是当前关系。                                     |
-| Pi Package Consumer            |                  0 |    1 | 消费至少一个 Pi Package，但不一定嵌入完整的当前 Runtime。                                    |
-| RPC/JSON Consumer              |                  1 |    3 | 启动或消费 Pi CLI Protocol/Event Surface。                                      |
-| ACP Consumer                   |                  0 |    2 | 直接或通过 Bridge 连接 ACP。                                                      |
-| Frontend 或 Controller          |                  2 |   10 | 展示或远程控制 Pi-backed User/Session Surface。                                   |
-| Fork 或 Alternate Distribution  |                  0 |    3 | 重新发布、改名或实质性重新分发 Pi-derived Code/Behavior。                                 |
-| Derived 或 Internalized from Pi |                  0 |    3 | 在 Internalize 或改变 Runtime Boundary 后仍保留 Pi-derived Code/Provenance。       |
-| Service 或 Infrastructure       |                  9 |    0 | 为 Pi Workflow 增加外部/本地 Service、Broker、Backend 或 Infrastructure Dependency。 |
-| Official-adjacent              |                  1 |    0 | 由上游组织维护或作为相邻 Reference 提供，但不属于 Pi Core。                                   |
-| Historical 或 Archived          |                  0 |    0 | 记录 Legacy/Retired 关系；当前实例均为 Deferred，不增加 Reviewed/Candidate Count。        |
-| Indirect Consumer              |                  0 |    1 | 通过另一 Adapter/Dependency 接触 Pi，而不是直接 Embed 或 Launch。                       |
-
-<!-- sync:root-queue-directories -->
-
-### Catalog、目录与历史语境
-
-官方 Catalog 与四个当前相关目录是导航入口，不是质量或兼容性 Oracle。在带日期的
-2026-07-31 快照中，Catalog 报告 5,351 个 Package，以及互相重叠的 3,059 个
-Extension、360 个 Skill、109 个 Theme、78 个 Prompt Filter；这些 Filter 数不能
-相加。
-
-| 入口                                                                                | 注册表状态           | 合适用途                                                         | 边界                                                                               |
-| --------------------------------------------------------------------------------- | --------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| Pi Package Catalog                                                                | 官方 Discovery    | 广泛发现 Package。                                                | Catalog 收录不等于 Source、License、Safety、Maintenance、Compatibility 或 Hands-on Review。 |
-| awesome-pi                                                                        | 当前 Related List | 活跃、双语、人工策展的 Package/Resource 导航。                             | Discovery Scope 不同于证据化运行实践。                                                      |
-| awesome-pi-coding-agent                                                           | 当前 Related List | 自动、频繁更新、偏广度的导航。                                              | 自动发现和生成描述不是人工实测。                                                                 |
-| Pi Package Index                                                                  | 当前 Related List | 每日 npm Metadata、Maintenance Signal、Search 与 Public JSON API。 | 非官方 Metadata 与 Popularity/Maintenance Signal 不构成背书。                              |
-| pi-ecosystem-wiki                                                                 | 当前 Related List | Architecture、Comparison 与 Ecosystem Synthesis。               | Secondary/Generated Claim 在回查一手来源前仍只是线索。                                         |
-| [awesome-pi-agent](https://github.com/qualisero/awesome-pi-agent)                 | Archived 历史语境   | 理解较早目录与命名入口。                                                 | 已明确 Retired/Outdated，不能用于当前 Compatibility。                                       |
-| [Traveler0014/awesome-pi-agent](https://github.com/Traveler0014/awesome-pi-agent) | 已拒绝作为当前目录       | Schema-backed Catalog Design 参考。                             | Scheduled Metadata Update 失败，内容未越过六月初始快照。                                        |
-| [awesome-pi-mono](https://github.com/afoofaa/awesome-pi-mono)                     | 已拒绝作为当前目录       | 早期 Manual Taxonomy/Directory 语境。                             | 五月 Seed 后没有实质更新，持续维护未得到证明。                                                       |
-
-<!-- sync:root-queue-limits -->
-
-### 发现边界与可能仍然遗漏的范围
-
-以上标题中的“全部”是指当前仓库已 Check-in 的全部记录，不是所有现实中存在的
-Pi 相关项目。
-
-| 盲区                                            | 真实项目可能缺席的原因                                                                                      | 当前处理与残余限制                                                                                                                                  |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 初始批次不可重放                                      | 历史 13 条线索搜索没有保存原始 Query、Ranking、Page、Duplicate、Rejected Result、Failure 或 Pre-filter Denominator。 | 运行被如实标记为 `reconstructed-non-replayable`、Truncated 与 Incomplete；不能支持“生态完整”结论。                                                               |
-| 当前 Probe 有界                                   | 配置了 9 个 GitHub Query Family——6 个 Code、3 个 Repository；每个只读第一页，最多 50 条。                            | 保存 Limit、Truncation、Error、Attempt 与 Disposition；低排名或使用不同措辞的项目仍可能遗漏。                                                                        |
-| Code-search Authentication                    | Repository-scoped 默认 Actions Token 不提供本项目使用的独立 Public Code-search Context。                       | Repository Search 运行；除非配置 Public-only `DISCOVERY_SEARCH_TOKEN`，6 个 Code Search 都以 0 Attempt 明确记为 `skipped`。                                |
-| 仅搜索 GitHub                                    | 其他 Forge、个人网站、仅文档产品、Binary 或 Registry-only Package 可能没有可发现的 GitHub Repository。                   | Catalog、Registry、Directory 与 Referral Cross-check 能缓解，但不能使覆盖完整。                                                                            |
-| Private/Internal/Visibility Ambiguous         | 发布这些 Identity 可能泄露信息或污染公开计数。                                                                     | Probe Fail Closed，并清除受影响整条 Query 的 Identity/Count；这些项目有意不进入 Public Artifact。                                                               |
-| Rename、Move、Fork、Delete 与 Internalize         | Canonical URL 和当前 Dependency Name 会隐藏历史 Alias、Redirect、Provenance 与独立 Fork。                      | 保存 Alias、Package Identity、Immutable Evidence 与显式 Relationship Type；未知 Lineage 仍可能存在。                                                       |
-| Search Vocabulary、Language、Ranking 与 Indexing | 产品可能不含“Pi”、使用其他语言、间接调用 Protocol，或排在第一页之后。                                                        | Query 覆盖 Package Symbol、RPC String、Provenance 与 Product Term，但有限 Vocabulary 不可能完整。                                                         |
-| Registry/Manifest 形态差异                        | 相关 Import 可能只在 Lockfile、Generated File、Monorepo Subdirectory、其他语言或未公开 Source Archive 中。          | Source Review 时解析 Publisher、Artifact、Repository、Ref 与 Install Target；当前 Query 不覆盖所有形态。                                                     |
-| Dynamic Compatibility                         | Pi、Node/Bun、Package Scope、Provider、Terminal、Platform 与 External Service 可独立变化。                   | 固定 Snapshot，并把 Relationship、Source Review、Hands-on Verification 与 Recommendation 分成不同 Claim。                                               |
-| Evidence 不均衡                                  | 候选集中在 Frontend、SDK Embedder、Fork 与 Suite；另有 6 类既无 Reviewed Evidence，也无 Active Candidate。         | 优先发现 Custom Provider/Model Gateway、Local-model Runtime、UI/Statusline/Accessibility、Theme、Prompt Pack 与 Individual Skill，同时不能隐藏所有类别都缺亲测的事实。 |
-
-### 晋级 Gate
-
-目前有意**不设置任何第三方正式精选条目**。晋级需要具名人类 Reviewer、
-Immutable Artifact、Relationship Disclosure、Isolated Trial、精确
-Environment/Command、Expected/Actual Result、Negative Case、Cleanup/Rollback、
-Residual Risk、双语事实审查与 Expiration/Retest Trigger。Star、Download、
-Catalog Presence、Passing CI、Declared License Metadata 或 Source Review 都不能
-替代这些步骤。
-
-<!-- sync:root-related -->
-
-## 相关列表
-
-以下项目回答相邻的 Discovery/Ecosystem 问题。
+这些项目处理相邻的包与生态发现问题。
 
 <!-- resource:related-awesome-pi -->
 
-- [awesome-pi](https://github.com/BubblePtr/awesome-pi) - CC0 下活跃的双语 Pi Package 与 Ecosystem Resource Curated Directory。
+- [awesome-pi](https://github.com/BubblePtr/awesome-pi) - 活跃的双语 Pi 包与生态资源目录。
 
 <!-- resource:related-automated-directory -->
 
-- [awesome-pi-coding-agent](https://github.com/shaftoe/awesome-pi-coding-agent) - 为 Breadth/Discovery 优化、自动且频繁更新的 Directory。
+- [awesome-pi-coding-agent](https://github.com/shaftoe/awesome-pi-coding-agent) - 为广泛发现优化、自动且频繁刷新的目录。
 
 <!-- resource:related-package-index -->
 
-- [Pi Package Index](https://github.com/getpipher/pi-package-index) - 非官方、每日刷新的 npm Package Index，提供可搜索的 Maintenance Metadata 与 Public JSON API。
+- [Pi Package Index](https://github.com/getpipher/pi-package-index) - 非官方每日 npm 索引，提供可搜索的维护元数据和公开 JSON API。
 
 <!-- resource:related-ecosystem-wiki -->
 
-- [pi-ecosystem-wiki](https://github.com/micuintus/pi-ecosystem-wiki) - Architecture、Comparison 与 Ecosystem Synthesis；Secondary Claim 应以一手来源验证。
+- [pi-ecosystem-wiki](https://github.com/micuintus/pi-ecosystem-wiki) - 架构、比较与生态综述；其中的二手说法应回查一手来源。
 
 <!-- sync:root-contributing -->
 
-## 贡献
+### 贡献
 
-提议实践或候选前阅读[贡献指南](CONTRIBUTING.zh-CN.md)。贡献必须说明条目为何特别
-有用，披露 Relationship 与 AI Assistance，区分 Source Review 与 Direct Use，
-提供可复现证据，并同时更新两种语言。提交内容采用 CC0-1.0。
+提议实践、配方或生态线索前，请阅读[贡献指南](CONTRIBUTING.zh-CN.md)。贡献必须
+解释给读者带来的结果，区分来源事实和直接执行，披露项目关系与 AI 辅助情况，
+提供可复现证据，并同步更新两种语言。内容采用 CC0-1.0。
+
+修改这个仓库本身时运行：
+
+```bash
+npm ci --ignore-scripts
+npm run check
+npm run check:awesome
+```
+
+这些检查验证文档、双语结构、注册表、研究数据、链接和校验器；它们不表示
+Pi 配方已经实际执行。
 
 <!-- sync:root-footnotes -->
 
-## 注记
+### 注记
 
-这是独立社区仓库，不由 Earendil Works 维护，也不隶属于 Earendil Works。“Pi”
+这是独立社区仓库，不由 Earendil Works 维护，也不隶属于 Earendil Works。Pi
 和所链接项目名称归各自所有者。
 
-策展/源码审查快照：**2026-07-31，Asia/Singapore**。发现候选快照：
-**2026-08-01，Asia/Singapore**。Dynamic Count、Package Metadata、Provider
-Behavior 与 `latest` Documentation 可能已经变化。
+动态包数量、模型服务商行为、模型目录和当前文档可能已在快照后变化。
+旧资料可能使用 <code>badlogic/pi-mono</code>、 <code>earendil-works/pi-mono</code> 或 <code>@mariozechner/\*</code>；
+遵循前应确认当前仓库、发布者、包命名空间、对等依赖和安装目标。
 
 中央 Awesome 项目的
-[列表创建指南](https://github.com/sindresorhus/awesome/blob/main/create-list.md)与
+[列表创建指南](https://github.com/sindresorhus/awesome/blob/main/create-list.md)和
 [当前 PR 模板](https://github.com/sindresorhus/awesome/blob/main/pull_request_template.md)
-拒绝 AI-generated List 与 Fully AI-generated PR。本透明研究预览必须先产生实质
-Human Testing、Selection、Rewriting、Bilingual Review，并达到要求的公开维护
-时间，才能诚实地声称具备中央列表申请资格。
+拒绝 AI 生成的列表和完全由 AI 生成的 PR。本 AI 辅助预览必须经过实质性人工测试、
+筛选、重写和双语审查，并达到要求的公开维护时间，才能诚实声称具备中央列表申请
+资格。
